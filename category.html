@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เกมหมวดหมู่ — สุ่มหมวดวัดไหวพริบ</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <div class="brand"><span class="dot">●</span> วงกำลังจะเหงา</div>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--lime); color:#12210a;">03 · วัดไหวพริบ</span>
+    <h1>เกมหมวดหมู่</h1>
+    <p>สุ่มหมวดหนึ่งขึ้นมา แล้วผลัดกันพูดชื่อของในหมวดนั้นไปเรื่อย ๆ รอบวง ห้ามซ้ำ ห้ามผิดหมวด ห้ามช้า — ใครทำพลาดคนแรกแพ้ (จะให้ดื่มหรือทำโทษอะไรก็ตกลงกันเอง)</p>
+  </section>
+
+  <div class="panel reveal-up">
+    <h2>กติกาแบบเร็ว ๆ</h2>
+    <ol>
+      <li>กดสุ่มหมวดด้านล่าง 1 หมวด ให้ทุกคนได้ยินพร้อมกัน</li>
+      <li>เริ่มพูดวนตามเข็มนาฬิกา คนละ 1 คำในหมวดนั้น ห้ามซ้ำกับที่พูดไปแล้ว</li>
+      <li>ตั้งเวลาต่อคน (แนะนำ 5 วินาที) กดเริ่มจับเวลาทุกครั้งที่ถึงตาใครคนนั้น</li>
+      <li>ตอบไม่ทัน ตอบซ้ำ หรือตอบผิดหมวด = แพ้รอบนั้น ทำโทษตามที่วงตกลงไว้ก่อนเล่น</li>
+    </ol>
+  </div>
+
+  <div id="stage" class="stage reveal-up">
+    <div class="label">หมวดที่ต้องตอบ</div>
+    <div class="reveal" id="catText">แตะปุ่มด้านล่างเพื่อสุ่ม</div>
+    <div class="controls">
+      <button class="btn" id="newCatBtn">สุ่มหมวดใหม่</button>
+    </div>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>⏱ จับเวลาต่อคน</h2>
+    <div class="timer-ring" id="timerRing">
+      <svg viewBox="0 0 120 120">
+        <circle class="bg" cx="60" cy="60" r="52"/>
+        <circle class="fg" id="timerFg" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="0"/>
+      </svg>
+      <div class="num" id="timerNum">0:05</div>
+    </div>
+    <div class="controls" style="justify-content:center; display:flex; gap:14px; margin-top:16px; flex-wrap:wrap;">
+      <button class="btn secondary" data-sec="5">5 วิ</button>
+      <button class="btn secondary" data-sec="10">10 วิ</button>
+      <button class="btn secondary" data-sec="15">15 วิ</button>
+      <button class="btn" id="startTimerBtn">ถึงตาคุณ — เริ่ม!</button>
+    </div>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>คลังหมวดทั้งหมด (<span id="catCount">0</span> หมวด)</h2>
+    <div class="tags" id="catList"></div>
+  </div>
+
+  <footer>เล่นด้วยความรับผิดชอบ ดื่มพอดี ไม่ขับรถ</footer>
+</div>
+
+<script src="data/category-game.js"></script>
+<script src="js/main.js"></script>
+<script src="js/category.js"></script>
+</body>
+</html>

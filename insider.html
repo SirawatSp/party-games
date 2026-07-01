@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Insider จอมบงการ — สุ่มคำลับ</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <div class="brand"><span class="dot">●</span> วงกำลังจะเหงา</div>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--cyan); color:#00202b;">02 · บลัฟกันเถอะ</span>
+    <h1>Insider จอมบงการ</h1>
+    <p>เกมสืบจับจอมบงการที่แฝงตัวอยู่ในวง เล่นได้ตั้งแต่ 3 คนขึ้นไป ใช้เว็บนี้แทนสำรับการ์ด — สุ่มคำลับให้เฉพาะ "ผู้นำ" แอบดูคนเดียว</p>
+  </section>
+
+  <div class="panel reveal-up">
+    <h2>กติกาแบบเร็ว ๆ</h2>
+    <ol>
+      <li>เลือก 1 คนเป็น <b>ผู้นำ (Leader)</b> — คนอื่นในวงหลับตาหรือหันหน้าหนีจอ</li>
+      <li>ผู้นำกดปุ่ม "สุ่มคำลับ" ด้านล่าง แล้วแอบดูคำเพียงคนเดียว เก็บเป็นความลับ</li>
+      <li><b>จอมบงการ</b> คือคนที่แอบรู้คำเดียวกับผู้นำ (สมมติให้ 1 คนในวงแอบดูจอผู้นำทัน โดยไม่มีใครรู้ว่าใคร) ส่วนที่เหลือคือ <b>ประชาชน</b> ที่ไม่รู้คำตอบ</li>
+      <li>เริ่มจับเวลา ให้ทุกคนช่วยกันตั้งคำถามกับผู้นำ โดยผู้นำตอบได้แค่ "ใช่" "ไม่ใช่" หรือ "ไม่แน่ใจ" เพื่อค่อย ๆ ไล่เดาคำลับ</li>
+      <li>จอมบงการต้องแกล้งถามคำถามพาวงให้ใกล้เคียงคำตอบ แต่ห้ามถามตรงเกินจนถูกจับได้ว่ารู้คำตอบอยู่แล้ว</li>
+      <li>ถ้ามีคนทายถูกก่อนหมดเวลา ให้ทั้งวงโหวตว่าใครคือจอมบงการ — ถ้าจับถูกตัว ประชาชนชนะ ถ้าจับผิดตัว จอมบงการชนะ (ใครแพ้ดื่ม!)</li>
+    </ol>
+  </div>
+
+  <div id="stage" class="stage blur reveal-up">
+    <div class="tap-hint" id="tapHint">แตะเพื่อดูคำ (ผู้นำเท่านั้น)</div>
+    <div class="label" id="wordCategory">หมวด</div>
+    <div class="reveal" id="wordText">แตะเพื่อสุ่มคำแรก</div>
+    <div class="sub">แอบดูคนเดียวเท่านั้นนะ 🤫</div>
+    <div class="controls">
+      <button class="btn" id="newWordBtn">สุ่มคำลับใหม่</button>
+      <button class="btn secondary" id="hideBtn">ซ่อนคำ</button>
+    </div>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>⏱ ตั้งเวลาสืบสวน</h2>
+    <div class="timer-ring" id="timerRing">
+      <svg viewBox="0 0 120 120">
+        <circle class="bg" cx="60" cy="60" r="52"/>
+        <circle class="fg" id="timerFg" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="0"/>
+      </svg>
+      <div class="num" id="timerNum">3:00</div>
+    </div>
+    <div class="controls" style="justify-content:center; display:flex; gap:14px; margin-top:16px; flex-wrap:wrap;">
+      <button class="btn secondary" data-sec="60">1 นาที</button>
+      <button class="btn secondary" data-sec="180">3 นาที</button>
+      <button class="btn secondary" data-sec="300">5 นาที</button>
+      <button class="btn" id="startTimerBtn">เริ่มจับเวลา</button>
+    </div>
+  </div>
+
+  <footer>เล่นด้วยความรับผิดชอบ ดื่มพอดี ไม่ขับรถ</footer>
+</div>
+
+<script src="data/insider.js"></script>
+<script src="js/main.js"></script>
+<script src="js/insider.js"></script>
+</body>
+</html>

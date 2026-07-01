@@ -1,0 +1,28 @@
+// เกม Insider (จอมบงการ) — คลังคำลับแบ่งตามหมวด ให้ผู้นำ (Leader) เห็นคำคนเดียว
+const INSIDER_WORDS = [
+  { category: "สัตว์", word: "ยีราฟ" }, { category: "สัตว์", word: "เพนกวิน" },
+  { category: "สัตว์", word: "จระเข้" }, { category: "สัตว์", word: "อูฐ" },
+  { category: "สัตว์", word: "แมงกะพรุน" }, { category: "สัตว์", word: "ค้างคาว" },
+  { category: "อาหาร", word: "ต้มยำกุ้ง" }, { category: "อาหาร", word: "ซูชิ" },
+  { category: "อาหาร", word: "พิซซ่า" }, { category: "อาหาร", word: "ส้มตำ" },
+  { category: "อาหาร", word: "หมูกระทะ" }, { category: "อาหาร", word: "ราเมง" },
+  { category: "สถานที่", word: "สนามบิน" }, { category: "สถานที่", word: "วัดพระแก้ว" },
+  { category: "สถานที่", word: "ตลาดนัดจตุจักร" }, { category: "สถานที่", word: "หอไอเฟล" },
+  { category: "สถานที่", word: "โรงพยาบาล" }, { category: "สถานที่", word: "สวนสัตว์" },
+  { category: "สิ่งของ", word: "ร่ม" }, { category: "สิ่งของ", word: "แว่นตากันแดด" },
+  { category: "สิ่งของ", word: "กระติกน้ำแข็ง" }, { category: "สิ่งของ", word: "ลูกโป่ง" },
+  { category: "สิ่งของ", word: "เข็มขัดนิรภัย" }, { category: "สิ่งของ", word: "ไฟแช็ก" },
+  { category: "อาชีพ", word: "นักบิน" }, { category: "อาชีพ", word: "หมอฟัน" },
+  { category: "อาชีพ", word: "ยูทูบเบอร์" }, { category: "อาชีพ", word: "พนักงานดับเพลิง" },
+  { category: "อาชีพ", word: "บาริสต้า" }, { category: "อาชีพ", word: "ไกด์นำเที่ยว" },
+  { category: "คนดัง/ตัวละคร", word: "แบทแมน" }, { category: "คนดัง/ตัวละคร", word: "โดราเอมอน" },
+  { category: "คนดัง/ตัวละคร", word: "แฮร์รี่ พอตเตอร์" }, { category: "คนดัง/ตัวละคร", word: "ซานตาคลอส" },
+  { category: "กีฬา", word: "มวยไทย" }, { category: "กีฬา", word: "แบดมินตัน" },
+  { category: "กีฬา", word: "ปิงปอง" }, { category: "กีฬา", word: "ว่ายน้ำ" },
+  { category: "เทคโนโลยี", word: "หูฟังไร้สาย" }, { category: "เทคโนโลยี", word: "โดรน" },
+  { category: "เทคโนโลยี", word: "พาวเวอร์แบงก์" }, { category: "เทคโนโลยี", word: "สมาร์ทวอทช์" },
+  { category: "ธรรมชาติ", word: "ภูเขาไฟ" }, { category: "ธรรมชาติ", word: "รุ้งกินน้ำ" },
+  { category: "ธรรมชาติ", word: "น้ำตก" }, { category: "ธรรมชาติ", word: "ทะเลทราย" },
+  { category: "ยานพาหนะ", word: "เรือสำเภา" }, { category: "ยานพาหนะ", word: "รถตุ๊กตุ๊ก" },
+  { category: "ยานพาหนะ", word: "บอลลูนอากาศร้อน" }, { category: "ยานพาหนะ", word: "สเก็ตบอร์ด" }
+];

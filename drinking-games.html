@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เกมวงเหล้า — คลังกติกาเกมปาร์ตี้</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <div class="brand"><span class="dot">●</span> วงกำลังจะเหงา</div>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--pink); color:#240010;">01 · ปาร์ตี้</span>
+    <h1>เกมวงเหล้า</h1>
+    <p>รวมกติกาเกมฮิตที่คนไทยเล่นกันจริงในวงปาร์ตี้ กรองตามอุปกรณ์ที่มีอยู่ตรงหน้า แตะเกมไหนเพื่อดูกติกาแบบละเอียด</p>
+  </section>
+
+  <div class="dg-filters reveal-up" id="equipFilters">
+    <span class="tag active" data-eq="all">ทั้งหมด</span>
+    <span class="tag" data-eq="none">ไม่ใช้อุปกรณ์</span>
+    <span class="tag" data-eq="cards">ไพ่</span>
+    <span class="tag" data-eq="bottle">ขวด</span>
+    <span class="tag" data-eq="dice">ลูกเต๋า</span>
+    <span class="tag" data-eq="paper">กระดาษปากกา</span>
+    <span class="tag" data-eq="cup">แก้ว</span>
+    <span class="tag" data-eq="headphone">หูฟัง</span>
+  </div>
+
+  <div class="dg-list reveal-up" id="dgList"></div>
+
+  <footer>เล่นด้วยความรับผิดชอบ ดื่มพอดี ไม่ขับรถ</footer>
+</div>
+
+<script src="data/drinking-games.js"></script>
+<script src="js/main.js"></script>
+<script src="js/drinking-games.js"></script>
+</body>
+</html>

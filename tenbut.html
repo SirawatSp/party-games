@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10 เต็ม 10 แต่... — สุ่มคำถามให้คะแนน</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <div class="brand"><span class="dot">●</span> วงกำลังจะเหงา</div>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--amber); color:#241000;">04 · ให้คะแนน</span>
+    <h1>10 เต็ม 10 แต่...</h1>
+    <p>เทรนด์จากโซเชียลที่เอามาปรับให้เข้ากับวงเพื่อน — นึกถึงใครสักคน (แฟน, แคนดิเดต, เพื่อนในวง) ให้เต็ม 10 ไว้ในใจ แล้วสุ่มมุก "แต่" มาข้อนึง ให้ทั้งวงช่วยกันโหวตว่าคะแนนคนนั้นควรเหลือเท่าไหร่</p>
+  </section>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเล่น</h2>
+    <ol>
+      <li>เลือกคนในใจไว้ 1 คน (จะบอกวงหรือเก็บเป็นความลับก็ได้) ตั้งต้นที่ 10 คะแนนเต็ม</li>
+      <li>กดสุ่มคำถามด้านล่าง อ่านให้วงฟังว่า "10 เต็ม 10 แต่..." ตามข้อที่ขึ้นมา</li>
+      <li>แต่ละคนในวงออกเสียงว่าคะแนนควรลดเหลือเท่าไหร่ พร้อมเหตุผล ถกกันให้ฮา</li>
+      <li>สุ่มข้อต่อไปเรื่อย ๆ จนกว่าจะพอใจ ใครคะแนนตกต่ำสุดในวง โดนแซวหรือดื่มแล้วแต่ตกลง</li>
+    </ol>
+  </div>
+
+  <div class="tags reveal-up" id="filterTags">
+    <span class="tag active" data-tag="all">ทั้งหมด</span>
+    <span class="tag" data-tag="funny">ฮา 😂</span>
+    <span class="tag" data-tag="dealbreaker">จุดพัง 💥</span>
+    <span class="tag" data-tag="wholesome">น่ารักกด+ 🥰</span>
+  </div>
+
+  <div class="deck reveal-up">
+    <div id="cardHolder"></div>
+  </div>
+
+  <div class="controls" style="justify-content:center; display:flex; margin-bottom:60px;">
+    <button class="btn" id="nextBtn">สุ่มข้อต่อไป →</button>
+  </div>
+
+  <footer>เล่นด้วยความรับผิดชอบ อย่าใช้จริงจังเกินไป มันคือเกม 😄</footer>
+</div>
+
+<script src="data/shes-a-10-but.js"></script>
+<script src="js/main.js"></script>
+<script src="js/tenbut.js"></script>
+</body>
+</html>
