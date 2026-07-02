@@ -422,6 +422,31 @@ footer{
   font-size:15px;
   line-height:1.7;
 }
+.trivia-card .verdict.qa{
+  background:var(--violet); color:#160034;
+}
+.trivia-card .explain.qa-answer{
+  font-family:'Kanit',sans-serif; font-weight:700;
+  font-size:clamp(18px,3.4vw,22px);
+  color:var(--text);
+  line-height:1.5;
+}
+
+/* ---------- trivia mode switch ---------- */
+.mode-switch{
+  display:flex; gap:10px; margin:18px 0 6px;
+}
+.mode-btn{
+  font-family:'Kanit',sans-serif; font-weight:700; font-size:15px;
+  padding:12px 24px; border-radius:999px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.02);
+  color:var(--text-dim);
+  cursor:pointer;
+  transition:.2s;
+}
+.mode-btn:hover{border-color:var(--violet); color:var(--violet);}
+.mode-btn.active{background:var(--violet); color:#160034; border-color:var(--violet);}
 
 /* ================= drinking games library ================= */
 .dg-filters{display:flex; gap:10px; flex-wrap:wrap; margin:20px 0 10px;}

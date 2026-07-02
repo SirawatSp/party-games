@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ทริเวียหลุดโลก — จริงหรือมั่ว</title>
+<title>ทริเวียหลุดโลก — จริงหรือมั่ว / ชัวร์หรือไม่</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -17,11 +17,16 @@
   <section class="page-head reveal-up">
     <span class="kicker" style="background:var(--violet); color:#160034;">05 · รอบรู้รอบโลก</span>
     <h1>ทริเวียหลุดโลก</h1>
-    <p>รวมเรื่องแปลก ๆ ในโลก ตั้งแต่กฎหมายพิลึกของแต่ละประเทศ วัฒนธรรมประเพณีสุดเซอร์ไพรส์ ไปจนถึงธรรมชาติและประวัติศาสตร์ที่ไม่น่าเชื่อว่าจริง — ให้วงช่วยกันทายว่า "จริง" หรือ "มั่ว"</p>
+    <p>รวมเรื่องแปลก ๆ ในโลก ตั้งแต่กฎหมายพิลึกของแต่ละประเทศ สัตว์โลกน่ารู้ ไปจนถึงป๊อปคัลเจอร์และปริศนาชวนคิด เลือกโหมดที่ถูกใจวงแล้วเริ่มเล่นได้เลย</p>
   </section>
 
-  <div class="panel reveal-up">
-    <h2>วิธีเล่น</h2>
+  <div class="mode-switch reveal-up" id="modeSwitch">
+    <button class="mode-btn active" data-mode="tf">จริงหรือมั่ว</button>
+    <button class="mode-btn" data-mode="qa">ชัวร์หรือไม่</button>
+  </div>
+
+  <div class="panel reveal-up" id="rulesTF">
+    <h2>วิธีเล่น · จริงหรือมั่ว</h2>
     <ol>
       <li>กดสุ่มคำถามด้านล่าง อ่านข้อความให้วงฟัง</li>
       <li>ทุกคนในวงทายพร้อมกันว่าข้อความนี้ "จริง" หรือ "มั่ว" (ยกมือ/ชูนิ้วโหวต)</li>
@@ -30,13 +35,33 @@
     </ol>
   </div>
 
-  <div class="tags reveal-up" id="filterTags">
+  <div class="panel reveal-up" id="rulesQA" style="display:none;">
+    <h2>วิธีเล่น · ชัวร์หรือไม่</h2>
+    <ol>
+      <li>กดสุ่มคำถามด้านล่าง อ่านคำถามให้วงฟัง</li>
+      <li>ให้ทุกคนช่วยกันเดา "คำตอบ" ออกมาเป็นคำหรือประโยคสั้น ๆ พูดคุยถกกันได้เต็มที่ ไม่ต้องรีบ</li>
+      <li>เมื่อวงตกลงคำตอบกันได้แล้ว หรืออยากรู้คำเฉลย กดปุ่ม "เฉลย!"</li>
+      <li>ใครตอบใกล้เคียงที่สุดชนะรอบนั้นไป แล้วสุ่มข้อต่อไปเรื่อย ๆ</li>
+    </ol>
+  </div>
+
+  <div class="tags reveal-up" id="filterTagsTF">
     <span class="tag active" data-tag="all">ทั้งหมด</span>
     <span class="tag" data-tag="law">กฎหมาย ⚖️</span>
     <span class="tag" data-tag="culture">วัฒนธรรม 🌏</span>
     <span class="tag" data-tag="nature">ธรรมชาติ 🐙</span>
     <span class="tag" data-tag="history">ประวัติศาสตร์ 🏛️</span>
     <span class="tag" data-tag="record">สถิติโลก 🏆</span>
+  </div>
+
+  <div class="tags reveal-up" id="filterTagsQA" style="display:none;">
+    <span class="tag active" data-tag="all">ทั้งหมด</span>
+    <span class="tag" data-tag="space">โลก/อวกาศ 🌌</span>
+    <span class="tag" data-tag="animal">สัตว์โลก 🦛</span>
+    <span class="tag" data-tag="body">ร่างกาย 🧠</span>
+    <span class="tag" data-tag="law">กฎหมายแปลก ⚖️</span>
+    <span class="tag" data-tag="pop">จิปาถะ 🎬</span>
+    <span class="tag" data-tag="riddle">ปริศนาคำทาย 🧩</span>
   </div>
 
   <div class="deck reveal-up">
@@ -51,6 +76,7 @@
 </div>
 
 <script src="data/world-trivia.js"></script>
+<script src="data/world-trivia-qa.js"></script>
 <script src="js/main.js"></script>
 <script src="js/world-trivia.js"></script>
 </body>
