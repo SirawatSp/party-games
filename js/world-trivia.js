@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const filterTagsQA = document.getElementById("filterTagsQA");
 
   const TAG_LABEL_TF = { law: "กฎหมาย", culture: "วัฒนธรรม", nature: "ธรรมชาติ", history: "ประวัติศาสตร์", record: "สถิติโลก" };
-  const TAG_LABEL_QA = { space: "โลก/อวกาศ", animal: "สัตว์โลก", body: "ร่างกาย", law: "กฎหมายแปลก", pop: "จิปาถะ", riddle: "ปริศนาคำทาย" };
+  const TAG_LABEL_QA = { space: "โลก/อวกาศ", animal: "สัตว์โลก", body: "ร่างกาย", law: "กฎหมายแปลก", culture: "วัฒนธรรม", pop: "จิปาถะ", riddle: "ปริศนาคำทาย" };
 
   let mode = "tf";
   let activeTag = "all";
