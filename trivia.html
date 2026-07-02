@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ทริเวียหลุดโลก — จริงหรือมั่ว</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <div class="brand"><span class="dot">●</span> วงกำลังจะเหงา</div>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--violet); color:#160034;">05 · รอบรู้รอบโลก</span>
+    <h1>ทริเวียหลุดโลก</h1>
+    <p>รวมเรื่องแปลก ๆ ในโลก ตั้งแต่กฎหมายพิลึกของแต่ละประเทศ วัฒนธรรมประเพณีสุดเซอร์ไพรส์ ไปจนถึงธรรมชาติและประวัติศาสตร์ที่ไม่น่าเชื่อว่าจริง — ให้วงช่วยกันทายว่า "จริง" หรือ "มั่ว"</p>
+  </section>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเล่น</h2>
+    <ol>
+      <li>กดสุ่มคำถามด้านล่าง อ่านข้อความให้วงฟัง</li>
+      <li>ทุกคนในวงทายพร้อมกันว่าข้อความนี้ "จริง" หรือ "มั่ว" (ยกมือ/ชูนิ้วโหวต)</li>
+      <li>กดปุ่ม "เฉลย!" เพื่อดูคำตอบจริงพร้อมคำอธิบายสั้น ๆ</li>
+      <li>ใครทายผิดโดนแซวหรือดื่มตามที่วงตกลงกัน แล้วสุ่มข้อต่อไปเรื่อย ๆ</li>
+    </ol>
+  </div>
+
+  <div class="tags reveal-up" id="filterTags">
+    <span class="tag active" data-tag="all">ทั้งหมด</span>
+    <span class="tag" data-tag="law">กฎหมาย ⚖️</span>
+    <span class="tag" data-tag="culture">วัฒนธรรม 🌏</span>
+    <span class="tag" data-tag="nature">ธรรมชาติ 🐙</span>
+    <span class="tag" data-tag="history">ประวัติศาสตร์ 🏛️</span>
+    <span class="tag" data-tag="record">สถิติโลก 🏆</span>
+  </div>
+
+  <div class="deck reveal-up">
+    <div id="cardHolder"></div>
+  </div>
+
+  <div class="controls" style="justify-content:center; display:flex; margin-bottom:60px;">
+    <button class="btn" id="nextBtn">สุ่มข้อต่อไป →</button>
+  </div>
+
+  <footer>ข้อมูลรวบรวมเพื่อความบันเทิง เล่นสนุก ๆ ในวงเพื่อน 😄</footer>
+</div>
+
+<script src="data/world-trivia.js"></script>
+<script src="js/main.js"></script>
+<script src="js/world-trivia.js"></script>
+</body>
+</html>

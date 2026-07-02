@@ -9,12 +9,14 @@
   --lime: #d6ff3d;
   --cyan: #2be6ff;
   --amber: #ffb703;
+  --violet: #9d6bff;
   --text: #f6eef9;
   --text-dim: #b6a3c2;
   --line: #3a2245;
   --radius: 22px;
   --shadow-pink: 0 0 40px -8px rgba(255,47,135,.55);
   --shadow-cyan: 0 0 40px -10px rgba(43,230,255,.45);
+  --shadow-violet: 0 0 40px -10px rgba(157,107,255,.5);
 }
 
 *{box-sizing:border-box;}
@@ -75,7 +77,7 @@ a{color:inherit; text-decoration:none;}
   color:var(--lime);
   text-transform:uppercase;
 }
-.marquee span::after{content:"\00a0 \2726 \00a0 ปาร์ตี้ \00a0 \2726 \00a0 เกมวงเหล้า \00a0 \2726 \00a0 Insider \00a0 \2726 \00a0 เกมหมวดหมู่ \00a0 \2726 \00a0 She's a 10 but \00a0 \2726 \00a0 ";}
+.marquee span::after{content:"\00a0 \2726 \00a0 ปาร์ตี้ \00a0 \2726 \00a0 เกมวงเหล้า \00a0 \2726 \00a0 Insider \00a0 \2726 \00a0 เกมหมวดหมู่ \00a0 \2726 \00a0 She's a 10 but \00a0 \2726 \00a0 ทริเวียหลุดโลก \00a0 \2726 \00a0 ";}
 @keyframes scroll{ 0%{transform:translateX(0);} 100%{transform:translateX(-100%);} }
 
 /* ---------- top nav ---------- */
@@ -160,6 +162,7 @@ a{color:inherit; text-decoration:none;}
 .card:nth-child(2){transform:rotate(1deg);}
 .card:nth-child(3){transform:rotate(.8deg);}
 .card:nth-child(4){transform:rotate(-1deg);}
+.card:nth-child(5){transform:rotate(1.4deg);}
 .card:hover{ transform:scale(1.03) rotate(0deg); box-shadow:var(--shadow-pink); border-color:var(--pink); }
 
 .card .glow{
@@ -200,6 +203,7 @@ a{color:inherit; text-decoration:none;}
 .chip-cyan .glow{background:var(--cyan);}
 .chip-lime .glow{background:var(--lime);}
 .chip-amber .glow{background:var(--amber);}
+.chip-violet .glow{background:var(--violet);}
 
 /* ---------- footer ---------- */
 footer{
@@ -378,6 +382,46 @@ footer{
 .tagpill.funny{background:var(--amber); color:#241000;}
 .tagpill.dealbreaker{background:var(--pink); color:#240010;}
 .tagpill.wholesome{background:var(--cyan); color:#001a24;}
+
+/* ================= WORLD TRIVIA DECK ================= */
+.trivia-card{
+  background:var(--bg-card);
+  border:1px solid var(--line);
+  border-radius:26px;
+  padding:44px 32px;
+  text-align:center;
+  box-shadow:var(--shadow-violet);
+  animation:cardIn .4s cubic-bezier(.2,.9,.3,1.3);
+}
+.trivia-card .cat{
+  display:inline-block;
+  font-family:'Kanit',sans-serif; font-weight:700; font-size:12.5px;
+  letter-spacing:.1em; text-transform:uppercase;
+  color:var(--violet);
+  background:rgba(157,107,255,.12);
+  padding:5px 14px; border-radius:999px;
+  margin-bottom:18px;
+}
+.trivia-card .statement{
+  font-family:'Kanit',sans-serif; font-weight:600;
+  font-size:clamp(19px,3.6vw,25px);
+  line-height:1.5;
+  margin-bottom:22px;
+}
+.trivia-card .reveal-btn{ font-size:15px; padding:14px 28px; }
+.trivia-card .verdict{
+  display:inline-block;
+  font-family:'Kanit',sans-serif; font-weight:800; font-size:18px;
+  padding:6px 18px; border-radius:999px;
+  margin-bottom:14px;
+}
+.trivia-card .verdict.true{background:var(--lime); color:#1a0410;}
+.trivia-card .verdict.false{background:var(--pink); color:#240010;}
+.trivia-card .explain{
+  color:var(--text-dim);
+  font-size:15px;
+  line-height:1.7;
+}
 
 /* ================= drinking games library ================= */
 .dg-filters{display:flex; gap:10px; flex-wrap:wrap; margin:20px 0 10px;}
