@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wavelength จูนคลื่นใจ — วงล้อทายใจ</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <div class="brand"><span class="dot">●</span> วงกำลังจะเหงา</div>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--orange); color:#2b1200;">06 · จูนคลื่นเดียวกัน</span>
+    <h1>Wavelength จูนคลื่นใจ</h1>
+    <p>เกมอ่านใจจากบอร์ดเกมดัง — คนใบ้แอบดูตำแหน่งเป้าหมายบนวงล้อ แล้วพูดใบ้ 1 คำที่อยู่ "ระหว่าง" สองขั้วของการ์ด ให้ทีมช่วยกันหมุนเข็มไปให้ตรงจุดที่คนใบ้เห็นตอนแรก ยิ่งตรงยิ่งได้แต้มเยอะ</p>
+  </section>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเล่น</h2>
+    <ol>
+      <li>แบ่ง 2 ทีม (หรือเล่นรวมกันทั้งวงก็ได้) เลือก <b>คนใบ้</b> ประจำรอบ 1 คน</li>
+      <li>กด "รอบใหม่" ระบบจะสุ่มการ์ดสเปกตรัม 2 ขั้ว พร้อมซ่อนตำแหน่งเป้าหมายไว้บนวงล้อ</li>
+      <li>คนใบ้กด "แอบดูเป้า" คนเดียว (คนอื่นละสายตาจากจอ!) จำตำแหน่งแล้วกดซ่อน</li>
+      <li>คนใบ้พูดใบ้ <b>1 คำหรือวลีเดียว</b> ที่อยู่ตรงจุดนั้นของสเปกตรัม เช่น การ์ด "ร้อน–เย็น" เป้าอยู่ค่อนไปทางเย็น อาจใบ้ว่า "ไอศกรีม"</li>
+      <li>ทีมถกกันแล้วเลื่อนเข็มไปตำแหน่งที่คิดว่าใช่ (คนใบ้ห้ามพูดเพิ่ม!) พอมั่นใจกด "เฉลย"</li>
+      <li>ได้แต้มตามโซนที่เข็มชี้: กลางสุด 4 / ถัดมา 3 / ริมสุด 2 — ถ้าเล่นแบบ 2 ทีม ก่อนเฉลยให้ทีมตรงข้ามทายว่าเป้าจริงอยู่ "ซ้าย" หรือ "ขวา" ของเข็ม ทายถูกได้ 1 แต้ม (ยกเว้นทีมใบ้ได้ 4 แต้มพอดี)</li>
+      <li>สลับคนใบ้ไปเรื่อย ๆ ทีมแรกที่ถึง 10 แต้มชนะ ใครแพ้ดื่มตามธรรมเนียม 🍻</li>
+    </ol>
+  </div>
+
+  <div class="wl-stage reveal-up">
+    <div class="wl-labels">
+      <span id="leftLabel">← ซ้าย</span>
+      <span id="rightLabel">ขวา →</span>
+    </div>
+    <div class="wl-dial">
+      <svg viewBox="0 0 400 214">
+        <path d="M28,200 A172,172 0 0 1 372,200 Z" fill="#241430" stroke="#3a2245" stroke-width="2"/>
+        <g id="ticks"></g>
+        <g id="targetGroup" style="display:none;"></g>
+        <g id="coverGroup">
+          <text x="200" y="120" class="wl-cover-q">?</text>
+        </g>
+        <line id="needle" x1="200" y1="200" x2="200" y2="42" stroke="#ff2f87" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="200" cy="200" r="12" fill="#ff2f87"/>
+        <path d="M20,200 A180,180 0 0 1 380,200" fill="none" stroke="#3a2245" stroke-width="2"/>
+      </svg>
+    </div>
+    <input type="range" id="dialSlider" class="wl-slider" min="0" max="180" step="0.5" value="90">
+    <div class="wl-hint" id="stageHint">คนใบ้กดแอบดูเป้า แล้วใบ้ 1 คำ/วลีให้ทีมหมุนเข็มตาม</div>
+    <div id="resultBox" class="wl-result" style="display:none;"></div>
+    <div class="controls wl-controls">
+      <button class="btn secondary" id="peekBtn">แอบดูเป้า 👁 (คนใบ้เท่านั้น)</button>
+      <button class="btn" id="revealBtn">เฉลย!</button>
+      <button class="btn secondary" id="newRoundBtn">รอบใหม่ ↻</button>
+    </div>
+  </div>
+
+  <footer>ดัดแปลงจากบอร์ดเกม Wavelength เพื่อเล่นสนุกในวงเพื่อน · เล่นด้วยความรับผิดชอบ</footer>
+</div>
+
+<script src="data/wavelength.js"></script>
+<script src="js/main.js"></script>
+<script src="js/wavelength.js"></script>
+</body>
+</html>
