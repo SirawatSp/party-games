@@ -11,6 +11,9 @@ const INSIDER_WORDS = [
   { category: "สัตว์", word: "จิงโจ้" }, { category: "สัตว์", word: "หมาป่า" },
   { category: "สัตว์", word: "นกฮูก" }, { category: "สัตว์", word: "ผีเสื้อ" },
   { category: "สัตว์", word: "ปลาฉลาม" }, { category: "สัตว์", word: "กวาง" },
+  { category: "สัตว์", word: "แรด" }, { category: "สัตว์", word: "ฮิปโปโปเตมัส" },
+  { category: "สัตว์", word: "จิ้งจอก" }, { category: "สัตว์", word: "กระรอก" },
+  { category: "สัตว์", word: "นกยูง" }, { category: "สัตว์", word: "งูเห่า" },
 
   { category: "อาหาร", word: "ต้มยำกุ้ง" }, { category: "อาหาร", word: "ซูชิ" },
   { category: "อาหาร", word: "พิซซ่า" }, { category: "อาหาร", word: "ส้มตำ" },
@@ -22,6 +25,9 @@ const INSIDER_WORDS = [
   { category: "อาหาร", word: "เบอร์เกอร์" }, { category: "อาหาร", word: "ก๋วยเตี๋ยวเรือ" },
   { category: "อาหาร", word: "ข้าวมันไก่" }, { category: "อาหาร", word: "ลาบ" },
   { category: "อาหาร", word: "ไก่ทอด" }, { category: "อาหาร", word: "สุกี้" },
+  { category: "อาหาร", word: "ยำวุ้นเส้น" }, { category: "อาหาร", word: "ผัดซีอิ๊ว" },
+  { category: "อาหาร", word: "ขนมจีน" }, { category: "อาหาร", word: "แซนด์วิช" },
+  { category: "อาหาร", word: "ดิมซำ" }, { category: "อาหาร", word: "ข้าวเหนียวมะม่วง" },
 
   { category: "สถานที่", word: "สนามบิน" }, { category: "สถานที่", word: "วัดพระแก้ว" },
   { category: "สถานที่", word: "ตลาดนัดจตุจักร" }, { category: "สถานที่", word: "หอไอเฟล" },
@@ -32,6 +38,9 @@ const INSIDER_WORDS = [
   { category: "สถานที่", word: "ห้างสรรพสินค้า" }, { category: "สถานที่", word: "สถานีรถไฟ" },
   { category: "สถานที่", word: "วัดอรุณ" }, { category: "สถานที่", word: "กำแพงเมืองจีน" },
   { category: "สถานที่", word: "โรงภาพยนตร์" }, { category: "สถานที่", word: "สนามเด็กเล่น" },
+  { category: "สถานที่", word: "น้ำตกเอราวัณ" }, { category: "สถานที่", word: "คาเฟ่" },
+  { category: "สถานที่", word: "สะพานข้ามแม่น้ำแคว" }, { category: "สถานที่", word: "หอสมุดแห่งชาติ" },
+  { category: "สถานที่", word: "ยอดเขาเอเวอเรสต์" }, { category: "สถานที่", word: "ทำเนียบรัฐบาล" },
 
   { category: "สิ่งของ", word: "ร่ม" }, { category: "สิ่งของ", word: "แว่นตากันแดด" },
   { category: "สิ่งของ", word: "กระติกน้ำแข็ง" }, { category: "สิ่งของ", word: "ลูกโป่ง" },
@@ -42,6 +51,9 @@ const INSIDER_WORDS = [
   { category: "สิ่งของ", word: "หมอนอิง" }, { category: "สิ่งของ", word: "ผ้าห่ม" },
   { category: "สิ่งของ", word: "กระจกเงา" }, { category: "สิ่งของ", word: "พัดลม" },
   { category: "สิ่งของ", word: "ตะเกียง" }, { category: "สิ่งของ", word: "กระเป๋าสตางค์" },
+  { category: "สิ่งของ", word: "ร่มญี่ปุ่น" }, { category: "สิ่งของ", word: "พัด" },
+  { category: "สิ่งของ", word: "แปรงสีฟัน" }, { category: "สิ่งของ", word: "มีดพับ" },
+  { category: "สิ่งของ", word: "เข็มกลัด" }, { category: "สิ่งของ", word: "สายชาร์จ" },
 
   { category: "อาชีพ", word: "นักบิน" }, { category: "อาชีพ", word: "หมอฟัน" },
   { category: "อาชีพ", word: "ยูทูบเบอร์" }, { category: "อาชีพ", word: "พนักงานดับเพลิง" },
@@ -52,6 +64,9 @@ const INSIDER_WORDS = [
   { category: "อาชีพ", word: "ทนายความ" }, { category: "อาชีพ", word: "นักบัญชี" },
   { category: "อาชีพ", word: "ช่างภาพ" }, { category: "อาชีพ", word: "นักแสดง" },
   { category: "อาชีพ", word: "เกษตรกร" }, { category: "อาชีพ", word: "พยาบาล" },
+  { category: "อาชีพ", word: "นักออกแบบแฟชั่น" }, { category: "อาชีพ", word: "พนักงานส่งของ" },
+  { category: "อาชีพ", word: "โปรแกรมเมอร์" }, { category: "อาชีพ", word: "นักการเมือง" },
+  { category: "อาชีพ", word: "นักดนตรี" }, { category: "อาชีพ", word: "ช่างตัดผม" },
 
   { category: "คนดัง/ตัวละคร", word: "แบทแมน" }, { category: "คนดัง/ตัวละคร", word: "โดราเอมอน" },
   { category: "คนดัง/ตัวละคร", word: "แฮร์รี่ พอตเตอร์" }, { category: "คนดัง/ตัวละคร", word: "ซานตาคลอส" },
@@ -60,6 +75,9 @@ const INSIDER_WORDS = [
   { category: "คนดัง/ตัวละคร", word: "ไอรอนแมน" }, { category: "คนดัง/ตัวละคร", word: "มิกกี้เมาส์" },
   { category: "คนดัง/ตัวละคร", word: "วันเดอร์วูแมน" }, { category: "คนดัง/ตัวละคร", word: "ฮัลค์" },
   { category: "คนดัง/ตัวละคร", word: "ก็อตซิลล่า" }, { category: "คนดัง/ตัวละคร", word: "มาริโอ้" },
+  { category: "คนดัง/ตัวละคร", word: "กัปตันอเมริกา" }, { category: "คนดัง/ตัวละคร", word: "ธานอส" },
+  { category: "คนดัง/ตัวละคร", word: "โจ๊กเกอร์" }, { category: "คนดัง/ตัวละคร", word: "เจ้าหญิงสโนไวท์" },
+  { category: "คนดัง/ตัวละคร", word: "อุลตร้าแมน" }, { category: "คนดัง/ตัวละคร", word: "โคนัน" },
 
   { category: "กีฬา", word: "มวยไทย" }, { category: "กีฬา", word: "แบดมินตัน" },
   { category: "กีฬา", word: "ปิงปอง" }, { category: "กีฬา", word: "ว่ายน้ำ" },
@@ -68,6 +86,9 @@ const INSIDER_WORDS = [
   { category: "กีฬา", word: "ฟุตบอล" }, { category: "กีฬา", word: "วอลเลย์บอล" },
   { category: "กีฬา", word: "เทนนิส" }, { category: "กีฬา", word: "ปีนผา" },
   { category: "กีฬา", word: "ยิงธนู" }, { category: "กีฬา", word: "ขี่ม้า" },
+  { category: "กีฬา", word: "มวยปล้ำ" }, { category: "กีฬา", word: "สนุกเกอร์" },
+  { category: "กีฬา", word: "ไตรกีฬา" }, { category: "กีฬา", word: "ยิมนาสติก" },
+  { category: "กีฬา", word: "เบสบอล" }, { category: "กีฬา", word: "ฮอกกี้น้ำแข็ง" },
 
   { category: "เทคโนโลยี", word: "หูฟังไร้สาย" }, { category: "เทคโนโลยี", word: "โดรน" },
   { category: "เทคโนโลยี", word: "พาวเวอร์แบงก์" }, { category: "เทคโนโลยี", word: "สมาร์ทวอทช์" },
@@ -76,6 +97,9 @@ const INSIDER_WORDS = [
   { category: "เทคโนโลยี", word: "แท็บเล็ต" }, { category: "เทคโนโลยี", word: "ลำโพงบลูทูธ" },
   { category: "เทคโนโลยี", word: "จอยเกม" }, { category: "เทคโนโลยี", word: "กล้องดิจิทัล" },
   { category: "เทคโนโลยี", word: "เราเตอร์ไวไฟ" }, { category: "เทคโนโลยี", word: "ไมค์ลอย" },
+  { category: "เทคโนโลยี", word: "แว่น VR" }, { category: "เทคโนโลยี", word: "เครื่องสแกนลายนิ้วมือ" },
+  { category: "เทคโนโลยี", word: "ลำโพงอัจฉริยะ" }, { category: "เทคโนโลยี", word: "เครื่องพิมพ์ 3 มิติ" },
+  { category: "เทคโนโลยี", word: "สาย USB" }, { category: "เทคโนโลยี", word: "ไมโครชิป" },
 
   { category: "ธรรมชาติ", word: "ภูเขาไฟ" }, { category: "ธรรมชาติ", word: "รุ้งกินน้ำ" },
   { category: "ธรรมชาติ", word: "น้ำตก" }, { category: "ธรรมชาติ", word: "ทะเลทราย" },
@@ -84,6 +108,9 @@ const INSIDER_WORDS = [
   { category: "ธรรมชาติ", word: "ถ้ำ" }, { category: "ธรรมชาติ", word: "หน้าผา" },
   { category: "ธรรมชาติ", word: "บึงน้ำ" }, { category: "ธรรมชาติ", word: "หุบเขา" },
   { category: "ธรรมชาติ", word: "เกาะ" }, { category: "ธรรมชาติ", word: "ป่าสน" },
+  { category: "ธรรมชาติ", word: "ทะเลสาบ" }, { category: "ธรรมชาติ", word: "แนวปะการัง" },
+  { category: "ธรรมชาติ", word: "ลำธาร" }, { category: "ธรรมชาติ", word: "ที่ราบสูง" },
+  { category: "ธรรมชาติ", word: "เกาะภูเขาไฟ" }, { category: "ธรรมชาติ", word: "ป่าชายเลน" },
 
   { category: "ยานพาหนะ", word: "เรือสำเภา" }, { category: "ยานพาหนะ", word: "รถตุ๊กตุ๊ก" },
   { category: "ยานพาหนะ", word: "บอลลูนอากาศร้อน" }, { category: "ยานพาหนะ", word: "สเก็ตบอร์ด" },
@@ -92,6 +119,9 @@ const INSIDER_WORDS = [
   { category: "ยานพาหนะ", word: "รถไฟความเร็วสูง" }, { category: "ยานพาหนะ", word: "เรือยอชต์" },
   { category: "ยานพาหนะ", word: "สโนว์โมบิล" }, { category: "ยานพาหนะ", word: "รถเมล์" },
   { category: "ยานพาหนะ", word: "มอเตอร์ไซค์" }, { category: "ยานพาหนะ", word: "กระเช้าลอยฟ้า" },
+  { category: "ยานพาหนะ", word: "รถราง" }, { category: "ยานพาหนะ", word: "เรือแคนู" },
+  { category: "ยานพาหนะ", word: "เครื่องร่อน" }, { category: "ยานพาหนะ", word: "รถไถนา" },
+  { category: "ยานพาหนะ", word: "เรือใบ" }, { category: "ยานพาหนะ", word: "สกู๊ตเตอร์ไฟฟ้า" },
 
   { category: "เครื่องดื่ม", word: "กาแฟเย็น" }, { category: "เครื่องดื่ม", word: "ชาเขียว" },
   { category: "เครื่องดื่ม", word: "น้ำมะพร้าว" }, { category: "เครื่องดื่ม", word: "โซดา" },
@@ -99,6 +129,8 @@ const INSIDER_WORDS = [
   { category: "เครื่องดื่ม", word: "ชานมไข่มุก" }, { category: "เครื่องดื่ม", word: "น้ำอัดลม" },
   { category: "เครื่องดื่ม", word: "ไวน์แดง" }, { category: "เครื่องดื่ม", word: "น้ำผลไม้ปั่น" },
   { category: "เครื่องดื่ม", word: "ค็อกเทล" }, { category: "เครื่องดื่ม", word: "ชาไทย" },
+  { category: "เครื่องดื่ม", word: "น้ำสมุนไพร" }, { category: "เครื่องดื่ม", word: "นมถั่วเหลือง" },
+  { category: "เครื่องดื่ม", word: "เอสเปรสโซ" }, { category: "เครื่องดื่ม", word: "น้ำแข็งไส" },
 
   { category: "เสื้อผ้า/แฟชั่น", word: "เนคไท" }, { category: "เสื้อผ้า/แฟชั่น", word: "หมวกแก๊ป" },
   { category: "เสื้อผ้า/แฟชั่น", word: "ผ้าพันคอ" }, { category: "เสื้อผ้า/แฟชั่น", word: "ถุงเท้า" },
@@ -106,6 +138,8 @@ const INSIDER_WORDS = [
   { category: "เสื้อผ้า/แฟชั่น", word: "เสื้อกันหนาว" }, { category: "เสื้อผ้า/แฟชั่น", word: "กางเกงยีนส์" },
   { category: "เสื้อผ้า/แฟชั่น", word: "รองเท้าส้นสูง" }, { category: "เสื้อผ้า/แฟชั่น", word: "กระเป๋าถือ" },
   { category: "เสื้อผ้า/แฟชั่น", word: "แว่นตา" }, { category: "เสื้อผ้า/แฟชั่น", word: "สร้อยคอ" },
+  { category: "เสื้อผ้า/แฟชั่น", word: "เสื้อฮาวาย" }, { category: "เสื้อผ้า/แฟชั่น", word: "หมวกปีกกว้าง" },
+  { category: "เสื้อผ้า/แฟชั่น", word: "ถุงมือ" }, { category: "เสื้อผ้า/แฟชั่น", word: "ผ้าคลุมไหล่" },
 
   { category: "ของเล่น", word: "ว่าว" }, { category: "ของเล่น", word: "ลูกข่าง" },
   { category: "ของเล่น", word: "ตุ๊กตาหมี" }, { category: "ของเล่น", word: "หุ่นยนต์ของเล่น" },
@@ -113,6 +147,8 @@ const INSIDER_WORDS = [
   { category: "ของเล่น", word: "ลูกบอลชายหาด" }, { category: "ของเล่น", word: "กล่องดนตรี" },
   { category: "ของเล่น", word: "ปืนฉีดน้ำ" }, { category: "ของเล่น", word: "ตัวต่อเลโก้" },
   { category: "ของเล่น", word: "ฮูลาฮูป" }, { category: "ของเล่น", word: "เครื่องบินกระดาษ" },
+  { category: "ของเล่น", word: "กระดานหก" }, { category: "ของเล่น", word: "ชิงช้า" },
+  { category: "ของเล่น", word: "ลูกแก้ว" }, { category: "ของเล่น", word: "เครื่องบินเล็กบังคับ" },
 
   { category: "อวกาศ", word: "ดาวหาง" }, { category: "อวกาศ", word: "จรวด" },
   { category: "อวกาศ", word: "มนุษย์ต่างดาว" }, { category: "อวกาศ", word: "กล้องโทรทรรศน์" },
@@ -120,29 +156,39 @@ const INSIDER_WORDS = [
   { category: "อวกาศ", word: "ดาวเทียม" }, { category: "อวกาศ", word: "สถานีอวกาศ" },
   { category: "อวกาศ", word: "ยานอวกาศ" }, { category: "อวกาศ", word: "กาแล็กซี" },
   { category: "อวกาศ", word: "นักบินอวกาศ" }, { category: "อวกาศ", word: "ดาวอังคาร" },
+  { category: "อวกาศ", word: "อุกกาบาต" }, { category: "อวกาศ", word: "ดาวพฤหัสบดี" },
+  { category: "อวกาศ", word: "วงแหวนดาวเสาร์" }, { category: "อวกาศ", word: "สุริยุปราคา" },
 
   { category: "สภาพอากาศ", word: "ฟ้าผ่า" }, { category: "สภาพอากาศ", word: "หมอก" },
   { category: "สภาพอากาศ", word: "ลูกเห็บ" }, { category: "สภาพอากาศ", word: "สายรุ้ง" },
   { category: "สภาพอากาศ", word: "พายุฝน" }, { category: "สภาพอากาศ", word: "แดดจ้า" },
   { category: "สภาพอากาศ", word: "ลมมรสุม" }, { category: "สภาพอากาศ", word: "หิมะ" },
   { category: "สภาพอากาศ", word: "พายุหิมะ" }, { category: "สภาพอากาศ", word: "น้ำค้าง" },
+  { category: "สภาพอากาศ", word: "พายุทราย" }, { category: "สภาพอากาศ", word: "อากาศชื้น" },
+  { category: "สภาพอากาศ", word: "ลมกระโชกแรง" }, { category: "สภาพอากาศ", word: "คลื่นความร้อน" },
 
   { category: "เทศกาล/ประเพณี", word: "สงกรานต์" }, { category: "เทศกาล/ประเพณี", word: "ลอยกระทง" },
   { category: "เทศกาล/ประเพณี", word: "ตรุษจีน" }, { category: "เทศกาล/ประเพณี", word: "คริสต์มาส" },
   { category: "เทศกาล/ประเพณี", word: "ฮาโลวีน" }, { category: "เทศกาล/ประเพณี", word: "วันวาเลนไทน์" },
   { category: "เทศกาล/ประเพณี", word: "วันปีใหม่" }, { category: "เทศกาล/ประเพณี", word: "วันแม่" },
   { category: "เทศกาล/ประเพณี", word: "เทศกาลกินเจ" }, { category: "เทศกาล/ประเพณี", word: "เทศกาลไหว้พระจันทร์" },
+  { category: "เทศกาล/ประเพณี", word: "เทศกาลอีสเตอร์" }, { category: "เทศกาล/ประเพณี", word: "บุญบั้งไฟ" },
+  { category: "เทศกาล/ประเพณี", word: "ประเพณีแห่เทียนพรรษา" }, { category: "เทศกาล/ประเพณี", word: "วันแรงงาน" },
 
   { category: "โรงเรียน/สำนักงาน", word: "กระดานดำ" }, { category: "โรงเรียน/สำนักงาน", word: "ยางลบ" },
   { category: "โรงเรียน/สำนักงาน", word: "เครื่องคิดเลข" }, { category: "โรงเรียน/สำนักงาน", word: "ที่เย็บกระดาษ" },
   { category: "โรงเรียน/สำนักงาน", word: "กระดาษโน้ต" }, { category: "โรงเรียน/สำนักงาน", word: "ปากกาเน้นข้อความ" },
   { category: "โรงเรียน/สำนักงาน", word: "ดินสอ" }, { category: "โรงเรียน/สำนักงาน", word: "สมุดจด" },
   { category: "โรงเรียน/สำนักงาน", word: "กระเป๋านักเรียน" }, { category: "โรงเรียน/สำนักงาน", word: "คลิปหนีบกระดาษ" },
+  { category: "โรงเรียน/สำนักงาน", word: "ไม้บรรทัด" }, { category: "โรงเรียน/สำนักงาน", word: "เครื่องแฟกซ์" },
+  { category: "โรงเรียน/สำนักงาน", word: "ตู้เอกสาร" }, { category: "โรงเรียน/สำนักงาน", word: "แฟ้มสันปก" },
 
   { category: "ดนตรี", word: "กีตาร์" }, { category: "ดนตรี", word: "กลองชุด" },
   { category: "ดนตรี", word: "ไวโอลิน" }, { category: "ดนตรี", word: "เปียโน" },
   { category: "ดนตรี", word: "ไมโครโฟน" }, { category: "ดนตรี", word: "ลำโพง" },
   { category: "ดนตรี", word: "แซกโซโฟน" }, { category: "ดนตรี", word: "ขลุ่ย" },
   { category: "ดนตรี", word: "ระนาด" }, { category: "ดนตรี", word: "ฉาบ" },
-  { category: "ดนตรี", word: "ทรัมเป็ต" }, { category: "ดนตรี", word: "กลองยาว" }
+  { category: "ดนตรี", word: "ทรัมเป็ต" }, { category: "ดนตรี", word: "กลองยาว" },
+  { category: "ดนตรี", word: "ฮาร์โมนิกา" }, { category: "ดนตรี", word: "พิณ" },
+  { category: "ดนตรี", word: "เชลโล" }, { category: "ดนตรี", word: "อูคูเลเล่" }
 ];
