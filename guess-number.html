@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ใครแม่นสุด — เกมทายตัวเลข</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <div class="brand"><span class="dot">●</span> วงกำลังจะเหงา</div>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--teal); color:#00261e;">07 · วัดสายตาทายเลข</span>
+    <h1>ใครแม่นสุด</h1>
+    <p>โจทย์ตัวเลขจากเรื่องจริงรอบโลก ส่งมือถือวนกันในวง แต่ละคนพิมพ์เลขที่ตัวเองเดาแบบลับ ๆ ห้ามดูของคนอื่น พอครบทุกคนแล้วเฉลยพร้อมกันว่าใครเดาใกล้เคียงคำตอบจริงที่สุด</p>
+  </section>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเล่น</h2>
+    <ol>
+      <li>ใส่ชื่อผู้เล่นในวงให้ครบ (อย่างน้อย 2 คน) แล้วกด "เริ่มเกม"</li>
+      <li>ระบบสุ่มโจทย์ตัวเลข 1 ข้อ ส่งมือถือให้ผู้เล่นคนแรกพิมพ์เลขที่ตัวเองคิดแล้วกด "ล็อกคำตอบ"</li>
+      <li>หน้าจอจะซ่อนเลขทันทีและบอกให้ส่งต่อให้คนถัดไป ทำแบบนี้จนครบทุกคน (ห้ามบอกใบ้กันระหว่างทาง!)</li>
+      <li>เฉลยพร้อมกัน — ระบบจะเรียงคำตอบทุกคนจากน้อยไปมาก และไฮไลต์คนที่ทายใกล้เคียงคำตอบจริงที่สุด</li>
+      <li>ใครไกลสุดโดนแซวหรือดื่มตามที่วงตกลงกัน แล้วกด "ข้อต่อไป" เล่นกันต่อได้เรื่อย ๆ</li>
+    </ol>
+  </div>
+
+  <div class="gn-stage reveal-up">
+    <div id="setupPanel">
+      <h3 class="gn-h3">ใครอยู่ในวงบ้าง?</h3>
+      <div class="gn-add-row">
+        <input type="text" id="playerNameInput" class="gn-input" placeholder="พิมพ์ชื่อผู้เล่น" maxlength="20">
+        <button class="btn secondary" id="addPlayerBtn">+ เพิ่ม</button>
+      </div>
+      <div class="gn-error" id="setupError"></div>
+      <div class="gn-chips" id="playerChips"></div>
+      <div class="controls" style="justify-content:center; display:flex; margin-top:22px;">
+        <button class="btn" id="startGameBtn" disabled>เริ่มเกม →</button>
+      </div>
+    </div>
+
+    <div id="guessPanel" style="display:none;">
+      <div class="gn-dots" id="progressDots"></div>
+      <div class="gn-question" id="questionText"></div>
+      <div class="gn-turn" id="turnLabel"></div>
+      <input type="number" step="any" inputmode="decimal" id="guessInput" class="gn-guess-input" placeholder="พิมพ์เลขที่เดา">
+      <div class="controls" style="justify-content:center; display:flex; margin-top:18px;">
+        <button class="btn" id="lockGuessBtn">ล็อกคำตอบ 🔒</button>
+      </div>
+    </div>
+
+    <div id="passPanel" style="display:none;" class="gn-pass">
+      <div class="gn-pass-icon">🤫</div>
+      <div class="gn-pass-text">ล็อกคำตอบแล้ว! ส่งมือถือให้</div>
+      <div class="gn-pass-name" id="passNextName"></div>
+      <button class="btn" id="readyBtn">พร้อมแล้ว ดูคำถาม →</button>
+    </div>
+
+    <div id="revealPanel" style="display:none;">
+      <h3 class="gn-h3">🎉 ผลการทาย เรียงจากน้อยไปมาก</h3>
+      <div id="resultList" class="gn-result-list"></div>
+      <div id="answerBox" class="gn-answer-box"></div>
+      <div class="controls wl-controls">
+        <button class="btn" id="nextQuestionBtn">ข้อต่อไป →</button>
+        <button class="btn secondary" id="resetPlayersBtn">เริ่มวงใหม่ ↻</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>เล่นด้วยความรับผิดชอบ ดื่มพอดี ไม่ขับรถ</footer>
+</div>
+
+<script src="data/guess-number.js"></script>
+<script src="js/main.js"></script>
+<script src="js/guess-number.js"></script>
+</body>
+</html>

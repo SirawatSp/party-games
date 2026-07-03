@@ -11,6 +11,7 @@
   --amber: #ffb703;
   --violet: #9d6bff;
   --orange: #ff8a3d;
+  --teal: #1de9b6;
   --text: #f6eef9;
   --text-dim: #b6a3c2;
   --line: #3a2245;
@@ -78,7 +79,7 @@ a{color:inherit; text-decoration:none;}
   color:var(--lime);
   text-transform:uppercase;
 }
-.marquee span::after{content:"\00a0 \2726 \00a0 ปาร์ตี้ \00a0 \2726 \00a0 เกมวงเหล้า \00a0 \2726 \00a0 Insider \00a0 \2726 \00a0 เกมหมวดหมู่ \00a0 \2726 \00a0 She's a 10 but \00a0 \2726 \00a0 ทริเวียหลุดโลก \00a0 \2726 \00a0 Wavelength \00a0 \2726 \00a0 ";}
+.marquee span::after{content:"\00a0 \2726 \00a0 ปาร์ตี้ \00a0 \2726 \00a0 เกมวงเหล้า \00a0 \2726 \00a0 Insider \00a0 \2726 \00a0 เกมหมวดหมู่ \00a0 \2726 \00a0 She's a 10 but \00a0 \2726 \00a0 ทริเวียหลุดโลก \00a0 \2726 \00a0 Wavelength \00a0 \2726 \00a0 ใครแม่นสุด \00a0 \2726 \00a0 ";}
 @keyframes scroll{ 0%{transform:translateX(0);} 100%{transform:translateX(-100%);} }
 
 /* ---------- top nav ---------- */
@@ -165,6 +166,7 @@ a{color:inherit; text-decoration:none;}
 .card:nth-child(4){transform:rotate(-1deg);}
 .card:nth-child(5){transform:rotate(1.4deg);}
 .card:nth-child(6){transform:rotate(-.9deg);}
+.card:nth-child(7){transform:rotate(1.1deg);}
 .card:hover{ transform:scale(1.03) rotate(0deg); box-shadow:var(--shadow-pink); border-color:var(--pink); }
 
 .card .glow{
@@ -207,6 +209,7 @@ a{color:inherit; text-decoration:none;}
 .chip-amber .glow{background:var(--amber);}
 .chip-violet .glow{background:var(--violet);}
 .chip-orange .glow{background:var(--orange);}
+.chip-teal .glow{background:var(--teal);}
 
 /* ---------- footer ---------- */
 footer{
@@ -539,6 +542,92 @@ footer{
 .wl-msg{color:var(--text-dim); font-size:15px; margin-top:4px;}
 .wl-controls{margin-top:20px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
 .wl-controls .btn{font-size:14.5px; padding:14px 22px;}
+
+/* ================= GUESS NUMBER ================= */
+.gn-stage{
+  background:var(--bg-card);
+  border:1px solid var(--line);
+  border-radius:28px;
+  padding:32px 24px;
+  margin:26px 0 50px;
+  text-align:center;
+}
+.gn-h3{font-size:19px; margin-bottom:18px; color:var(--lime);}
+.gn-add-row{display:flex; gap:10px; max-width:420px; margin:0 auto;}
+.gn-input, .gn-guess-input{
+  flex:1;
+  font-family:'Sarabun', sans-serif; font-size:16px;
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:14px 16px;
+  color:var(--text);
+  outline:none;
+}
+.gn-input:focus, .gn-guess-input:focus{border-color:var(--lime);}
+.gn-error{color:var(--pink); font-size:13.5px; margin-top:8px; min-height:18px;}
+.gn-chips{
+  display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
+  margin-top:18px; max-width:520px; margin-left:auto; margin-right:auto;
+}
+.gn-chip{
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:'Kanit',sans-serif; font-weight:600; font-size:14.5px;
+  background:rgba(214,255,61,.1); border:1px solid var(--lime); color:var(--lime);
+  padding:7px 8px 7px 16px; border-radius:999px;
+}
+.gn-chip button{
+  background:none; border:none; color:var(--lime); font-size:17px; cursor:pointer;
+  width:22px; height:22px; border-radius:50%; line-height:1;
+}
+.gn-chip button:hover{background:var(--lime); color:#1a2400;}
+
+.gn-dots{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:20px;}
+.gn-dot{
+  font-family:'Kanit',sans-serif; font-weight:600; font-size:12.5px;
+  padding:5px 12px; border-radius:999px;
+  border:1px solid var(--line); color:var(--text-dim);
+}
+.gn-dot.active{background:var(--pink); color:#1a0410; border-color:var(--pink);}
+.gn-dot.done{background:rgba(214,255,61,.15); color:var(--lime); border-color:var(--lime);}
+
+.gn-question{
+  font-family:'Kanit',sans-serif; font-weight:700;
+  font-size:clamp(19px,3.6vw,25px);
+  line-height:1.5; max-width:600px; margin:0 auto 10px;
+}
+.gn-turn{color:var(--cyan); font-family:'Kanit',sans-serif; font-weight:700; font-size:15px; margin-bottom:20px;}
+.gn-guess-input{max-width:280px; margin:0 auto; display:block; text-align:center; font-size:22px; font-weight:700;}
+
+.gn-pass{padding:20px 0;}
+.gn-pass-icon{font-size:48px; margin-bottom:10px;}
+.gn-pass-text{color:var(--text-dim); font-size:15px;}
+.gn-pass-name{
+  font-family:'Kanit',sans-serif; font-weight:800; font-size:clamp(26px,5vw,36px);
+  color:var(--lime); margin:8px 0 26px;
+}
+
+.gn-result-list{max-width:460px; margin:0 auto; display:flex; flex-direction:column; gap:10px;}
+.gn-row{
+  display:flex; justify-content:space-between; align-items:center;
+  background:rgba(255,255,255,.02); border:1px solid var(--line);
+  border-radius:14px; padding:12px 18px;
+  font-family:'Kanit',sans-serif;
+}
+.gn-row.winner{border-color:var(--lime); background:rgba(214,255,61,.08); box-shadow:0 0 24px -8px rgba(214,255,61,.4);}
+.gn-row-name{font-weight:700;}
+.gn-row-val{color:var(--text-dim); font-weight:600;}
+.gn-row.winner .gn-row-val{color:var(--lime);}
+.gn-answer-box{margin:24px auto 0; max-width:460px;}
+.gn-answer-label{
+  font-family:'Kanit',sans-serif; font-weight:700; font-size:12.5px;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--text-dim);
+}
+.gn-answer-num{
+  font-family:'Kanit',sans-serif; font-weight:800; font-size:clamp(28px,5.5vw,38px);
+  color:var(--amber); margin:4px 0 10px;
+}
+.gn-explain{color:var(--text-dim); font-size:14.5px; line-height:1.6;}
 
 /* scroll reveal */
 .reveal-up{opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s ease;}
