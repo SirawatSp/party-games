@@ -12,6 +12,7 @@
   --violet: #9d6bff;
   --orange: #ff8a3d;
   --teal: #1de9b6;
+  --indigo: #5b6eff;
   --text: #f6eef9;
   --text-dim: #b6a3c2;
   --line: #3a2245;
@@ -79,7 +80,7 @@ a{color:inherit; text-decoration:none;}
   color:var(--lime);
   text-transform:uppercase;
 }
-.marquee span::after{content:"\00a0 \2726 \00a0 ปาร์ตี้ \00a0 \2726 \00a0 เกมวงเหล้า \00a0 \2726 \00a0 Insider \00a0 \2726 \00a0 เกมหมวดหมู่ \00a0 \2726 \00a0 She's a 10 but \00a0 \2726 \00a0 ทริเวียหลุดโลก \00a0 \2726 \00a0 Wavelength \00a0 \2726 \00a0 ใครแม่นสุด \00a0 \2726 \00a0 ";}
+.marquee span::after{content:"\00a0 \2726 \00a0 ปาร์ตี้ \00a0 \2726 \00a0 เกมวงเหล้า \00a0 \2726 \00a0 Insider \00a0 \2726 \00a0 เกมหมวดหมู่ \00a0 \2726 \00a0 She's a 10 but \00a0 \2726 \00a0 ทริเวียหลุดโลก \00a0 \2726 \00a0 Wavelength \00a0 \2726 \00a0 ใครแม่นสุด \00a0 \2726 \00a0 จัดแถวชีวิต \00a0 \2726 \00a0 ";}
 @keyframes scroll{ 0%{transform:translateX(0);} 100%{transform:translateX(-100%);} }
 
 /* ---------- top nav ---------- */
@@ -210,6 +211,7 @@ a{color:inherit; text-decoration:none;}
 .chip-violet .glow{background:var(--violet);}
 .chip-orange .glow{background:var(--orange);}
 .chip-teal .glow{background:var(--teal);}
+.chip-indigo .glow{background:var(--indigo);}
 
 /* ---------- footer ---------- */
 footer{
@@ -615,9 +617,11 @@ footer{
   font-family:'Kanit',sans-serif;
 }
 .gn-row.winner{border-color:var(--lime); background:rgba(214,255,61,.08); box-shadow:0 0 24px -8px rgba(214,255,61,.4);}
+.gn-row.lowest{border-color:var(--indigo); background:rgba(91,110,255,.08);}
 .gn-row-name{font-weight:700;}
 .gn-row-val{color:var(--text-dim); font-weight:600;}
 .gn-row.winner .gn-row-val{color:var(--lime);}
+.gn-row.lowest .gn-row-val{color:var(--indigo);}
 .gn-answer-box{margin:24px auto 0; max-width:460px;}
 .gn-answer-label{
   font-family:'Kanit',sans-serif; font-weight:700; font-size:12.5px;
