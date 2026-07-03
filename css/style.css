@@ -554,74 +554,12 @@ footer{
   margin:26px 0 50px;
   text-align:center;
 }
-.gn-h3{font-size:19px; margin-bottom:18px; color:var(--lime);}
-.gn-add-row{display:flex; gap:10px; max-width:420px; margin:0 auto;}
-.gn-input, .gn-guess-input{
-  flex:1;
-  font-family:'Sarabun', sans-serif; font-size:16px;
-  background:rgba(255,255,255,.03);
-  border:1px solid var(--line);
-  border-radius:14px;
-  padding:14px 16px;
-  color:var(--text);
-  outline:none;
-}
-.gn-input:focus, .gn-guess-input:focus{border-color:var(--lime);}
-.gn-error{color:var(--pink); font-size:13.5px; margin-top:8px; min-height:18px;}
-.gn-chips{
-  display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
-  margin-top:18px; max-width:520px; margin-left:auto; margin-right:auto;
-}
-.gn-chip{
-  display:inline-flex; align-items:center; gap:8px;
-  font-family:'Kanit',sans-serif; font-weight:600; font-size:14.5px;
-  background:rgba(214,255,61,.1); border:1px solid var(--lime); color:var(--lime);
-  padding:7px 8px 7px 16px; border-radius:999px;
-}
-.gn-chip button{
-  background:none; border:none; color:var(--lime); font-size:17px; cursor:pointer;
-  width:22px; height:22px; border-radius:50%; line-height:1;
-}
-.gn-chip button:hover{background:var(--lime); color:#1a2400;}
-
-.gn-dots{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:20px;}
-.gn-dot{
-  font-family:'Kanit',sans-serif; font-weight:600; font-size:12.5px;
-  padding:5px 12px; border-radius:999px;
-  border:1px solid var(--line); color:var(--text-dim);
-}
-.gn-dot.active{background:var(--pink); color:#1a0410; border-color:var(--pink);}
-.gn-dot.done{background:rgba(214,255,61,.15); color:var(--lime); border-color:var(--lime);}
-
 .gn-question{
   font-family:'Kanit',sans-serif; font-weight:700;
   font-size:clamp(19px,3.6vw,25px);
   line-height:1.5; max-width:600px; margin:0 auto 10px;
 }
-.gn-turn{color:var(--cyan); font-family:'Kanit',sans-serif; font-weight:700; font-size:15px; margin-bottom:20px;}
-.gn-guess-input{max-width:280px; margin:0 auto; display:block; text-align:center; font-size:22px; font-weight:700;}
 
-.gn-pass{padding:20px 0;}
-.gn-pass-icon{font-size:48px; margin-bottom:10px;}
-.gn-pass-text{color:var(--text-dim); font-size:15px;}
-.gn-pass-name{
-  font-family:'Kanit',sans-serif; font-weight:800; font-size:clamp(26px,5vw,36px);
-  color:var(--lime); margin:8px 0 26px;
-}
-
-.gn-result-list{max-width:460px; margin:0 auto; display:flex; flex-direction:column; gap:10px;}
-.gn-row{
-  display:flex; justify-content:space-between; align-items:center;
-  background:rgba(255,255,255,.02); border:1px solid var(--line);
-  border-radius:14px; padding:12px 18px;
-  font-family:'Kanit',sans-serif;
-}
-.gn-row.winner{border-color:var(--lime); background:rgba(214,255,61,.08); box-shadow:0 0 24px -8px rgba(214,255,61,.4);}
-.gn-row.lowest{border-color:var(--indigo); background:rgba(91,110,255,.08);}
-.gn-row-name{font-weight:700;}
-.gn-row-val{color:var(--text-dim); font-weight:600;}
-.gn-row.winner .gn-row-val{color:var(--lime);}
-.gn-row.lowest .gn-row-val{color:var(--indigo);}
 .gn-answer-box{margin:24px auto 0; max-width:460px;}
 .gn-answer-label{
   font-family:'Kanit',sans-serif; font-weight:700; font-size:12.5px;
