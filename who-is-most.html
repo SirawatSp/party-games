@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ใครคือที่สุด — เกมชี้นิ้ว</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <div class="brand"><span class="dot">●</span> วงกำลังจะเหงา</div>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--crimson); color:#2e0006;">09 · เกมชี้นิ้ว</span>
+    <h1>ใครคือที่สุด</h1>
+    <p>เกมคลาสสิกที่เล่นกันแทบทุกวง — อ่านโจทย์บนจอให้ทั้งวงฟัง แล้วให้ทุกคนชี้นิ้วไปที่คนที่คิดว่าใช่ที่สุดพร้อมกันในสามจังหวะ ใครโดนชี้เยอะสุดคือคำตอบของวงนี้!</p>
+  </section>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเล่น</h2>
+    <ol>
+      <li>อ่านโจทย์บนจอให้ทั้งวงได้ยินชัด ๆ</li>
+      <li>นับ 1-2-3 แล้วให้ทุกคน (รวมถึงตัวเอง) ชี้นิ้วไปที่คนที่คิดว่าใช่ที่สุดพร้อมกัน ห้ามรอดูคนอื่นก่อนชี้!</li>
+      <li>ดูว่าใครโดนชี้เยอะสุด นั่นคือคำตอบของวงนี้ จะแซว จะเถียง จะดื่มตามกติกาวงก็ได้เลย</li>
+      <li>กด "ข้อต่อไป" เล่นกันต่อได้เรื่อย ๆ</li>
+    </ol>
+  </div>
+
+  <div class="gn-stage reveal-up">
+    <div id="guessPanel">
+      <div class="gn-question" id="promptText"></div>
+      <div class="controls" style="justify-content:center; display:flex; margin-top:18px;">
+        <button class="btn" id="nextPromptBtn">ข้อต่อไป →</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>เล่นด้วยความรับผิดชอบ ดื่มพอดี ไม่ขับรถ</footer>
+</div>
+
+<script src="data/who-is-most.js"></script>
+<script src="js/main.js"></script>
+<script src="js/who-is-most.js"></script>
+</body>
+</html>
