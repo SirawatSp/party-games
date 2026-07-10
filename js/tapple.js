@@ -116,7 +116,10 @@ document.addEventListener("DOMContentLoaded", () => {
     players.forEach((p, i) => {
       const row = document.createElement("div");
       const isAlive = roundAlive.includes(i);
-      row.className = "tp-score-row" + (target === scoreboard && !isAlive ? " out" : "");
+      const isCurrent = target === scoreboard && isAlive && roundAlive[currentTurnIdx] === i;
+      row.className = "tp-score-row" +
+        (target === scoreboard && !isAlive ? " out" : "") +
+        (isCurrent ? " current" : "");
       row.innerHTML =
         '<span class="tp-score-name">' + p.name + "</span>" +
         '<span class="tp-score-cards">' + "🃏".repeat(p.cards) + "</span>";
@@ -155,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setAllText(timerEls, secondsLeft);
     timerEls.forEach((el) => el.classList.remove("low"));
     const playerIdx = roundAlive[currentTurnIdx];
-    setAllText(turnEls, "ตาของ " + players[playerIdx].name);
+    setAllText(turnEls, "👉 ตาของ " + players[playerIdx].name);
     renderScoreboard(scoreboard);
 
     stopTimer();
@@ -259,19 +262,33 @@ document.addEventListener("DOMContentLoaded", () => {
     setupPanel.style.display = "";
   });
 
+  function requestFs(el) {
+    const method = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+    if (method) {
+      const result = method.call(el);
+      if (result && result.catch) result.catch(() => {});
+    }
+  }
+
+  function exitFs() {
+    const method = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+    if (method && (document.fullscreenElement || document.webkitFullscreenElement)) {
+      const result = method.call(document);
+      if (result && result.catch) result.catch(() => {});
+    }
+  }
+
   function enterDualView() {
     dualView.style.display = "flex";
-    if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen().catch(() => {});
-    }
+    document.documentElement.classList.add("tp-no-scroll");
+    requestFs(dualView);
   }
 
   function exitDualView() {
     if (dualView.style.display === "none") return;
     dualView.style.display = "none";
-    if (document.fullscreenElement && document.exitFullscreen) {
-      document.exitFullscreen().catch(() => {});
-    }
+    document.documentElement.classList.remove("tp-no-scroll");
+    exitFs();
   }
 
   dualViewBtn.addEventListener("click", enterDualView);
