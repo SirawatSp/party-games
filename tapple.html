@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สปีดตัวอักษร — เกมสไตล์ Tapple</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <div class="brand"><span class="dot">●</span> วงกำลังจะเหงา</div>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--sky); color:#00263b;">11 · เกมสไตล์ Tapple</span>
+    <h1>สปีดตัวอักษร</h1>
+    <p>ดัดแปลงจากบอร์ดเกม Tapple — สุ่มหมวดหมู่ แล้วผลัดกันตอบคำในหมวดนั้นให้ขึ้นต้นด้วยตัวอักษรที่ยังไม่ถูกใช้ ภายใน 10 วินาที ตอบได้แล้วแตะตัวอักษรนั้นเพื่อล็อกทิ้ง ใครตอบไม่ทันหรือตอบผิดกติกาตกรอบ เหลือคนสุดท้ายรับป้ายหมวด คนแรกที่ได้ 3 ป้ายชนะเกม!</p>
+  </section>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเล่น</h2>
+    <ol>
+      <li>ใส่ชื่อผู้เล่นในวงให้ครบ (อย่างน้อย 2 คน) แล้วกด "เริ่มเกม"</li>
+      <li>ระบบสุ่มหมวดหมู่ 1 หมวด ผลัดกันเป็นเจ้าของตา ภายใน 10 วินาทีต้องพูดคำในหมวดที่ขึ้นต้นด้วยตัวอักษรที่ยังไม่ถูกล็อก</li>
+      <li>ตอบถูกแล้วแตะตัวอักษรตัวนั้นเพื่อล็อกทิ้ง เปลี่ยนตาให้คนถัดไปทันที</li>
+      <li>ใครตอบไม่ทันเวลา ตอบซ้ำตัวอักษรเดิม หรือทั้งวงเห็นตรงกันว่าคำตอบผิดกติกา ให้กดปุ่ม "ตกรอบ" ให้คนนั้น (ตกแค่รอบนี้ ไม่ตกทั้งเกม)</li>
+      <li>เหลือผู้เล่นคนสุดท้ายในรอบ รับป้ายหมวด 1 ใบ แล้วเริ่มรอบใหม่ทันที ใครได้ครบ 3 ป้ายก่อนชนะเกม</li>
+    </ol>
+  </div>
+
+  <div class="tp-stage reveal-up">
+    <div id="setupPanel">
+      <h3 class="tp-h3">ใครอยู่ในวงบ้าง?</h3>
+      <div class="tp-add-row">
+        <input type="text" id="playerNameInput" class="tp-input" placeholder="พิมพ์ชื่อผู้เล่น" maxlength="20">
+        <button class="btn secondary" id="addPlayerBtn">+ เพิ่ม</button>
+      </div>
+      <div class="tp-error" id="setupError"></div>
+      <div class="tp-chips" id="playerChips"></div>
+      <div class="controls" style="justify-content:center; display:flex; margin-top:22px;">
+        <button class="btn" id="startGameBtn" disabled>เริ่มเกม →</button>
+      </div>
+    </div>
+
+    <div id="gamePanel" style="display:none;">
+      <div class="tp-scoreboard" id="scoreboard"></div>
+
+      <div class="tp-category" id="categoryText"></div>
+      <div class="tp-turn" id="turnLabel"></div>
+      <div class="tp-timer" id="timerNum">10</div>
+
+      <div class="tp-letters" id="letterGrid"></div>
+
+      <div class="controls" style="justify-content:center; display:flex; margin-top:18px;">
+        <button class="btn secondary" id="eliminateBtn">ตกรอบ ❌</button>
+      </div>
+    </div>
+
+    <div id="roundEndPanel" style="display:none;">
+      <h3 class="tp-h3" id="roundEndTitle"></h3>
+      <div class="tp-scoreboard" id="roundEndScoreboard"></div>
+      <div class="controls" style="justify-content:center; display:flex; margin-top:18px;">
+        <button class="btn" id="nextRoundBtn">รอบต่อไป →</button>
+      </div>
+    </div>
+
+    <div id="gameEndPanel" style="display:none;">
+      <h3 class="tp-h3" id="gameEndTitle">🏆 ชนะเกม!</h3>
+      <p class="tp-hint" id="gameEndHint"></p>
+      <div class="controls" style="justify-content:center; display:flex; margin-top:14px;">
+        <button class="btn" id="resetGameBtn">เริ่มเกมใหม่ ↻</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>เล่นด้วยความรับผิดชอบ ดื่มพอดี ไม่ขับรถ</footer>
+</div>
+
+<script src="data/tapple-categories.js"></script>
+<script src="js/main.js"></script>
+<script src="js/tapple.js"></script>
+</body>
+</html>
