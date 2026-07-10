@@ -25,9 +25,9 @@
     <ol>
       <li>เปิดเมนูร้านอาหารวางกลางโต๊ะให้ทุกคนดูได้</li>
       <li>ส่งมือถือวนให้แต่ละคนพิมพ์ชื่อตัวเองกับเมนูที่จะสั่งแบบลับ ๆ ห้ามให้คนอื่นเห็นจอ</li>
-      <li>พิมพ์ครบทุกคนแล้วกด "ครบทุกคนแล้ว เริ่มเสิร์ฟ" ระบบจะสลับลำดับแล้วโชว์เมนูทีละจาน (ไม่บอกว่าใครสั่ง)</li>
-      <li>ให้ทั้งวงช่วยกันทายว่าจานนี้ใครสั่ง แล้วกด "เฉลย" ดูว่าใครสั่งจริง ๆ</li>
-      <li>กด "จานต่อไป" ไปเรื่อย ๆ จนครบทุกจาน</li>
+      <li>พิมพ์ครบทุกคนแล้วกด "ครบทุกคนแล้ว เริ่มเสิร์ฟ" ระบบจะสลับลำดับแล้วโชว์เมนูทุกจานพร้อมกัน (ไม่บอกว่าใครสั่ง)</li>
+      <li>ให้ทั้งวงช่วยกันทายทีละจานว่าใครสั่ง จะเลือกจานไหนก่อนก็ได้ แล้วแตะที่จานนั้นเพื่อเฉลย</li>
+      <li>ทายและแตะเฉลยไปเรื่อย ๆ จนครบทุกจาน</li>
     </ol>
   </div>
 
@@ -54,20 +54,10 @@
     </div>
 
     <div id="revealPanel" style="display:none;">
-      <div class="wo-serve-label">🍽 จานนี้เสิร์ฟแล้ว</div>
-      <div class="gn-question" id="dishText"></div>
-      <div class="wo-hint">ทายกันว่าใครสั่ง!</div>
-      <div id="answerBox" class="gn-answer-box" style="display:none;"></div>
-      <div class="controls" style="justify-content:center; display:flex; gap:12px; flex-wrap:wrap; margin-top:18px;">
-        <button class="btn" id="revealNameBtn">เฉลย 🔍</button>
-        <button class="btn secondary" id="nextDishBtn" style="display:none;">จานต่อไป →</button>
-      </div>
-    </div>
-
-    <div id="donePanel" style="display:none;">
-      <h3 class="wo-h3">🎉 หมดเมนูแล้ว!</h3>
-      <p class="wo-hint">อิ่มกันหรือยัง? เริ่มรอบใหม่ได้เลยถ้าจะสั่งเพิ่ม</p>
-      <div class="controls" style="justify-content:center; display:flex; margin-top:14px;">
+      <div class="wo-serve-label">🍽 เมนูเสิร์ฟครบแล้ว — แตะจานไหนก็ได้เพื่อเฉลย</div>
+      <div class="wo-grid" id="dishGrid"></div>
+      <p class="wo-hint" id="doneHint" style="display:none;">🎉 เฉลยครบทุกจานแล้ว! อิ่มกันหรือยัง?</p>
+      <div class="controls" style="justify-content:center; display:flex; margin-top:22px;">
         <button class="btn" id="resetBtn">เริ่มรอบใหม่ ↻</button>
       </div>
     </div>

@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const entryPanel = document.getElementById("entryPanel");
   const passPanel = document.getElementById("passPanel");
   const revealPanel = document.getElementById("revealPanel");
-  const donePanel = document.getElementById("donePanel");
 
   const entryCount = document.getElementById("entryCount");
   const nameInput = document.getElementById("nameInput");
@@ -13,23 +12,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const nextPersonBtn = document.getElementById("nextPersonBtn");
   const startServeBtn = document.getElementById("startServeBtn");
 
-  const dishText = document.getElementById("dishText");
-  const answerBox = document.getElementById("answerBox");
-  const revealNameBtn = document.getElementById("revealNameBtn");
-  const nextDishBtn = document.getElementById("nextDishBtn");
-
+  const dishGrid = document.getElementById("dishGrid");
+  const doneHint = document.getElementById("doneHint");
   const resetBtn = document.getElementById("resetBtn");
 
   let entries = [];
   let serveQueue = [];
-  let serveIndex = 0;
+  let revealedCount = 0;
 
   function showEntryForm() {
     entryCount.textContent = entries.length + 1;
     nameInput.value = "";
     dishInput.value = "";
     passPanel.style.display = "none";
-    donePanel.style.display = "none";
+    revealPanel.style.display = "none";
     entryPanel.style.display = "";
     setTimeout(() => nameInput.focus(), 50);
   }
@@ -69,53 +65,46 @@ document.addEventListener("DOMContentLoaded", () => {
     return copy;
   }
 
-  function showDish() {
-    const current = serveQueue[serveIndex];
-    dishText.textContent = current.dish;
-    answerBox.style.display = "none";
-    revealNameBtn.style.display = "";
-    nextDishBtn.style.display = "none";
+  function renderGrid() {
+    dishGrid.innerHTML = "";
+    serveQueue.forEach((entry, i) => {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "wo-card";
+      card.innerHTML =
+        '<div class="wo-card-dish">' + entry.dish + "</div>" +
+        '<div class="wo-card-hint">แตะเพื่อเฉลย</div>';
+      card.addEventListener("click", () => revealCard(i, card));
+      dishGrid.appendChild(card);
+    });
+  }
+
+  function revealCard(i, card) {
+    if (card.classList.contains("revealed")) return;
+    card.classList.add("revealed");
+    card.innerHTML =
+      '<div class="wo-card-dish">' + serveQueue[i].dish + "</div>" +
+      '<div class="wo-card-name">' + serveQueue[i].name + "</div>";
+    revealedCount++;
+    doneHint.style.display = revealedCount >= serveQueue.length ? "" : "none";
   }
 
   function startServe() {
     if (entries.length < 2) return;
     serveQueue = shuffle(entries);
-    serveIndex = 0;
+    revealedCount = 0;
+    doneHint.style.display = "none";
     passPanel.style.display = "none";
     revealPanel.style.display = "";
-    showDish();
+    renderGrid();
   }
 
   startServeBtn.addEventListener("click", startServe);
 
-  function revealName() {
-    const current = serveQueue[serveIndex];
-    answerBox.innerHTML =
-      '<div class="gn-answer-label">คนสั่งคือ</div>' +
-      '<div class="gn-answer-num" style="color:var(--gold);">' + current.name + "</div>";
-    answerBox.style.display = "";
-    revealNameBtn.style.display = "none";
-    nextDishBtn.style.display = "";
-  }
-
-  revealNameBtn.addEventListener("click", revealName);
-
-  function nextDish() {
-    serveIndex++;
-    if (serveIndex >= serveQueue.length) {
-      revealPanel.style.display = "none";
-      donePanel.style.display = "";
-    } else {
-      showDish();
-    }
-  }
-
-  nextDishBtn.addEventListener("click", nextDish);
-
   resetBtn.addEventListener("click", () => {
     entries = [];
     serveQueue = [];
-    serveIndex = 0;
+    revealedCount = 0;
     showEntryForm();
   });
 
