@@ -1,16 +1,31 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const TAPPLE_LETTERS = [
+  const TH_LETTERS = [
     "ก", "ข", "ค", "ง", "จ", "ฉ", "ช", "ซ", "ญ", "ด", "ต", "ถ", "ท", "ธ", "น",
     "บ", "ป", "ผ", "ฝ", "พ", "ฟ", "ภ", "ม", "ย", "ร", "ล", "ว", "ศ", "ส", "ห", "อ"
   ];
+  const EN_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
   const TURN_SECONDS = 10;
   const CARDS_TO_WIN = 3;
+  const PLAYER_COLORS = [
+    "--sky", "--pink", "--lime", "--gold", "--violet",
+    "--teal", "--crimson", "--orange", "--indigo", "--cyan", "--amber"
+  ];
+  // Up to 4 seats arranged around the phone: south = default/near side, north = opposite
+  // side (rotated 180deg), west/east = the two side seats (rotated +-90deg).
+  const SEAT_DEFS = {
+    1: ["south"],
+    2: ["north", "south"],
+    3: ["north", "west", "south"],
+    4: ["north", "west", "east", "south"]
+  };
 
   const setupPanel = document.getElementById("setupPanel");
   const gamePanel = document.getElementById("gamePanel");
   const roundEndPanel = document.getElementById("roundEndPanel");
   const gameEndPanel = document.getElementById("gameEndPanel");
 
+  const modeSwitch = document.getElementById("modeSwitch");
   const playerNameInput = document.getElementById("playerNameInput");
   const addPlayerBtn = document.getElementById("addPlayerBtn");
   const playerChips = document.getElementById("playerChips");
@@ -18,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const setupError = document.getElementById("setupError");
 
   const scoreboard = document.getElementById("scoreboard");
-  const eliminateBtn = document.getElementById("eliminateBtn");
+  const mainEliminateBtn = document.getElementById("eliminateBtn");
   const dualViewBtn = document.getElementById("dualViewBtn");
 
   const roundEndTitle = document.getElementById("roundEndTitle");
@@ -30,42 +45,41 @@ document.addEventListener("DOMContentLoaded", () => {
   const resetGameBtn = document.getElementById("resetGameBtn");
 
   const dualView = document.getElementById("dualView");
+  const dualPanesEl = document.getElementById("dualPanes");
   const exitDualViewBtn = document.getElementById("exitDualViewBtn");
 
-  // Each entry: { category, turn, timer, letters } elements that must always show the same state.
-  const categoryEls = [
-    document.getElementById("categoryText"),
-    document.getElementById("dualCategoryTop"),
-    document.getElementById("dualCategoryBottom")
-  ];
-  const turnEls = [
-    document.getElementById("turnLabel"),
-    document.getElementById("dualTurnTop"),
-    document.getElementById("dualTurnBottom")
-  ];
-  const timerEls = [
-    document.getElementById("timerNum"),
-    document.getElementById("dualTimerTop"),
-    document.getElementById("dualTimerBottom")
-  ];
-  const letterGridContainers = [
-    document.getElementById("letterGrid"),
-    document.getElementById("dualLettersTop"),
-    document.getElementById("dualLettersBottom")
-  ];
-  const eliminateBtns = [
-    eliminateBtn,
-    document.getElementById("dualEliminateTop"),
-    document.getElementById("dualEliminateBottom")
-  ];
+  const mainCategoryEl = document.getElementById("categoryText");
+  const mainTurnEl = document.getElementById("turnLabel");
+  const mainTimerEl = document.getElementById("timerNum");
+  const mainLetterGridEl = document.getElementById("letterGrid");
+
+  // These registries always start with the main-panel element, then get the dual-view
+  // seat panes appended once buildDualPanes() runs at game start.
+  let categoryEls = [mainCategoryEl];
+  let turnEls = [mainTurnEl];
+  let timerEls = [mainTimerEl];
+  let letterGridContainers = [mainLetterGridEl];
+  let eliminateBtnEls = [mainEliminateBtn];
+
+  let mode = "th";
+  let currentLetters = TH_LETTERS;
+  let currentCategories = TAPPLE_CATEGORIES;
 
   let players = [];
   let usedCategoryIndexes = [];
   let lockedLetters = new Set();
   let roundAlive = [];
   let currentTurnIdx = 0;
+  let currentTurnColorVar = "--sky";
   let secondsLeft = TURN_SECONDS;
   let timerInterval = null;
+
+  modeSwitch.querySelectorAll(".tp-mode-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      mode = btn.dataset.mode;
+      modeSwitch.querySelectorAll(".tp-mode-btn").forEach((b) => b.classList.toggle("active", b === btn));
+    });
+  });
 
   function renderChips() {
     playerChips.innerHTML = "";
@@ -90,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     setupError.textContent = "";
-    players.push({ name, cards: 0 });
+    players.push({ name, cards: 0, color: "--sky" });
     playerNameInput.value = "";
     playerNameInput.focus();
     renderChips();
@@ -102,13 +116,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   function pickCategory() {
-    if (usedCategoryIndexes.length >= TAPPLE_CATEGORIES.length) usedCategoryIndexes = [];
+    if (usedCategoryIndexes.length >= currentCategories.length) usedCategoryIndexes = [];
     let idx;
     do {
-      idx = Math.floor(Math.random() * TAPPLE_CATEGORIES.length);
+      idx = Math.floor(Math.random() * currentCategories.length);
     } while (usedCategoryIndexes.includes(idx));
     usedCategoryIndexes.push(idx);
-    return TAPPLE_CATEGORIES[idx];
+    return currentCategories[idx];
   }
 
   function renderScoreboard(target) {
@@ -120,6 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
       row.className = "tp-score-row" +
         (target === scoreboard && !isAlive ? " out" : "") +
         (isCurrent ? " current" : "");
+      if (isCurrent) row.style.setProperty("--tc", "var(" + p.color + ")");
       row.innerHTML =
         '<span class="tp-score-name">' + p.name + "</span>" +
         '<span class="tp-score-cards">' + "🃏".repeat(p.cards) + "</span>";
@@ -130,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderLetterGrids() {
     letterGridContainers.forEach((container) => {
       container.innerHTML = "";
-      TAPPLE_LETTERS.forEach((letter) => {
+      currentLetters.forEach((letter) => {
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "tp-letter" + (lockedLetters.has(letter) ? " used" : "");
@@ -142,8 +157,50 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function buildDualPanes() {
+    dualPanesEl.innerHTML = "";
+    categoryEls = [mainCategoryEl];
+    turnEls = [mainTurnEl];
+    timerEls = [mainTimerEl];
+    letterGridContainers = [mainLetterGridEl];
+    eliminateBtnEls = [mainEliminateBtn];
+
+    const seatCount = Math.min(Math.max(players.length, 1), 4);
+    dualPanesEl.className = "tp-dual-cross seats-" + seatCount;
+
+    SEAT_DEFS[seatCount].forEach((seatKey) => {
+      const pane = document.createElement("div");
+      pane.className = "tp-seat tp-seat-" + seatKey;
+      pane.innerHTML =
+        '<div class="tp-dual-turn"></div>' +
+        '<div class="tp-dual-category"></div>' +
+        '<div class="tp-dual-timer">' + TURN_SECONDS + "</div>" +
+        '<div class="tp-dual-letters"></div>' +
+        '<button type="button" class="btn secondary tp-dual-eliminate">ตกรอบ ❌</button>';
+      dualPanesEl.appendChild(pane);
+
+      turnEls.push(pane.querySelector(".tp-dual-turn"));
+      categoryEls.push(pane.querySelector(".tp-dual-category"));
+      timerEls.push(pane.querySelector(".tp-dual-timer"));
+      letterGridContainers.push(pane.querySelector(".tp-dual-letters"));
+      const elimBtn = pane.querySelector(".tp-dual-eliminate");
+      elimBtn.addEventListener("click", () => {
+        stopTimer();
+        eliminateCurrent();
+      });
+      eliminateBtnEls.push(elimBtn);
+    });
+  }
+
   function setAllText(els, text) {
     els.forEach((el) => { el.textContent = text; });
+  }
+
+  function applyTurnBadge(text, colorVar) {
+    turnEls.forEach((el) => {
+      el.textContent = text;
+      el.style.background = "var(" + colorVar + ")";
+    });
   }
 
   function stopTimer() {
@@ -158,7 +215,8 @@ document.addEventListener("DOMContentLoaded", () => {
     setAllText(timerEls, secondsLeft);
     timerEls.forEach((el) => el.classList.remove("low"));
     const playerIdx = roundAlive[currentTurnIdx];
-    setAllText(turnEls, "👉 ตาของ " + players[playerIdx].name);
+    currentTurnColorVar = players[playerIdx].color;
+    applyTurnBadge("👉 ตาของ " + players[playerIdx].name, currentTurnColorVar);
     renderScoreboard(scoreboard);
 
     stopTimer();
@@ -193,7 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderLetterGrids();
     stopTimer();
 
-    if (lockedLetters.size >= TAPPLE_LETTERS.length) {
+    if (lockedLetters.size >= currentLetters.length) {
       endRound(null);
       return;
     }
@@ -212,11 +270,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  eliminateBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      stopTimer();
-      eliminateCurrent();
-    });
+  mainEliminateBtn.addEventListener("click", () => {
+    stopTimer();
+    eliminateCurrent();
   });
 
   function endRound(winnerIdx) {
@@ -247,6 +303,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   startGameBtn.addEventListener("click", () => {
     if (players.length < 2) return;
+    players.forEach((p, i) => { p.color = PLAYER_COLORS[i % PLAYER_COLORS.length]; });
+    currentLetters = mode === "en" ? EN_LETTERS : TH_LETTERS;
+    currentCategories = mode === "en" ? TAPPLE_CATEGORIES_EN : TAPPLE_CATEGORIES;
+    buildDualPanes();
     startRound();
   });
 
@@ -255,6 +315,12 @@ document.addEventListener("DOMContentLoaded", () => {
     exitDualView();
     players = [];
     usedCategoryIndexes = [];
+    dualPanesEl.innerHTML = "";
+    categoryEls = [mainCategoryEl];
+    turnEls = [mainTurnEl];
+    timerEls = [mainTimerEl];
+    letterGridContainers = [mainLetterGridEl];
+    eliminateBtnEls = [mainEliminateBtn];
     renderChips();
     gamePanel.style.display = "none";
     roundEndPanel.style.display = "none";
@@ -279,7 +345,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function enterDualView() {
-    dualView.style.display = "flex";
+    dualView.style.display = "block";
     document.documentElement.classList.add("tp-no-scroll");
     requestFs(dualView);
   }
