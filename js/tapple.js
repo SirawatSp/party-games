@@ -21,9 +21,14 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const setupPanel = document.getElementById("setupPanel");
+  const categoryPanel = document.getElementById("categoryPanel");
   const gamePanel = document.getElementById("gamePanel");
   const roundEndPanel = document.getElementById("roundEndPanel");
   const gameEndPanel = document.getElementById("gameEndPanel");
+
+  const categoryPreviewText = document.getElementById("categoryPreviewText");
+  const rerollCategoryBtn = document.getElementById("rerollCategoryBtn");
+  const beginRoundBtn = document.getElementById("beginRoundBtn");
 
   const modeSwitch = document.getElementById("modeSwitch");
   const playerNameInput = document.getElementById("playerNameInput");
@@ -231,19 +236,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1000);
   }
 
-  function startRound() {
-    const category = pickCategory();
-    setAllText(categoryEls, category);
+  let pendingCategory = null;
+
+  function showCategoryPanel() {
+    pendingCategory = pickCategory();
+    categoryPreviewText.textContent = pendingCategory;
+    setupPanel.style.display = "none";
+    gamePanel.style.display = "none";
+    roundEndPanel.style.display = "none";
+    gameEndPanel.style.display = "none";
+    categoryPanel.style.display = "";
+  }
+
+  rerollCategoryBtn.addEventListener("click", () => {
+    pendingCategory = pickCategory();
+    categoryPreviewText.textContent = pendingCategory;
+  });
+
+  beginRoundBtn.addEventListener("click", () => {
+    setAllText(categoryEls, pendingCategory);
     lockedLetters = new Set();
     roundAlive = players.map((_, i) => i);
     currentTurnIdx = 0;
     renderLetterGrids();
-    setupPanel.style.display = "none";
-    roundEndPanel.style.display = "none";
-    gameEndPanel.style.display = "none";
+    categoryPanel.style.display = "none";
     gamePanel.style.display = "";
     startTurn();
-  }
+  });
 
   function handleLetterTap(letter) {
     if (lockedLetters.has(letter)) return;
@@ -299,7 +318,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  nextRoundBtn.addEventListener("click", startRound);
+  nextRoundBtn.addEventListener("click", showCategoryPanel);
 
   startGameBtn.addEventListener("click", () => {
     if (players.length < 2) return;
@@ -307,7 +326,7 @@ document.addEventListener("DOMContentLoaded", () => {
     currentLetters = mode === "en" ? EN_LETTERS : TH_LETTERS;
     currentCategories = mode === "en" ? TAPPLE_CATEGORIES_EN : TAPPLE_CATEGORIES;
     buildDualPanes();
-    startRound();
+    showCategoryPanel();
   });
 
   resetGameBtn.addEventListener("click", () => {
@@ -322,6 +341,7 @@ document.addEventListener("DOMContentLoaded", () => {
     letterGridContainers = [mainLetterGridEl];
     eliminateBtnEls = [mainEliminateBtn];
     renderChips();
+    categoryPanel.style.display = "none";
     gamePanel.style.display = "none";
     roundEndPanel.style.display = "none";
     gameEndPanel.style.display = "none";

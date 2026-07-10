@@ -24,7 +24,8 @@
     <h2>วิธีเล่น</h2>
     <ol>
       <li>ใส่ชื่อผู้เล่นในวงให้ครบ (อย่างน้อย 2 คน) แล้วกด "เริ่มเกม"</li>
-      <li>ระบบสุ่มหมวดหมู่ 1 หมวด ผลัดกันเป็นเจ้าของตา ภายใน 10 วินาทีต้องพูดคำในหมวดที่ขึ้นต้นด้วยตัวอักษรที่ยังไม่ถูกล็อก</li>
+      <li>ระบบสุ่มหมวดหมู่มาให้ดูก่อน กด "สุ่มใหม่" ได้ถ้ายังไม่ถูกใจ พร้อมแล้วค่อยกด "เริ่มรอบ" นาฬิกาจับเวลาจะเริ่มตอนนั้น</li>
+      <li>ผลัดกันเป็นเจ้าของตา ภายใน 10 วินาทีต้องพูดคำในหมวดที่ขึ้นต้นด้วยตัวอักษรที่ยังไม่ถูกล็อก</li>
       <li>ตอบถูกแล้วแตะตัวอักษรตัวนั้นเพื่อล็อกทิ้ง เปลี่ยนตาให้คนถัดไปทันที</li>
       <li>ใครตอบไม่ทันเวลา ตอบซ้ำตัวอักษรเดิม หรือทั้งวงเห็นตรงกันว่าคำตอบผิดกติกา ให้กดปุ่ม "ตกรอบ" ให้คนนั้น (ตกแค่รอบนี้ ไม่ตกทั้งเกม)</li>
       <li>เหลือผู้เล่นคนสุดท้ายในรอบ รับป้ายหมวด 1 ใบ แล้วเริ่มรอบใหม่ทันที ใครได้ครบ 3 ป้ายก่อนชนะเกม</li>
@@ -49,6 +50,15 @@
       <div class="tp-chips" id="playerChips"></div>
       <div class="controls" style="justify-content:center; display:flex; margin-top:22px;">
         <button class="btn" id="startGameBtn" disabled>เริ่มเกม →</button>
+      </div>
+    </div>
+
+    <div id="categoryPanel" style="display:none;">
+      <h3 class="tp-h3">หมวดหมู่รอบนี้</h3>
+      <div class="tp-category" id="categoryPreviewText"></div>
+      <div class="controls" style="justify-content:center; display:flex; gap:12px; flex-wrap:wrap; margin-top:18px;">
+        <button class="btn secondary" id="rerollCategoryBtn">สุ่มใหม่ 🎲</button>
+        <button class="btn" id="beginRoundBtn">เริ่มรอบ →</button>
       </div>
     </div>
 
