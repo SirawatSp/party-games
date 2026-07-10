@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>รู้ไหมใครสั่ง — เกมทายเมนู</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <div class="brand"><span class="dot">●</span> วงกำลังจะเหงา</div>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--gold); color:#2e2200;">10 · เกมทายเมนู</span>
+    <h1>รู้ไหมใครสั่ง</h1>
+    <p>เล่นตอนไปกินข้าวกับเพื่อน เปิดเมนูร้านวางกลางโต๊ะ แล้วส่งมือถือวนให้แต่ละคนพิมพ์ชื่อกับเมนูที่จะสั่งแบบลับ ๆ พอครบทุกคนแล้ว ระบบจะสลับลำดับแล้วเปิดเผยเมนูทีละจานเหมือนอาหารเสิร์ฟจริง ให้ทั้งวงช่วยกันทายว่าจานนี้ใครสั่ง!</p>
+  </section>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเล่น</h2>
+    <ol>
+      <li>เปิดเมนูร้านอาหารวางกลางโต๊ะให้ทุกคนดูได้</li>
+      <li>ส่งมือถือวนให้แต่ละคนพิมพ์ชื่อตัวเองกับเมนูที่จะสั่งแบบลับ ๆ ห้ามให้คนอื่นเห็นจอ</li>
+      <li>พิมพ์ครบทุกคนแล้วกด "ครบทุกคนแล้ว เริ่มเสิร์ฟ" ระบบจะสลับลำดับแล้วโชว์เมนูทีละจาน (ไม่บอกว่าใครสั่ง)</li>
+      <li>ให้ทั้งวงช่วยกันทายว่าจานนี้ใครสั่ง แล้วกด "เฉลย" ดูว่าใครสั่งจริง ๆ</li>
+      <li>กด "จานต่อไป" ไปเรื่อย ๆ จนครบทุกจาน</li>
+    </ol>
+  </div>
+
+  <div class="gn-stage reveal-up">
+    <div id="entryPanel">
+      <h3 class="wo-h3">คนที่ <span id="entryCount">1</span> — พิมพ์ชื่อกับเมนูที่จะสั่ง</h3>
+      <div class="wo-form">
+        <input type="text" id="nameInput" class="wo-input" placeholder="ชื่อของคุณ" maxlength="20">
+        <input type="text" id="dishInput" class="wo-input" placeholder="เมนูที่จะสั่ง" maxlength="40">
+      </div>
+      <div class="controls" style="justify-content:center; display:flex; margin-top:18px;">
+        <button class="btn" id="saveEntryBtn">บันทึกแล้วส่งต่อ 🔒</button>
+      </div>
+    </div>
+
+    <div id="passPanel" style="display:none;" class="gn-pass">
+      <div class="gn-pass-icon">🤫</div>
+      <div class="gn-pass-text">บันทึกแล้ว! ส่งมือถือให้คนถัดไป</div>
+      <div class="wo-count" id="passCount"></div>
+      <div class="controls" style="justify-content:center; display:flex; gap:12px; flex-wrap:wrap; margin-top:10px;">
+        <button class="btn" id="nextPersonBtn">พิมพ์เมนูคนต่อไป →</button>
+        <button class="btn secondary" id="startServeBtn" disabled>ครบทุกคนแล้ว เริ่มเสิร์ฟ 🍽</button>
+      </div>
+    </div>
+
+    <div id="revealPanel" style="display:none;">
+      <div class="wo-serve-label">🍽 จานนี้เสิร์ฟแล้ว</div>
+      <div class="gn-question" id="dishText"></div>
+      <div class="wo-hint">ทายกันว่าใครสั่ง!</div>
+      <div id="answerBox" class="gn-answer-box" style="display:none;"></div>
+      <div class="controls" style="justify-content:center; display:flex; gap:12px; flex-wrap:wrap; margin-top:18px;">
+        <button class="btn" id="revealNameBtn">เฉลย 🔍</button>
+        <button class="btn secondary" id="nextDishBtn" style="display:none;">จานต่อไป →</button>
+      </div>
+    </div>
+
+    <div id="donePanel" style="display:none;">
+      <h3 class="wo-h3">🎉 หมดเมนูแล้ว!</h3>
+      <p class="wo-hint">อิ่มกันหรือยัง? เริ่มรอบใหม่ได้เลยถ้าจะสั่งเพิ่ม</p>
+      <div class="controls" style="justify-content:center; display:flex; margin-top:14px;">
+        <button class="btn" id="resetBtn">เริ่มรอบใหม่ ↻</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>เล่นด้วยความรับผิดชอบ ดื่มพอดี ไม่ขับรถ</footer>
+</div>
+
+<script src="js/main.js"></script>
+<script src="js/who-ordered.js"></script>
+</body>
+</html>

@@ -14,6 +14,7 @@
   --teal: #1de9b6;
   --indigo: #5b6eff;
   --crimson: #ff3d54;
+  --gold: #ffd23f;
   --text: #f6eef9;
   --text-dim: #b6a3c2;
   --line: #3a2245;
@@ -81,7 +82,7 @@ a{color:inherit; text-decoration:none;}
   color:var(--lime);
   text-transform:uppercase;
 }
-.marquee span::after{content:"\00a0 \2726 \00a0 ปาร์ตี้ \00a0 \2726 \00a0 เกมวงเหล้า \00a0 \2726 \00a0 Insider \00a0 \2726 \00a0 เกมหมวดหมู่ \00a0 \2726 \00a0 She's a 10 but \00a0 \2726 \00a0 ทริเวียหลุดโลก \00a0 \2726 \00a0 Wavelength \00a0 \2726 \00a0 ใครแม่นสุด \00a0 \2726 \00a0 จัดแถวชีวิต \00a0 \2726 \00a0 ใครคือที่สุด \00a0 \2726 \00a0 ";}
+.marquee span::after{content:"\00a0 \2726 \00a0 ปาร์ตี้ \00a0 \2726 \00a0 เกมวงเหล้า \00a0 \2726 \00a0 Insider \00a0 \2726 \00a0 เกมหมวดหมู่ \00a0 \2726 \00a0 She's a 10 but \00a0 \2726 \00a0 ทริเวียหลุดโลก \00a0 \2726 \00a0 Wavelength \00a0 \2726 \00a0 ใครแม่นสุด \00a0 \2726 \00a0 จัดแถวชีวิต \00a0 \2726 \00a0 ใครคือที่สุด \00a0 \2726 \00a0 รู้ไหมใครสั่ง \00a0 \2726 \00a0 ";}
 @keyframes scroll{ 0%{transform:translateX(0);} 100%{transform:translateX(-100%);} }
 
 /* ---------- top nav ---------- */
@@ -214,6 +215,7 @@ a{color:inherit; text-decoration:none;}
 .chip-teal .glow{background:var(--teal);}
 .chip-indigo .glow{background:var(--indigo);}
 .chip-crimson .glow{background:var(--crimson);}
+.chip-gold .glow{background:var(--gold);}
 
 /* ---------- footer ---------- */
 footer{
@@ -572,6 +574,31 @@ footer{
   color:var(--amber); margin:4px 0 10px;
 }
 .gn-explain{color:var(--text-dim); font-size:14.5px; line-height:1.6;}
+
+/* ================= WHO ORDERED ================= */
+.wo-h3{font-size:19px; margin-bottom:18px; color:var(--gold);}
+.wo-form{display:flex; flex-direction:column; gap:12px; max-width:360px; margin:0 auto;}
+.wo-input{
+  font-family:'Sarabun', sans-serif; font-size:16px;
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:14px 16px;
+  color:var(--text);
+  outline:none;
+  text-align:center;
+}
+.wo-input:focus{border-color:var(--gold);}
+.wo-count{color:var(--text-dim); font-size:14.5px; margin-top:4px;}
+.wo-hint{color:var(--text-dim); font-size:14.5px; margin-top:4px;}
+.wo-serve-label{
+  font-family:'Kanit',sans-serif; font-weight:700; font-size:13px;
+  letter-spacing:.06em; color:var(--gold); margin-bottom:10px;
+}
+
+.gn-pass{padding:20px 0;}
+.gn-pass-icon{font-size:48px; margin-bottom:10px;}
+.gn-pass-text{color:var(--text-dim); font-size:15px;}
 
 /* scroll reveal */
 .reveal-up{opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s ease;}
