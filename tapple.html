@@ -28,6 +28,7 @@
       <li>ตอบถูกแล้วแตะตัวอักษรตัวนั้นเพื่อล็อกทิ้ง เปลี่ยนตาให้คนถัดไปทันที</li>
       <li>ใครตอบไม่ทันเวลา ตอบซ้ำตัวอักษรเดิม หรือทั้งวงเห็นตรงกันว่าคำตอบผิดกติกา ให้กดปุ่ม "ตกรอบ" ให้คนนั้น (ตกแค่รอบนี้ ไม่ตกทั้งเกม)</li>
       <li>เหลือผู้เล่นคนสุดท้ายในรอบ รับป้ายหมวด 1 ใบ แล้วเริ่มรอบใหม่ทันที ใครได้ครบ 3 ป้ายก่อนชนะเกม</li>
+      <li>เล่นแบบนั่งตรงข้ามกันได้! กด "เล่นเต็มจอ 2 ฝั่ง" วางมือถือราบไว้กลางโต๊ะ แต่ละฝั่งจะเห็นตัวอักษรหันหน้าเข้าหาตัวเองพอดี</li>
     </ol>
   </div>
 
@@ -54,8 +55,9 @@
 
       <div class="tp-letters" id="letterGrid"></div>
 
-      <div class="controls" style="justify-content:center; display:flex; margin-top:18px;">
+      <div class="controls" style="justify-content:center; display:flex; gap:12px; flex-wrap:wrap; margin-top:18px;">
         <button class="btn secondary" id="eliminateBtn">ตกรอบ ❌</button>
+        <button class="btn secondary" id="dualViewBtn">เล่นเต็มจอ 2 ฝั่ง 📱</button>
       </div>
     </div>
 
@@ -77,6 +79,26 @@
   </div>
 
   <footer>เล่นด้วยความรับผิดชอบ ดื่มพอดี ไม่ขับรถ</footer>
+</div>
+
+<div id="dualView" class="tp-dual" style="display:none;">
+  <div class="tp-dual-half tp-dual-top">
+    <div class="tp-dual-turn" id="dualTurnTop"></div>
+    <div class="tp-dual-category" id="dualCategoryTop"></div>
+    <div class="tp-dual-timer" id="dualTimerTop">10</div>
+    <div class="tp-dual-letters" id="dualLettersTop"></div>
+    <button class="btn secondary tp-dual-eliminate" id="dualEliminateTop">ตกรอบ ❌</button>
+  </div>
+
+  <button class="tp-dual-exit" id="exitDualViewBtn" aria-label="ออกจากเต็มจอ">✕</button>
+
+  <div class="tp-dual-half tp-dual-bottom">
+    <div class="tp-dual-turn" id="dualTurnBottom"></div>
+    <div class="tp-dual-category" id="dualCategoryBottom"></div>
+    <div class="tp-dual-timer" id="dualTimerBottom">10</div>
+    <div class="tp-dual-letters" id="dualLettersBottom"></div>
+    <button class="btn secondary tp-dual-eliminate" id="dualEliminateBottom">ตกรอบ ❌</button>
+  </div>
 </div>
 
 <script src="data/tapple-categories.js"></script>

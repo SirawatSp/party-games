@@ -18,11 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const setupError = document.getElementById("setupError");
 
   const scoreboard = document.getElementById("scoreboard");
-  const categoryText = document.getElementById("categoryText");
-  const turnLabel = document.getElementById("turnLabel");
-  const timerNum = document.getElementById("timerNum");
-  const letterGrid = document.getElementById("letterGrid");
   const eliminateBtn = document.getElementById("eliminateBtn");
+  const dualViewBtn = document.getElementById("dualViewBtn");
 
   const roundEndTitle = document.getElementById("roundEndTitle");
   const roundEndScoreboard = document.getElementById("roundEndScoreboard");
@@ -31,6 +28,36 @@ document.addEventListener("DOMContentLoaded", () => {
   const gameEndTitle = document.getElementById("gameEndTitle");
   const gameEndHint = document.getElementById("gameEndHint");
   const resetGameBtn = document.getElementById("resetGameBtn");
+
+  const dualView = document.getElementById("dualView");
+  const exitDualViewBtn = document.getElementById("exitDualViewBtn");
+
+  // Each entry: { category, turn, timer, letters } elements that must always show the same state.
+  const categoryEls = [
+    document.getElementById("categoryText"),
+    document.getElementById("dualCategoryTop"),
+    document.getElementById("dualCategoryBottom")
+  ];
+  const turnEls = [
+    document.getElementById("turnLabel"),
+    document.getElementById("dualTurnTop"),
+    document.getElementById("dualTurnBottom")
+  ];
+  const timerEls = [
+    document.getElementById("timerNum"),
+    document.getElementById("dualTimerTop"),
+    document.getElementById("dualTimerBottom")
+  ];
+  const letterGridContainers = [
+    document.getElementById("letterGrid"),
+    document.getElementById("dualLettersTop"),
+    document.getElementById("dualLettersBottom")
+  ];
+  const eliminateBtns = [
+    eliminateBtn,
+    document.getElementById("dualEliminateTop"),
+    document.getElementById("dualEliminateBottom")
+  ];
 
   let players = [];
   let usedCategoryIndexes = [];
@@ -97,17 +124,23 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function renderLetterGrid() {
-    letterGrid.innerHTML = "";
-    TAPPLE_LETTERS.forEach((letter) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "tp-letter" + (lockedLetters.has(letter) ? " used" : "");
-      btn.textContent = letter;
-      btn.disabled = lockedLetters.has(letter);
-      btn.addEventListener("click", () => handleLetterTap(letter));
-      letterGrid.appendChild(btn);
+  function renderLetterGrids() {
+    letterGridContainers.forEach((container) => {
+      container.innerHTML = "";
+      TAPPLE_LETTERS.forEach((letter) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "tp-letter" + (lockedLetters.has(letter) ? " used" : "");
+        btn.textContent = letter;
+        btn.disabled = lockedLetters.has(letter);
+        btn.addEventListener("click", () => handleLetterTap(letter));
+        container.appendChild(btn);
+      });
     });
+  }
+
+  function setAllText(els, text) {
+    els.forEach((el) => { el.textContent = text; });
   }
 
   function stopTimer() {
@@ -119,17 +152,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function startTurn() {
     secondsLeft = TURN_SECONDS;
-    timerNum.textContent = secondsLeft;
-    timerNum.classList.remove("low");
+    setAllText(timerEls, secondsLeft);
+    timerEls.forEach((el) => el.classList.remove("low"));
     const playerIdx = roundAlive[currentTurnIdx];
-    turnLabel.textContent = "ตาของ " + players[playerIdx].name;
+    setAllText(turnEls, "ตาของ " + players[playerIdx].name);
     renderScoreboard(scoreboard);
 
     stopTimer();
     timerInterval = setInterval(() => {
       secondsLeft--;
-      timerNum.textContent = secondsLeft;
-      if (secondsLeft <= 3) timerNum.classList.add("low");
+      setAllText(timerEls, secondsLeft);
+      if (secondsLeft <= 3) timerEls.forEach((el) => el.classList.add("low"));
       if (secondsLeft <= 0) {
         stopTimer();
         eliminateCurrent();
@@ -139,11 +172,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function startRound() {
     const category = pickCategory();
-    categoryText.textContent = category;
+    setAllText(categoryEls, category);
     lockedLetters = new Set();
     roundAlive = players.map((_, i) => i);
     currentTurnIdx = 0;
-    renderLetterGrid();
+    renderLetterGrids();
     setupPanel.style.display = "none";
     roundEndPanel.style.display = "none";
     gameEndPanel.style.display = "none";
@@ -154,7 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function handleLetterTap(letter) {
     if (lockedLetters.has(letter)) return;
     lockedLetters.add(letter);
-    renderLetterGrid();
+    renderLetterGrids();
     stopTimer();
 
     if (lockedLetters.size >= TAPPLE_LETTERS.length) {
@@ -176,14 +209,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  eliminateBtn.addEventListener("click", () => {
-    stopTimer();
-    eliminateCurrent();
+  eliminateBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      stopTimer();
+      eliminateCurrent();
+    });
   });
 
   function endRound(winnerIdx) {
     stopTimer();
     gamePanel.style.display = "none";
+    exitDualView();
 
     if (winnerIdx === null) {
       roundEndTitle.textContent = "ตัวอักษรหมด! รอบนี้ไม่มีใครได้ป้าย";
@@ -213,6 +249,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   resetGameBtn.addEventListener("click", () => {
     stopTimer();
+    exitDualView();
     players = [];
     usedCategoryIndexes = [];
     renderChips();
@@ -220,6 +257,27 @@ document.addEventListener("DOMContentLoaded", () => {
     roundEndPanel.style.display = "none";
     gameEndPanel.style.display = "none";
     setupPanel.style.display = "";
+  });
+
+  function enterDualView() {
+    dualView.style.display = "flex";
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    }
+  }
+
+  function exitDualView() {
+    if (dualView.style.display === "none") return;
+    dualView.style.display = "none";
+    if (document.fullscreenElement && document.exitFullscreen) {
+      document.exitFullscreen().catch(() => {});
+    }
+  }
+
+  dualViewBtn.addEventListener("click", enterDualView);
+  exitDualViewBtn.addEventListener("click", exitDualView);
+  document.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement) dualView.style.display = "none";
   });
 
   renderChips();
