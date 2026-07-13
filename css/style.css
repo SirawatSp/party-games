@@ -86,7 +86,7 @@ a{color:inherit; text-decoration:none;}
   color:var(--lime);
   text-transform:uppercase;
 }
-.marquee span::after{content:"\00a0 \2726 \00a0 ปาร์ตี้ \00a0 \2726 \00a0 เกมวงเหล้า \00a0 \2726 \00a0 Insider \00a0 \2726 \00a0 เกมหมวดหมู่ \00a0 \2726 \00a0 She's a 10 but \00a0 \2726 \00a0 ทริเวียหลุดโลก \00a0 \2726 \00a0 Wavelength \00a0 \2726 \00a0 ใครแม่นสุด \00a0 \2726 \00a0 จัดแถวชีวิต \00a0 \2726 \00a0 ใครคือที่สุด \00a0 \2726 \00a0 รู้ไหมใครสั่ง \00a0 \2726 \00a0 สปีดตัวอักษร \00a0 \2726 \00a0 Flash Quiz \00a0 \2726 \00a0 ถามให้ลึก \00a0 \2726 \00a0 ";}
+.marquee span::after{content:"\00a0 \2726 \00a0 ปาร์ตี้ \00a0 \2726 \00a0 เกมวงเหล้า \00a0 \2726 \00a0 Insider \00a0 \2726 \00a0 เกมหมวดหมู่ \00a0 \2726 \00a0 She's a 10 but \00a0 \2726 \00a0 ทริเวียหลุดโลก \00a0 \2726 \00a0 Wavelength \00a0 \2726 \00a0 ใครแม่นสุด \00a0 \2726 \00a0 จัดแถวชีวิต \00a0 \2726 \00a0 ใครคือที่สุด \00a0 \2726 \00a0 รู้ไหมใครสั่ง \00a0 \2726 \00a0 สปีดตัวอักษร \00a0 \2726 \00a0 Flash Quiz \00a0 \2726 \00a0 ถามให้ลึก \00a0 \2726 \00a0 This or That \00a0 \2726 \00a0 ";}
 @keyframes scroll{ 0%{transform:translateX(0);} 100%{transform:translateX(-100%);} }
 
 /* ---------- top nav ---------- */
@@ -958,6 +958,65 @@ html.tp-no-scroll, html.tp-no-scroll body{overflow:hidden; height:100%; overscro
   width:40px; height:40px; border-radius:50%;
   background:var(--bg-card); border:1px solid var(--line); color:var(--text-dim);
   font-size:16px; cursor:pointer;
+}
+
+/* ================= THIS OR THAT ================= */
+.tot-stage{
+  background:var(--bg-card);
+  border:1px solid var(--line);
+  border-radius:28px;
+  padding:36px 24px;
+  margin:26px 0 30px;
+  text-align:center;
+}
+.tot-cat{
+  display:inline-block;
+  font-family:'Kanit',sans-serif; font-weight:700; font-size:12.5px;
+  letter-spacing:.1em; text-transform:uppercase;
+  color:var(--mint);
+  background:rgba(52,211,153,.12);
+  padding:5px 14px; border-radius:999px;
+  margin-bottom:22px;
+}
+.tot-options{
+  display:flex; align-items:stretch; justify-content:center; gap:16px;
+}
+.tot-option{
+  flex:1; max-width:260px;
+  min-height:120px;
+  display:flex; align-items:center; justify-content:center;
+  padding:20px 18px;
+  border-radius:20px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.02);
+  cursor:pointer;
+  font-family:'Kanit',sans-serif; font-weight:700;
+  font-size:clamp(16px,3.4vw,20px);
+  color:var(--text);
+  line-height:1.4;
+  transition:border-color .2s, background .2s, box-shadow .2s, transform .15s;
+}
+.tot-option:hover{border-color:var(--mint); box-shadow:0 0 24px -8px rgba(52,211,153,.4);}
+.tot-option:active{transform:scale(.97);}
+.tot-option.chosen{
+  border-color:var(--rose);
+  background:rgba(251,113,133,.12);
+  box-shadow:0 0 28px -8px rgba(251,113,133,.55);
+}
+.tot-vs{
+  align-self:center;
+  font-family:'Kanit',sans-serif; font-weight:800; font-size:15px;
+  color:var(--text-dim); padding:0 4px;
+}
+@media (max-width:520px){
+  .tot-options{flex-direction:column; align-items:center;}
+  .tot-option{max-width:100%; width:100%;}
+  .tot-vs{padding:2px 0;}
+}
+.tot-picked-label{
+  margin-top:20px;
+  font-family:'Kanit',sans-serif; font-weight:600; font-size:14px;
+  color:var(--rose); min-height:1.4em;
 }
 
 /* scroll reveal */

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>This or That — เลือกอย่างใดอย่างหนึ่ง</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <div class="brand"><span class="dot">●</span> วงกำลังจะเหงา</div>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--rose); color:#3a0410;">14 · เลือกอย่างใดอย่างหนึ่ง</span>
+    <h1>This or That</h1>
+    <p>สุ่มคู่ตัวเลือกออกมา แล้วให้ทุกคนในวงเลือกฝั่งพร้อมกัน ใครเลือกเหมือนกันก็เข้าใจกันไว คนไหนเลือกต่างก็เถียงกันมันส์ ๆ ได้เลย มีคลังกว่า 500 คู่หลายหมวดให้สุ่มเล่น</p>
+  </section>
+
+  <div class="panel reveal-up" id="rulesTot">
+    <h2>วิธีเล่น · This or That</h2>
+    <ol>
+      <li>เลือกหมวดที่อยากเล่น หรือกด "ทั้งหมด" ให้สุ่มคละหมวด</li>
+      <li>อ่านตัวเลือกทั้งสองฝั่งออกเสียงดัง ๆ ให้วงฟัง</li>
+      <li>นับ 1-2-3 แล้วให้ทุกคนชี้หรือพูดพร้อมกันว่าเลือกฝั่งไหน</li>
+      <li>ใครอยากถามเหตุผลเพื่อนที่เลือกไม่เหมือนกันก็คุยกันต่อได้เลย ไม่มีคำตอบถูกผิด</li>
+      <li>กด "คู่ต่อไป" เพื่อสุ่มคู่ใหม่ เล่นได้เรื่อย ๆ ไม่มีจบ</li>
+    </ol>
+  </div>
+
+  <div class="tags reveal-up" id="totTags">
+    <span class="tag active" data-cat="all">ทั้งหมด</span>
+    <span class="tag" data-cat="food">อาหาร 🍔</span>
+    <span class="tag" data-cat="lifestyle">ไลฟ์สไตล์ 🛋️</span>
+    <span class="tag" data-cat="entertain">บันเทิง 🎬</span>
+    <span class="tag" data-cat="travel">ท่องเที่ยว ✈️</span>
+    <span class="tag" data-cat="tech">เทคโนโลยี 📱</span>
+    <span class="tag" data-cat="fantasy">แฟนตาซี 🪄</span>
+    <span class="tag" data-cat="love">ความรัก 💕</span>
+    <span class="tag" data-cat="party">ปาร์ตี้ 🎉</span>
+    <span class="tag" data-cat="sport">กีฬา ⚽</span>
+    <span class="tag" data-cat="animal">สัตว์/ธรรมชาติ 🐾</span>
+    <span class="tag" data-cat="work">งาน/เรียน 💼</span>
+    <span class="tag" data-cat="weird">มันส์ๆ 🤪</span>
+  </div>
+
+  <div class="tot-stage reveal-up">
+    <div class="tot-cat" id="totCatLabel">หมวด</div>
+    <div class="tot-options" id="totOptions">
+      <button type="button" class="tot-option" id="totOptionA"></button>
+      <div class="tot-vs">หรือ</div>
+      <button type="button" class="tot-option" id="totOptionB"></button>
+    </div>
+    <div class="tot-picked-label" id="totPickedLabel"></div>
+  </div>
+
+  <div class="controls" style="justify-content:center; display:flex; margin-bottom:60px;">
+    <button class="btn" id="totNextBtn">คู่ต่อไป →</button>
+  </div>
+
+  <footer>เล่นเพื่อความสนุก ไม่มีคำตอบถูกผิด แค่เปิดบทสนทนาในวงเพื่อน 😄</footer>
+</div>
+
+<script src="data/thisorthat.js"></script>
+<script src="js/main.js"></script>
+<script src="js/thisorthat.js"></script>
+</body>
+</html>
