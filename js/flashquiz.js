@@ -15,15 +15,36 @@ document.addEventListener("DOMContentLoaded", () => {
   // ---------- Flash Quiz (flip-card review mode) ----------
   const cardHolder = document.getElementById("cardHolder");
   const nextBtn = document.getElementById("nextBtn");
+  const quizScoreText = document.getElementById("quizScoreText");
+  const quizScoreResetBtn = document.getElementById("quizScoreResetBtn");
 
   let activeTag = "all";
   let lastIndex = -1;
   let current = null;
   let revealed = false;
+  let quizCorrect = 0;
+  let quizTotal = 0;
 
   function pool() {
     return activeTag === "all" ? FLASHQUIZ_LIST : FLASHQUIZ_LIST.filter((q) => q.tag === activeTag);
   }
+
+  function updateQuizScoreText() {
+    quizScoreText.textContent = "✅ ตอบถูก " + quizCorrect + " จาก " + quizTotal + " ข้อ";
+  }
+
+  function judgeQuiz(correct) {
+    quizTotal++;
+    if (correct) quizCorrect++;
+    updateQuizScoreText();
+    next();
+  }
+
+  quizScoreResetBtn.addEventListener("click", () => {
+    quizCorrect = 0;
+    quizTotal = 0;
+    updateQuizScoreText();
+  });
 
   function renderCard() {
     cardHolder.innerHTML = "";
@@ -34,7 +55,11 @@ document.addEventListener("DOMContentLoaded", () => {
       '<div class="statement">' + current.question + "</div>" +
       (revealed
         ? '<div class="verdict qa">คำตอบ</div>' +
-          '<div class="explain qa-answer">' + current.answer + "</div>"
+          '<div class="explain qa-answer">' + current.answer + "</div>" +
+          '<div class="fq-judge quiz-judge">' +
+            '<button class="btn fq-judge-correct" id="quizCorrectBtn">ตอบถูก ✓</button>' +
+            '<button class="btn secondary fq-judge-wrong" id="quizWrongBtn">ตอบผิด ✗</button>' +
+          "</div>"
         : '<button class="btn reveal-btn" id="revealBtn">เฉลย!</button>');
     cardHolder.appendChild(card);
 
@@ -43,6 +68,9 @@ document.addEventListener("DOMContentLoaded", () => {
         revealed = true;
         renderCard();
       });
+    } else {
+      document.getElementById("quizCorrectBtn").addEventListener("click", () => judgeQuiz(true));
+      document.getElementById("quizWrongBtn").addEventListener("click", () => judgeQuiz(false));
     }
   }
 
@@ -79,6 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const battleTurnLabel = document.getElementById("battleTurnLabel");
   const battleEndTitle = document.getElementById("battleEndTitle");
   const battleEndHint = document.getElementById("battleEndHint");
+  const battleEndScore = document.getElementById("battleEndScore");
   const resetBattleBtn = document.getElementById("resetBattleBtn");
 
   const fqDualView = document.getElementById("fqDualView");
@@ -102,13 +131,20 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("dualRevealTop"),
     document.getElementById("dualRevealBottom")
   ];
+  const judgeRowEls = [
+    document.getElementById("battleJudgeRow"),
+    document.getElementById("dualJudgeTop"),
+    document.getElementById("dualJudgeBottom")
+  ];
   const side0TimeEls = [document.getElementById("clockTimeA"), document.getElementById("dualClockTimeBottom")];
   const side1TimeEls = [document.getElementById("clockTimeB"), document.getElementById("dualClockTimeTop")];
+  const side0ScoreEls = [document.getElementById("clockScoreA"), document.getElementById("dualClockScoreBottom")];
+  const side1ScoreEls = [document.getElementById("clockScoreB"), document.getElementById("dualClockScoreTop")];
   // In fullscreen dual view the whole half-screen is the tap target, not just the clock box.
   const side0ClockEls = [document.getElementById("clockA"), document.getElementById("dualClockBottom"), document.getElementById("dualHalfBottom")];
   const side1ClockEls = [document.getElementById("clockB"), document.getElementById("dualClockTop"), document.getElementById("dualHalfTop")];
 
-  let sides = [{ timeLeft: TIME_BANK_SECONDS }, { timeLeft: TIME_BANK_SECONDS }];
+  let sides = [{ timeLeft: TIME_BANK_SECONDS, correct: 0 }, { timeLeft: TIME_BANK_SECONDS, correct: 0 }];
   let usedBattleIndexes = [];
   let currentSideIdx = 0;
   let currentBattleQuestion = null;
@@ -135,6 +171,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderClocks() {
     side0TimeEls.forEach((el) => { el.textContent = fmtClock(sides[0].timeLeft); });
     side1TimeEls.forEach((el) => { el.textContent = fmtClock(sides[1].timeLeft); });
+    side0ScoreEls.forEach((el) => { el.textContent = "ถูก " + sides[0].correct + " ข้อ"; });
+    side1ScoreEls.forEach((el) => { el.textContent = "ถูก " + sides[1].correct + " ข้อ"; });
     side0ClockEls.forEach((el) => {
       el.classList.toggle("active", currentSideIdx === 0);
       el.classList.toggle("low", sides[0].timeLeft <= 10);
@@ -158,6 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
     questionEls.forEach((el) => { el.textContent = currentBattleQuestion.question; });
     answerEls.forEach((el) => { el.style.display = "none"; });
     revealBtnEls.forEach((el) => { el.style.display = ""; });
+    judgeRowEls.forEach((el) => { el.style.display = "none"; });
     battleAnswerRevealed = false;
     renderClocks();
 
@@ -179,6 +218,8 @@ document.addEventListener("DOMContentLoaded", () => {
     exitFqDualView();
     battleEndTitle.textContent = "🏆 ฝั่ง " + (winnerIdx + 1) + " ชนะการดวล!";
     battleEndHint.textContent = "เพราะเวลาของฝั่ง " + (loserIdx + 1) + " หมดก่อน";
+    battleEndScore.textContent =
+      "ฝั่ง 1 ตอบถูก " + sides[0].correct + " ข้อ  •  ฝั่ง 2 ตอบถูก " + sides[1].correct + " ข้อ";
     battleEndPanel.style.display = "";
   }
 
@@ -191,6 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
         '<div class="fq-answer-num">' + currentBattleQuestion.answer + "</div>";
       el.style.display = "";
     });
+    judgeRowEls.forEach((el) => { el.style.display = ""; });
   }
 
   revealBtnEls.forEach((btn) => btn.addEventListener("click", (e) => {
@@ -198,18 +240,38 @@ document.addEventListener("DOMContentLoaded", () => {
     revealBattleAnswer();
   }));
 
-  function switchSide(sideIdx) {
-    if (sideIdx !== currentSideIdx) return;
+  function advanceTurn() {
     stopBattleTimer();
     currentSideIdx = 1 - currentSideIdx;
     startBattleTurn();
+  }
+
+  function judgeBattleAnswer(correct) {
+    if (correct) sides[currentSideIdx].correct++;
+    advanceTurn();
+  }
+
+  judgeRowEls.forEach((row) => {
+    row.querySelector(".fq-judge-correct").addEventListener("click", (e) => {
+      e.stopPropagation();
+      judgeBattleAnswer(true);
+    });
+    row.querySelector(".fq-judge-wrong").addEventListener("click", (e) => {
+      e.stopPropagation();
+      judgeBattleAnswer(false);
+    });
+  });
+
+  function switchSide(sideIdx) {
+    if (sideIdx !== currentSideIdx) return;
+    advanceTurn();
   }
 
   side0ClockEls.forEach((el) => el.addEventListener("click", () => switchSide(0)));
   side1ClockEls.forEach((el) => el.addEventListener("click", () => switchSide(1)));
 
   startBattleBtn.addEventListener("click", () => {
-    sides = [{ timeLeft: TIME_BANK_SECONDS }, { timeLeft: TIME_BANK_SECONDS }];
+    sides = [{ timeLeft: TIME_BANK_SECONDS, correct: 0 }, { timeLeft: TIME_BANK_SECONDS, correct: 0 }];
     currentSideIdx = 0;
     usedBattleIndexes = [];
     battleIntroPanel.style.display = "none";

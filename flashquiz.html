@@ -30,7 +30,7 @@
     <ol>
       <li>กดสุ่มคำถามด้านล่าง อ่านคำถามให้วงฟัง</li>
       <li>ให้ทุกคนช่วยกันตอบออกมาดัง ๆ ไม่จำกัดเวลา คุยถกกันได้เต็มที่</li>
-      <li>กดปุ่ม "เฉลย!" เพื่อดูคำตอบจริง แล้วกด "ข้อต่อไป" เล่นกันต่อได้เรื่อย ๆ</li>
+      <li>กดปุ่ม "เฉลย!" เพื่อดูคำตอบจริง แล้วกด "ตอบถูก ✓" หรือ "ตอบผิด ✗" — ระบบจะนับคะแนนสะสมและสุ่มข้อใหม่ให้เลย (หรือกด "สุ่มข้อต่อไป" เพื่อข้ามโดยไม่นับ)</li>
     </ol>
   </div>
 
@@ -39,8 +39,8 @@
     <ol>
       <li>กด "เริ่มดวล" — แต่ละฝั่งจะได้เวลาสะสมฝั่งละ 60 วินาที เหมือนนาฬิกาจับเวลาหมากรุก ไม่ต้องใส่ชื่อผู้เล่น</li>
       <li>นาฬิกาฝั่งไหนกำลังเดินอยู่คือตาของฝั่งนั้น อ่านคำถามแล้วช่วยกันตอบ เวลาจะเดินไปเรื่อย ๆ</li>
-      <li>ตอบเสร็จแล้วแตะที่นาฬิกาฝั่งตัวเองเพื่อสลับตาไปอีกฝั่งพร้อมคำถามใหม่ (กด "เฉลย 🔍" ดูคำตอบได้ก่อนสลับ)</li>
-      <li>ฝั่งไหนเวลาหมดก่อนแพ้ทันที ยิ่งตอบเร็วยิ่งเหลือเวลาไปกดดันอีกฝั่ง!</li>
+      <li>ตอบเสร็จแล้วแตะที่นาฬิกาฝั่งตัวเองเพื่อสลับตาไปอีกฝั่งพร้อมคำถามใหม่ — หรือกด "เฉลย 🔍" ดูคำตอบ แล้วกด "ถูก ✓" / "ผิด ✗" เพื่อนับคะแนนพร้อมสลับตาให้เลย</li>
+      <li>ฝั่งไหนเวลาหมดก่อนแพ้ทันที ยิ่งตอบเร็วยิ่งเหลือเวลาไปกดดันอีกฝั่ง! ตอนจบจะสรุปให้ด้วยว่าแต่ละฝั่งตอบถูกไปกี่ข้อ</li>
       <li>เล่นแบบนั่งตรงข้ามกันได้ — กด "เล่นเต็มจอ" วางมือถือราบไว้กลางโต๊ะ อีกฝั่งจะเห็นนาฬิกาและคำถามหันหน้าเข้าหาตัวเองพอดี ในโหมดนี้แตะตรงไหนก็ได้ในครึ่งจอฝั่งตัวเองเพื่อสลับตา</li>
     </ol>
   </div>
@@ -60,6 +60,10 @@
   <div id="quizPanel">
     <div class="deck reveal-up">
       <div id="cardHolder"></div>
+    </div>
+    <div class="fq-score">
+      <span id="quizScoreText">✅ ตอบถูก 0 จาก 0 ข้อ</span>
+      <button class="fq-score-reset" id="quizScoreResetBtn">เริ่มนับใหม่ ↻</button>
     </div>
     <div class="controls" style="justify-content:center; display:flex; margin-bottom:60px;">
       <button class="btn" id="nextBtn">สุ่มข้อต่อไป →</button>
@@ -81,16 +85,22 @@
           <button type="button" class="fq-clock" id="clockA">
             <div class="fq-clock-name">ฝั่ง 1</div>
             <div class="fq-clock-time" id="clockTimeA">1:00</div>
+            <div class="fq-clock-score" id="clockScoreA">ถูก 0 ข้อ</div>
           </button>
           <div class="fq-clock-vs">⏱</div>
           <button type="button" class="fq-clock" id="clockB">
             <div class="fq-clock-name">ฝั่ง 2</div>
             <div class="fq-clock-time" id="clockTimeB">1:00</div>
+            <div class="fq-clock-score" id="clockScoreB">ถูก 0 ข้อ</div>
           </button>
         </div>
         <div class="fq-turn" id="battleTurnLabel"></div>
         <div class="fq-question" id="battleQuestionText"></div>
         <div id="battleAnswerBox" class="fq-answer-box" style="display:none;"></div>
+        <div class="fq-judge" id="battleJudgeRow" style="display:none;">
+          <button class="btn fq-judge-correct">ถูก ✓ สลับตา</button>
+          <button class="btn secondary fq-judge-wrong">ผิด ✗ สลับตา</button>
+        </div>
         <div class="controls" style="justify-content:center; display:flex; gap:12px; flex-wrap:wrap; margin-top:18px;">
           <button class="btn secondary" id="revealBattleAnswerBtn">เฉลย 🔍</button>
           <button class="btn secondary" id="fqDualViewBtn">เล่นเต็มจอ 📱</button>
@@ -100,6 +110,7 @@
       <div id="battleEndPanel" style="display:none;">
         <h3 class="fq-h3" id="battleEndTitle">🏆 ชนะการดวล!</h3>
         <p class="fq-hint" id="battleEndHint">เวลาของอีกฝั่งหมดก่อน</p>
+        <p class="fq-end-score" id="battleEndScore"></p>
         <div class="controls" style="justify-content:center; display:flex; margin-top:14px;">
           <button class="btn" id="resetBattleBtn">เริ่มดวลใหม่ ↻</button>
         </div>
@@ -115,10 +126,15 @@
     <div class="fq-dual-clock" id="dualClockTop">
       <div class="fq-dual-clock-name">ฝั่ง 2</div>
       <div class="fq-dual-clock-time" id="dualClockTimeTop">1:00</div>
+      <div class="fq-clock-score" id="dualClockScoreTop">ถูก 0 ข้อ</div>
     </div>
     <div class="fq-dual-question" id="dualQuestionTop"></div>
     <div id="dualAnswerTop" class="fq-dual-answer" style="display:none;"></div>
     <button class="btn secondary fq-dual-reveal" id="dualRevealTop">เฉลย 🔍</button>
+    <div class="fq-judge fq-dual-judge" id="dualJudgeTop" style="display:none;">
+      <button class="btn fq-judge-correct">ถูก ✓</button>
+      <button class="btn secondary fq-judge-wrong">ผิด ✗</button>
+    </div>
     <div class="fq-dual-tap-hint">ตอบเสร็จ แตะจอฝั่งตัวเองเพื่อสลับตา</div>
   </div>
 
@@ -128,10 +144,15 @@
     <div class="fq-dual-clock" id="dualClockBottom">
       <div class="fq-dual-clock-name">ฝั่ง 1</div>
       <div class="fq-dual-clock-time" id="dualClockTimeBottom">1:00</div>
+      <div class="fq-clock-score" id="dualClockScoreBottom">ถูก 0 ข้อ</div>
     </div>
     <div class="fq-dual-question" id="dualQuestionBottom"></div>
     <div id="dualAnswerBottom" class="fq-dual-answer" style="display:none;"></div>
     <button class="btn secondary fq-dual-reveal" id="dualRevealBottom">เฉลย 🔍</button>
+    <div class="fq-judge fq-dual-judge" id="dualJudgeBottom" style="display:none;">
+      <button class="btn fq-judge-correct">ถูก ✓</button>
+      <button class="btn secondary fq-judge-wrong">ผิด ✗</button>
+    </div>
     <div class="fq-dual-tap-hint">ตอบเสร็จ แตะจอฝั่งตัวเองเพื่อสลับตา</div>
   </div>
 </div>

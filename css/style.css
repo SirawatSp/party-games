@@ -839,6 +839,35 @@ html.tp-no-scroll, html.tp-no-scroll body{overflow:hidden; height:100%; overscro
 }
 .fq-clock.low .fq-clock-time{color:var(--pink);}
 .fq-clock-vs{color:var(--text-dim); font-size:20px;}
+.fq-clock-score{
+  font-family:'Kanit',sans-serif; font-weight:600; font-size:12px;
+  color:var(--lime); margin-top:2px;
+}
+
+.fq-score{
+  display:flex; align-items:center; justify-content:center; gap:14px;
+  flex-wrap:wrap; margin:18px 0 22px; text-align:center;
+}
+.fq-score span{
+  font-family:'Kanit',sans-serif; font-weight:700; font-size:15px; color:var(--lime);
+}
+.fq-score-reset{
+  font-family:'Kanit',sans-serif; font-weight:600; font-size:12.5px;
+  color:var(--text-dim); background:none; border:1px solid var(--line);
+  border-radius:999px; padding:6px 14px; cursor:pointer; transition:border-color .2s, color .2s;
+}
+.fq-score-reset:hover{border-color:var(--lime); color:var(--lime);}
+
+.fq-judge{
+  display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-top:16px;
+}
+.fq-judge-correct{background:var(--lime); color:#182600; box-shadow:none;}
+.fq-judge-wrong{border-color:var(--pink); color:var(--pink);}
+.fq-judge-wrong:hover{border-color:var(--pink); color:var(--pink); background:rgba(255,47,135,.08);}
+.fq-end-score{
+  font-family:'Kanit',sans-serif; font-weight:600; font-size:14.5px;
+  color:var(--text-dim); margin-top:6px;
+}
 
 .fq-turn{color:var(--text-dim); font-family:'Kanit',sans-serif; font-weight:700; font-size:15px; margin-bottom:14px;}
 .fq-question{
@@ -911,6 +940,8 @@ html.tp-no-scroll, html.tp-no-scroll body{overflow:hidden; height:100%; overscro
 .fq-dual-answer .fq-answer-label{font-size:11px;}
 .fq-dual-answer .fq-answer-num{font-size:clamp(17px,4.6vw,24px); margin:2px 0 0;}
 .fq-dual-reveal{font-size:12.5px; padding:8px 18px;}
+.fq-dual-judge{gap:10px; margin-top:0;}
+.fq-dual-judge button{font-size:12.5px; padding:8px 16px; cursor:pointer;}
 .fq-dual-tap-hint{
   font-family:'Kanit',sans-serif; font-weight:600;
   font-size:11px; color:var(--text-dim); opacity:.75;
