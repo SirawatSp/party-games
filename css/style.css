@@ -16,6 +16,7 @@
   --crimson: #ff3d54;
   --gold: #ffd23f;
   --sky: #38bdf8;
+  --coral: #ff6f61;
   --text: #f6eef9;
   --text-dim: #b6a3c2;
   --line: #3a2245;
@@ -83,7 +84,7 @@ a{color:inherit; text-decoration:none;}
   color:var(--lime);
   text-transform:uppercase;
 }
-.marquee span::after{content:"\00a0 \2726 \00a0 ปาร์ตี้ \00a0 \2726 \00a0 เกมวงเหล้า \00a0 \2726 \00a0 Insider \00a0 \2726 \00a0 เกมหมวดหมู่ \00a0 \2726 \00a0 She's a 10 but \00a0 \2726 \00a0 ทริเวียหลุดโลก \00a0 \2726 \00a0 Wavelength \00a0 \2726 \00a0 ใครแม่นสุด \00a0 \2726 \00a0 จัดแถวชีวิต \00a0 \2726 \00a0 ใครคือที่สุด \00a0 \2726 \00a0 รู้ไหมใครสั่ง \00a0 \2726 \00a0 สปีดตัวอักษร \00a0 \2726 \00a0 ";}
+.marquee span::after{content:"\00a0 \2726 \00a0 ปาร์ตี้ \00a0 \2726 \00a0 เกมวงเหล้า \00a0 \2726 \00a0 Insider \00a0 \2726 \00a0 เกมหมวดหมู่ \00a0 \2726 \00a0 She's a 10 but \00a0 \2726 \00a0 ทริเวียหลุดโลก \00a0 \2726 \00a0 Wavelength \00a0 \2726 \00a0 ใครแม่นสุด \00a0 \2726 \00a0 จัดแถวชีวิต \00a0 \2726 \00a0 ใครคือที่สุด \00a0 \2726 \00a0 รู้ไหมใครสั่ง \00a0 \2726 \00a0 สปีดตัวอักษร \00a0 \2726 \00a0 Flash Quiz \00a0 \2726 \00a0 ";}
 @keyframes scroll{ 0%{transform:translateX(0);} 100%{transform:translateX(-100%);} }
 
 /* ---------- top nav ---------- */
@@ -218,6 +219,7 @@ a{color:inherit; text-decoration:none;}
 .chip-crimson .glow{background:var(--crimson);}
 .chip-gold .glow{background:var(--gold);}
 .chip-sky .glow{background:var(--sky);}
+.chip-coral .glow{background:var(--coral);}
 
 /* ---------- footer ---------- */
 footer{
@@ -792,6 +794,84 @@ html.tp-no-scroll, html.tp-no-scroll body{overflow:hidden; height:100%; overscro
   width:44px; height:44px; border-radius:50%;
   background:var(--bg-card); border:1px solid var(--line); color:var(--text);
   font-size:18px; cursor:pointer;
+}
+
+/* ================= FLASH QUIZ BATTLE ================= */
+.fq-stage{
+  background:var(--bg-card);
+  border:1px solid var(--line);
+  border-radius:28px;
+  padding:32px 24px;
+  margin:26px 0 50px;
+  text-align:center;
+}
+.fq-h3{font-size:19px; margin-bottom:18px; color:var(--coral);}
+.fq-hint{color:var(--text-dim); font-size:14.5px; margin-top:4px;}
+.fq-add-row{display:flex; gap:10px; max-width:420px; margin:0 auto;}
+.fq-input{
+  flex:1;
+  font-family:'Sarabun', sans-serif; font-size:16px;
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:14px 16px;
+  color:var(--text);
+  outline:none;
+}
+.fq-input:focus{border-color:var(--coral);}
+.fq-error{color:var(--pink); font-size:13.5px; margin-top:8px; min-height:18px;}
+.fq-chips{
+  display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
+  margin-top:18px; max-width:520px; margin-left:auto; margin-right:auto;
+}
+.fq-chip{
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:'Kanit',sans-serif; font-weight:600; font-size:14.5px;
+  background:rgba(255,111,97,.1); border:1px solid var(--coral); color:var(--coral);
+  padding:7px 8px 7px 16px; border-radius:999px;
+}
+.fq-chip button{
+  background:none; border:none; color:var(--coral); font-size:17px; cursor:pointer;
+  width:22px; height:22px; border-radius:50%; line-height:1;
+}
+.fq-chip button:hover{background:var(--coral); color:#3a0e08;}
+
+.fq-scoreboard{
+  display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
+  margin-bottom:22px;
+}
+.fq-score-row{
+  display:flex; align-items:center; gap:8px;
+  font-family:'Kanit',sans-serif; font-weight:600; font-size:13.5px;
+  padding:6px 14px; border-radius:999px;
+  border:1px solid var(--line); color:var(--text);
+}
+.fq-score-row.current{
+  border-color:var(--coral); background:rgba(255,111,97,.14);
+  box-shadow:0 0 16px -4px rgba(255,111,97,.6);
+}
+.fq-score-num{color:var(--gold); font-weight:800;}
+
+.fq-turn{color:var(--text-dim); font-family:'Kanit',sans-serif; font-weight:700; font-size:15px; margin-bottom:14px;}
+.fq-timer{
+  font-family:'Kanit',sans-serif; font-weight:800;
+  font-size:clamp(36px,7vw,52px);
+  margin-bottom:22px;
+}
+.fq-timer.low{color:var(--pink);}
+.fq-question{
+  font-family:'Kanit',sans-serif; font-weight:700;
+  font-size:clamp(19px,3.6vw,25px);
+  line-height:1.5; max-width:600px; margin:0 auto 10px;
+}
+.fq-answer-box{margin:24px auto 0; max-width:460px;}
+.fq-answer-label{
+  font-family:'Kanit',sans-serif; font-weight:700; font-size:12.5px;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--text-dim);
+}
+.fq-answer-num{
+  font-family:'Kanit',sans-serif; font-weight:800; font-size:clamp(24px,4.5vw,32px);
+  color:var(--coral); margin:4px 0 10px;
 }
 
 /* scroll reveal */

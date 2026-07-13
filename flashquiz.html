@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flash Quiz — ตอบไว / ดวลกันแบบไว</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <div class="brand"><span class="dot">●</span> วงกำลังจะเหงา</div>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--coral); color:#3a0e08;">12 · ความรู้รอบตัวตอบไว</span>
+    <h1>Flash Quiz</h1>
+    <p>คำถามความรู้รอบตัวสไตล์ตอบไว มี 2 โหมด — "Flash Quiz" เปิดทบทวนเล่นกันเรื่อย ๆ ไม่มีเวลา และ "Flash Quiz Battle" แบ่งทีมดวลกันจับเวลาแข่งคะแนน</p>
+  </section>
+
+  <div class="mode-switch reveal-up" id="modeSwitch">
+    <button class="mode-btn active" data-mode="quiz">Flash Quiz</button>
+    <button class="mode-btn" data-mode="battle">Flash Quiz Battle</button>
+  </div>
+
+  <div class="panel reveal-up" id="rulesQuiz">
+    <h2>วิธีเล่น · Flash Quiz</h2>
+    <ol>
+      <li>กดสุ่มคำถามด้านล่าง อ่านคำถามให้วงฟัง</li>
+      <li>ให้ทุกคนช่วยกันตอบออกมาดัง ๆ ไม่จำกัดเวลา คุยถกกันได้เต็มที่</li>
+      <li>กดปุ่ม "เฉลย!" เพื่อดูคำตอบจริง แล้วกด "ข้อต่อไป" เล่นกันต่อได้เรื่อย ๆ</li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up" id="rulesBattle" style="display:none;">
+    <h2>วิธีเล่น · Flash Quiz Battle</h2>
+    <ol>
+      <li>ใส่ชื่อทีมหรือผู้เล่นในวงให้ครบ (อย่างน้อย 2 ทีม) แล้วกด "เริ่มดวล"</li>
+      <li>ผลัดกันเป็นเจ้าของตา ระบบสุ่มคำถามพร้อมจับเวลา 7 วินาที ต้องตอบให้ทันก่อนหมดเวลา</li>
+      <li>ตอบเสร็จแล้วให้วงช่วยกันตัดสินว่าตอบถูกไหม แล้วกด "ถูก ✅" หรือ "ผิด ❌" ให้ทีมนั้น</li>
+      <li>ตอบถูกได้ 1 คะแนน ทีมแรกที่ทำครบ 10 คะแนนชนะการดวล</li>
+    </ol>
+  </div>
+
+  <div class="tags reveal-up" id="filterTags">
+    <span class="tag active" data-tag="all">ทั้งหมด</span>
+    <span class="tag" data-tag="thai">ไทย 🇹🇭</span>
+    <span class="tag" data-tag="general">ทั่วไป 🌐</span>
+    <span class="tag" data-tag="science">วิทยาศาสตร์ 🔬</span>
+    <span class="tag" data-tag="history">ประวัติศาสตร์ 🏛️</span>
+    <span class="tag" data-tag="movie">หนัง/การ์ตูน 🎬</span>
+    <span class="tag" data-tag="music">เพลง 🎵</span>
+    <span class="tag" data-tag="sport">กีฬา ⚽</span>
+    <span class="tag" data-tag="game">เกม 🎮</span>
+  </div>
+
+  <div id="quizPanel">
+    <div class="deck reveal-up">
+      <div id="cardHolder"></div>
+    </div>
+    <div class="controls" style="justify-content:center; display:flex; margin-bottom:60px;">
+      <button class="btn" id="nextBtn">สุ่มข้อต่อไป →</button>
+    </div>
+  </div>
+
+  <div id="battlePanel" style="display:none;">
+    <div class="fq-stage reveal-up">
+      <div id="battleSetupPanel">
+        <h3 class="fq-h3">ใครดวลกับใคร?</h3>
+        <div class="fq-add-row">
+          <input type="text" id="teamNameInput" class="fq-input" placeholder="พิมพ์ชื่อทีม/ผู้เล่น" maxlength="20">
+          <button class="btn secondary" id="addTeamBtn">+ เพิ่ม</button>
+        </div>
+        <div class="fq-error" id="battleSetupError"></div>
+        <div class="fq-chips" id="teamChips"></div>
+        <div class="controls" style="justify-content:center; display:flex; margin-top:22px;">
+          <button class="btn" id="startBattleBtn" disabled>เริ่มดวล →</button>
+        </div>
+      </div>
+
+      <div id="battlePlayPanel" style="display:none;">
+        <div class="fq-scoreboard" id="battleScoreboard"></div>
+        <div class="fq-turn" id="battleTurnLabel"></div>
+        <div class="fq-timer" id="battleTimer">7</div>
+        <div class="fq-question" id="battleQuestionText"></div>
+        <div id="battleAnswerBox" class="fq-answer-box" style="display:none;"></div>
+        <div class="controls" style="justify-content:center; display:flex; gap:12px; flex-wrap:wrap; margin-top:18px;">
+          <button class="btn secondary" id="revealBattleAnswerBtn">เฉลย 🔍</button>
+          <button class="btn" id="correctBtn" style="display:none; background:var(--lime); color:#1a2400;">ถูก ✅</button>
+          <button class="btn secondary" id="wrongBtn" style="display:none;">ผิด ❌</button>
+        </div>
+      </div>
+
+      <div id="battleEndPanel" style="display:none;">
+        <h3 class="fq-h3" id="battleEndTitle">🏆 ชนะการดวล!</h3>
+        <p class="fq-hint">เก็บครบ 10 คะแนนก่อนใครก่อน</p>
+        <div class="controls" style="justify-content:center; display:flex; margin-top:14px;">
+          <button class="btn" id="resetBattleBtn">เริ่มดวลใหม่ ↻</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>ข้อมูลรวบรวมเพื่อความบันเทิง เล่นสนุก ๆ ในวงเพื่อน 😄</footer>
+</div>
+
+<script src="data/flashquiz.js"></script>
+<script src="js/main.js"></script>
+<script src="js/flashquiz.js"></script>
+</body>
+</html>
