@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>จับคู่ รู้จายยยย — สุ่มจับคู่แล้วทายใจเพื่อน</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <a class="brand-logo" href="index.html"><img class="brand-img" src="assets/logo.png" width="720" height="416" alt="Party Games — วงกำลังจะเหงา"></a>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--grape); color:#1e0630;">15 · จับคู่ทายใจ</span>
+    <h1>จับคู่ รู้จายยยย</h1>
+    <p>ใส่ชื่อคนในวงลงวงล้อ กดสุ่มจับคู่ แล้วเล่นเป็นคู่ ๆ — คนหนึ่งแอบเลือกคำตอบลับ ๆ อีกคนต้องทายว่าคู่ของตัวเองเลือกอะไร รู้จริงไหมว่าเพื่อนคิดยังไง!</p>
+  </section>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเล่น</h2>
+    <ol>
+      <li>พิมพ์ชื่อทุกคนในวงลงไป (อย่างน้อย 2 คน) ชื่อจะไปเรียงอยู่บนวงล้อ</li>
+      <li>กด "สุ่มจับคู่" วงล้อจะหมุนแล้วจับคู่ทุกคนแบบสุ่ม (ถ้าคนคี่ จะมีกลุ่ม 3 คน 1 กลุ่ม)</li>
+      <li>แต่ละรอบจะได้คู่หนึ่งขึ้นมา — ส่งมือถือให้ "คนเลือก" แอบเลือกคำตอบลับ ๆ โดยไม่ให้คู่เห็น</li>
+      <li>ส่งมือถือต่อให้ "คนทาย" ทายว่าคู่ของตัวเองเลือกช้อยไหนไป</li>
+      <li>เฉลยว่าทายถูกหรือผิด แล้วกด "คู่ต่อไป" เล่นวนไปเรื่อย ๆ ได้เลย</li>
+    </ol>
+  </div>
+
+  <div class="gn-stage reveal-up">
+    <!-- 1. Setup: wheel + names -->
+    <div id="muSetup">
+      <div class="mu-wheel-wrap">
+        <div class="mu-wheel-pointer">▼</div>
+        <svg id="muWheel" class="mu-wheel" viewBox="0 0 300 300" aria-hidden="true">
+          <g id="muWheelSlices"></g>
+        </svg>
+      </div>
+      <div id="muWheelEmpty" class="mu-wheel-empty">ยังไม่มีชื่อ — พิมพ์ชื่อเพื่อนด้านล่างได้เลย</div>
+
+      <div class="wo-form" style="margin-top:20px;">
+        <input type="text" id="muNameInput" class="wo-input" placeholder="พิมพ์ชื่อแล้วกด Enter" maxlength="16" autocomplete="off">
+      </div>
+      <div class="mu-names" id="muNames"></div>
+
+      <div class="controls" style="justify-content:center; display:flex; gap:12px; flex-wrap:wrap; margin-top:20px;">
+        <button class="btn" id="muAddBtn">เพิ่มชื่อ +</button>
+        <button class="btn secondary" id="muShuffleBtn" disabled>สุ่มจับคู่ 🎡</button>
+      </div>
+    </div>
+
+    <!-- 2. Pairs result -->
+    <div id="muPairs" style="display:none;">
+      <h3 class="mu-h3">🎉 จับคู่เรียบร้อย!</h3>
+      <div class="mu-pair-list" id="muPairList"></div>
+      <div class="controls" style="justify-content:center; display:flex; gap:12px; flex-wrap:wrap; margin-top:22px;">
+        <button class="btn" id="muStartBtn">เริ่มเล่น →</button>
+        <button class="btn secondary" id="muRepairBtn">จับคู่ใหม่ ↻</button>
+      </div>
+    </div>
+
+    <!-- 3. Chooser secretly picks -->
+    <div id="muChoose" style="display:none;">
+      <div class="mu-turn" id="muChooseTurn"></div>
+      <div class="gn-question" id="muChooseQ"></div>
+      <div class="mu-choices" id="muChooseChoices"></div>
+    </div>
+
+    <!-- pass phone interstitial -->
+    <div id="muPass" style="display:none;" class="gn-pass">
+      <div class="gn-pass-icon">🤫</div>
+      <div class="gn-pass-text" id="muPassText"></div>
+      <div class="controls" style="justify-content:center; display:flex; margin-top:14px;">
+        <button class="btn" id="muPassBtn">พร้อมแล้ว →</button>
+      </div>
+    </div>
+
+    <!-- 4. Guesser guesses -->
+    <div id="muGuess" style="display:none;">
+      <div class="mu-turn" id="muGuessTurn"></div>
+      <div class="gn-question" id="muGuessQ"></div>
+      <div class="mu-choices" id="muGuessChoices"></div>
+    </div>
+
+    <!-- 5. Reveal -->
+    <div id="muReveal" style="display:none;">
+      <div class="mu-reveal-emoji" id="muRevealEmoji">🎯</div>
+      <div class="mu-reveal-verdict" id="muRevealVerdict"></div>
+      <div class="mu-reveal-detail" id="muRevealDetail"></div>
+      <div class="mu-score" id="muScore"></div>
+      <div class="controls" style="justify-content:center; display:flex; gap:12px; flex-wrap:wrap; margin-top:20px;">
+        <button class="btn" id="muNextBtn">คู่ต่อไป →</button>
+        <button class="btn secondary" id="muRepair2Btn">จับคู่ใหม่ ↻</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>เล่นสนุก ๆ ในวงเพื่อน ไม่มีถูกผิด แค่มาดูว่าใครรู้ใจใครมากกว่ากัน 😆</footer>
+</div>
+
+<script src="data/matchup.js"></script>
+<script src="js/main.js"></script>
+<script src="js/matchup.js"></script>
+</body>
+</html>
