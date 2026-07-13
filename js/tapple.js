@@ -380,7 +380,7 @@ document.addEventListener("DOMContentLoaded", () => {
   dualViewBtn.addEventListener("click", enterDualView);
   exitDualViewBtn.addEventListener("click", exitDualView);
   document.addEventListener("fullscreenchange", () => {
-    if (!document.fullscreenElement) dualView.style.display = "none";
+    if (!document.fullscreenElement) exitDualView();
   });
 
   renderChips();

@@ -104,8 +104,9 @@ document.addEventListener("DOMContentLoaded", () => {
   ];
   const side0TimeEls = [document.getElementById("clockTimeA"), document.getElementById("dualClockTimeBottom")];
   const side1TimeEls = [document.getElementById("clockTimeB"), document.getElementById("dualClockTimeTop")];
-  const side0ClockEls = [document.getElementById("clockA"), document.getElementById("dualClockBottom")];
-  const side1ClockEls = [document.getElementById("clockB"), document.getElementById("dualClockTop")];
+  // In fullscreen dual view the whole half-screen is the tap target, not just the clock box.
+  const side0ClockEls = [document.getElementById("clockA"), document.getElementById("dualClockBottom"), document.getElementById("dualHalfBottom")];
+  const side1ClockEls = [document.getElementById("clockB"), document.getElementById("dualClockTop"), document.getElementById("dualHalfTop")];
 
   let sides = [{ timeLeft: TIME_BANK_SECONDS }, { timeLeft: TIME_BANK_SECONDS }];
   let usedBattleIndexes = [];
@@ -183,6 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function revealBattleAnswer() {
     battleAnswerRevealed = true;
+    revealBtnEls.forEach((el) => { el.style.display = "none"; });
     answerEls.forEach((el) => {
       el.innerHTML =
         '<div class="fq-answer-label">คำตอบ</div>' +
@@ -191,7 +193,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  revealBtnEls.forEach((btn) => btn.addEventListener("click", revealBattleAnswer));
+  revealBtnEls.forEach((btn) => btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    revealBattleAnswer();
+  }));
 
   function switchSide(sideIdx) {
     if (sideIdx !== currentSideIdx) return;
@@ -238,7 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function enterFqDualView() {
-    fqDualView.style.display = "block";
+    fqDualView.style.display = "flex";
     document.documentElement.classList.add("tp-no-scroll");
     requestFs(fqDualView);
   }
@@ -253,7 +258,7 @@ document.addEventListener("DOMContentLoaded", () => {
   fqDualViewBtn.addEventListener("click", enterFqDualView);
   exitFqDualBtn.addEventListener("click", exitFqDualView);
   document.addEventListener("fullscreenchange", () => {
-    if (!document.fullscreenElement) fqDualView.style.display = "none";
+    if (!document.fullscreenElement) exitFqDualView();
   });
 
   // ---------- Mode switch ----------

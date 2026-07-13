@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Flash Quiz — ตอบไว / ดวลกันแบบไว</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
@@ -41,7 +41,7 @@
       <li>นาฬิกาฝั่งไหนกำลังเดินอยู่คือตาของฝั่งนั้น อ่านคำถามแล้วช่วยกันตอบ เวลาจะเดินไปเรื่อย ๆ</li>
       <li>ตอบเสร็จแล้วแตะที่นาฬิกาฝั่งตัวเองเพื่อสลับตาไปอีกฝั่งพร้อมคำถามใหม่ (กด "เฉลย 🔍" ดูคำตอบได้ก่อนสลับ)</li>
       <li>ฝั่งไหนเวลาหมดก่อนแพ้ทันที ยิ่งตอบเร็วยิ่งเหลือเวลาไปกดดันอีกฝั่ง!</li>
-      <li>เล่นแบบนั่งตรงข้ามกันได้ — กด "เล่นเต็มจอ" วางมือถือราบไว้กลางโต๊ะ อีกฝั่งจะเห็นนาฬิกาและคำถามหันหน้าเข้าหาตัวเองพอดี</li>
+      <li>เล่นแบบนั่งตรงข้ามกันได้ — กด "เล่นเต็มจอ" วางมือถือราบไว้กลางโต๊ะ อีกฝั่งจะเห็นนาฬิกาและคำถามหันหน้าเข้าหาตัวเองพอดี ในโหมดนี้แตะตรงไหนก็ได้ในครึ่งจอฝั่งตัวเองเพื่อสลับตา</li>
     </ol>
   </div>
 
@@ -111,26 +111,28 @@
 </div>
 
 <div id="fqDualView" class="fq-dual" style="display:none;">
-  <div class="fq-dual-half fq-dual-top">
-    <button type="button" class="fq-dual-clock" id="dualClockTop">
+  <div class="fq-dual-half fq-dual-top" id="dualHalfTop">
+    <div class="fq-dual-clock" id="dualClockTop">
       <div class="fq-dual-clock-name">ฝั่ง 2</div>
       <div class="fq-dual-clock-time" id="dualClockTimeTop">1:00</div>
-    </button>
+    </div>
     <div class="fq-dual-question" id="dualQuestionTop"></div>
     <div id="dualAnswerTop" class="fq-dual-answer" style="display:none;"></div>
     <button class="btn secondary fq-dual-reveal" id="dualRevealTop">เฉลย 🔍</button>
+    <div class="fq-dual-tap-hint">ตอบเสร็จ แตะจอฝั่งตัวเองเพื่อสลับตา</div>
   </div>
 
   <button class="fq-dual-exit" id="exitFqDualBtn" aria-label="ออกจากเต็มจอ">✕</button>
 
-  <div class="fq-dual-half fq-dual-bottom">
-    <button type="button" class="fq-dual-clock" id="dualClockBottom">
+  <div class="fq-dual-half fq-dual-bottom" id="dualHalfBottom">
+    <div class="fq-dual-clock" id="dualClockBottom">
       <div class="fq-dual-clock-name">ฝั่ง 1</div>
       <div class="fq-dual-clock-time" id="dualClockTimeBottom">1:00</div>
-    </button>
+    </div>
     <div class="fq-dual-question" id="dualQuestionBottom"></div>
     <div id="dualAnswerBottom" class="fq-dual-answer" style="display:none;"></div>
     <button class="btn secondary fq-dual-reveal" id="dualRevealBottom">เฉลย 🔍</button>
+    <div class="fq-dual-tap-hint">ตอบเสร็จ แตะจอฝั่งตัวเองเพื่อสลับตา</div>
   </div>
 </div>
 
