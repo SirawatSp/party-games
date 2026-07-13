@@ -70,80 +70,49 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // ---------- Flash Quiz Battle (turn-based team race) ----------
-  const battleSetupPanel = document.getElementById("battleSetupPanel");
+  // ---------- Flash Quiz Battle (2-sided chess clock) ----------
+  const battleIntroPanel = document.getElementById("battleIntroPanel");
   const battlePlayPanel = document.getElementById("battlePlayPanel");
   const battleEndPanel = document.getElementById("battleEndPanel");
-
-  const teamNameInput = document.getElementById("teamNameInput");
-  const addTeamBtn = document.getElementById("addTeamBtn");
-  const teamChips = document.getElementById("teamChips");
   const startBattleBtn = document.getElementById("startBattleBtn");
-  const battleSetupError = document.getElementById("battleSetupError");
 
   const battleTurnLabel = document.getElementById("battleTurnLabel");
-  const battleQuestionText = document.getElementById("battleQuestionText");
-  const battleAnswerBox = document.getElementById("battleAnswerBox");
-  const revealBattleAnswerBtn = document.getElementById("revealBattleAnswerBtn");
-  const correctBtn = document.getElementById("correctBtn");
-  const wrongBtn = document.getElementById("wrongBtn");
-
-  const clockNameA = document.getElementById("clockNameA");
-  const clockTimeA = document.getElementById("clockTimeA");
-  const clockScoreA = document.getElementById("clockScoreA");
-  const clockA = document.getElementById("clockA");
-  const clockNameB = document.getElementById("clockNameB");
-  const clockTimeB = document.getElementById("clockTimeB");
-  const clockScoreB = document.getElementById("clockScoreB");
-  const clockB = document.getElementById("clockB");
-
   const battleEndTitle = document.getElementById("battleEndTitle");
   const battleEndHint = document.getElementById("battleEndHint");
   const resetBattleBtn = document.getElementById("resetBattleBtn");
 
-  let teams = [];
+  const fqDualView = document.getElementById("fqDualView");
+  const fqDualViewBtn = document.getElementById("fqDualViewBtn");
+  const exitFqDualBtn = document.getElementById("exitFqDualBtn");
+
+  // Side 0 = "ฝั่ง 1" = main clockA + fullscreen bottom half (upright).
+  // Side 1 = "ฝั่ง 2" = main clockB + fullscreen top half (rotated 180deg).
+  const questionEls = [
+    document.getElementById("battleQuestionText"),
+    document.getElementById("dualQuestionTop"),
+    document.getElementById("dualQuestionBottom")
+  ];
+  const answerEls = [
+    document.getElementById("battleAnswerBox"),
+    document.getElementById("dualAnswerTop"),
+    document.getElementById("dualAnswerBottom")
+  ];
+  const revealBtnEls = [
+    document.getElementById("revealBattleAnswerBtn"),
+    document.getElementById("dualRevealTop"),
+    document.getElementById("dualRevealBottom")
+  ];
+  const side0TimeEls = [document.getElementById("clockTimeA"), document.getElementById("dualClockTimeBottom")];
+  const side1TimeEls = [document.getElementById("clockTimeB"), document.getElementById("dualClockTimeTop")];
+  const side0ClockEls = [document.getElementById("clockA"), document.getElementById("dualClockBottom")];
+  const side1ClockEls = [document.getElementById("clockB"), document.getElementById("dualClockTop")];
+
+  let sides = [{ timeLeft: TIME_BANK_SECONDS }, { timeLeft: TIME_BANK_SECONDS }];
   let usedBattleIndexes = [];
-  let currentTeamIdx = 0;
+  let currentSideIdx = 0;
   let currentBattleQuestion = null;
   let battleTimerInterval = null;
-
-  function renderTeamChips() {
-    teamChips.innerHTML = "";
-    teams.forEach((t, i) => {
-      const chip = document.createElement("span");
-      chip.className = "fq-chip";
-      chip.innerHTML = t.name + ' <button aria-label="ลบ">×</button>';
-      chip.querySelector("button").addEventListener("click", () => {
-        teams.splice(i, 1);
-        renderTeamChips();
-      });
-      teamChips.appendChild(chip);
-    });
-    startBattleBtn.disabled = teams.length !== 2;
-  }
-
-  function addTeam() {
-    const name = teamNameInput.value.trim();
-    if (!name) return;
-    if (teams.length >= 2) {
-      battleSetupError.textContent = "ครบ 2 ฝั่งแล้ว ลบออกก่อนถ้าจะเปลี่ยน";
-      return;
-    }
-    if (teams.some((t) => t.name === name)) {
-      battleSetupError.textContent = "มีชื่อนี้แล้ว ลองชื่ออื่นดูนะ";
-      return;
-    }
-    battleSetupError.textContent = "";
-    teams.push({ name, score: 0, timeLeft: TIME_BANK_SECONDS });
-    teamNameInput.value = "";
-    teamNameInput.focus();
-    renderTeamChips();
-  }
-
-  addTeamBtn.addEventListener("click", addTeam);
-  teamNameInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") { e.preventDefault(); addTeam(); }
-  });
+  let battleAnswerRevealed = false;
 
   function pickBattleQuestion() {
     if (usedBattleIndexes.length >= FLASHQUIZ_LIST.length) usedBattleIndexes = [];
@@ -163,18 +132,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderClocks() {
-    const [a, b] = teams;
-    clockNameA.textContent = a.name;
-    clockTimeA.textContent = fmtClock(a.timeLeft);
-    clockScoreA.textContent = "ถูก " + a.score + " ข้อ";
-    clockNameB.textContent = b.name;
-    clockTimeB.textContent = fmtClock(b.timeLeft);
-    clockScoreB.textContent = "ถูก " + b.score + " ข้อ";
-
-    clockA.classList.toggle("active", currentTeamIdx === 0);
-    clockB.classList.toggle("active", currentTeamIdx === 1);
-    clockA.classList.toggle("low", a.timeLeft <= 10);
-    clockB.classList.toggle("low", b.timeLeft <= 10);
+    side0TimeEls.forEach((el) => { el.textContent = fmtClock(sides[0].timeLeft); });
+    side1TimeEls.forEach((el) => { el.textContent = fmtClock(sides[1].timeLeft); });
+    side0ClockEls.forEach((el) => {
+      el.classList.toggle("active", currentSideIdx === 0);
+      el.classList.toggle("low", sides[0].timeLeft <= 10);
+    });
+    side1ClockEls.forEach((el) => {
+      el.classList.toggle("active", currentSideIdx === 1);
+      el.classList.toggle("low", sides[1].timeLeft <= 10);
+    });
+    battleTurnLabel.textContent = "⏱ นาฬิกาฝั่ง " + (currentSideIdx + 1) + " กำลังเดิน — แตะนาฬิกาฝั่งตัวเองเพื่อสลับตา";
   }
 
   function stopBattleTimer() {
@@ -186,63 +154,60 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function startBattleTurn() {
     currentBattleQuestion = pickBattleQuestion();
-    battleQuestionText.textContent = currentBattleQuestion.question;
-    battleAnswerBox.style.display = "none";
-    revealBattleAnswerBtn.style.display = "";
-    correctBtn.style.display = "none";
-    wrongBtn.style.display = "none";
-    battleTurnLabel.textContent = "⏱ นาฬิกาฝั่ง " + teams[currentTeamIdx].name + " กำลังเดิน";
+    questionEls.forEach((el) => { el.textContent = currentBattleQuestion.question; });
+    answerEls.forEach((el) => { el.style.display = "none"; });
+    revealBtnEls.forEach((el) => { el.style.display = ""; });
+    battleAnswerRevealed = false;
     renderClocks();
 
     stopBattleTimer();
     battleTimerInterval = setInterval(() => {
-      teams[currentTeamIdx].timeLeft--;
+      sides[currentSideIdx].timeLeft--;
       renderClocks();
-      if (teams[currentTeamIdx].timeLeft <= 0) {
+      if (sides[currentSideIdx].timeLeft <= 0) {
         stopBattleTimer();
-        endBattle(currentTeamIdx);
+        endBattle(currentSideIdx);
       }
     }, 1000);
   }
 
   function endBattle(loserIdx) {
     stopBattleTimer();
-    const loser = teams[loserIdx];
-    const winner = teams[1 - loserIdx];
+    const winnerIdx = 1 - loserIdx;
     battlePlayPanel.style.display = "none";
-    battleEndTitle.textContent = "🏆 " + winner.name + " ชนะการดวล!";
-    battleEndHint.textContent = "เพราะเวลาของฝั่ง " + loser.name + " หมดก่อน";
+    exitFqDualView();
+    battleEndTitle.textContent = "🏆 ฝั่ง " + (winnerIdx + 1) + " ชนะการดวล!";
+    battleEndHint.textContent = "เพราะเวลาของฝั่ง " + (loserIdx + 1) + " หมดก่อน";
     battleEndPanel.style.display = "";
   }
 
   function revealBattleAnswer() {
-    battleAnswerBox.innerHTML =
-      '<div class="fq-answer-label">คำตอบ</div>' +
-      '<div class="fq-answer-num">' + currentBattleQuestion.answer + "</div>";
-    battleAnswerBox.style.display = "";
-    revealBattleAnswerBtn.style.display = "none";
-    correctBtn.style.display = "";
-    wrongBtn.style.display = "";
+    battleAnswerRevealed = true;
+    answerEls.forEach((el) => {
+      el.innerHTML =
+        '<div class="fq-answer-label">คำตอบ</div>' +
+        '<div class="fq-answer-num">' + currentBattleQuestion.answer + "</div>";
+      el.style.display = "";
+    });
   }
 
-  revealBattleAnswerBtn.addEventListener("click", revealBattleAnswer);
+  revealBtnEls.forEach((btn) => btn.addEventListener("click", revealBattleAnswer));
 
-  function afterJudged(wasCorrect) {
+  function switchSide(sideIdx) {
+    if (sideIdx !== currentSideIdx) return;
     stopBattleTimer();
-    if (wasCorrect) teams[currentTeamIdx].score++;
-    currentTeamIdx = 1 - currentTeamIdx;
+    currentSideIdx = 1 - currentSideIdx;
     startBattleTurn();
   }
 
-  correctBtn.addEventListener("click", () => afterJudged(true));
-  wrongBtn.addEventListener("click", () => afterJudged(false));
+  side0ClockEls.forEach((el) => el.addEventListener("click", () => switchSide(0)));
+  side1ClockEls.forEach((el) => el.addEventListener("click", () => switchSide(1)));
 
   startBattleBtn.addEventListener("click", () => {
-    if (teams.length !== 2) return;
-    teams.forEach((t) => { t.timeLeft = TIME_BANK_SECONDS; t.score = 0; });
-    currentTeamIdx = 0;
+    sides = [{ timeLeft: TIME_BANK_SECONDS }, { timeLeft: TIME_BANK_SECONDS }];
+    currentSideIdx = 0;
     usedBattleIndexes = [];
-    battleSetupPanel.style.display = "none";
+    battleIntroPanel.style.display = "none";
     battleEndPanel.style.display = "none";
     battlePlayPanel.style.display = "";
     startBattleTurn();
@@ -250,14 +215,46 @@ document.addEventListener("DOMContentLoaded", () => {
 
   resetBattleBtn.addEventListener("click", () => {
     stopBattleTimer();
-    teams = [];
-    renderTeamChips();
+    exitFqDualView();
     battlePlayPanel.style.display = "none";
     battleEndPanel.style.display = "none";
-    battleSetupPanel.style.display = "";
+    battleIntroPanel.style.display = "";
   });
 
-  renderTeamChips();
+  function requestFs(el) {
+    const method = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+    if (method) {
+      const result = method.call(el);
+      if (result && result.catch) result.catch(() => {});
+    }
+  }
+
+  function exitFs() {
+    const method = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+    if (method && (document.fullscreenElement || document.webkitFullscreenElement)) {
+      const result = method.call(document);
+      if (result && result.catch) result.catch(() => {});
+    }
+  }
+
+  function enterFqDualView() {
+    fqDualView.style.display = "block";
+    document.documentElement.classList.add("tp-no-scroll");
+    requestFs(fqDualView);
+  }
+
+  function exitFqDualView() {
+    if (fqDualView.style.display === "none") return;
+    fqDualView.style.display = "none";
+    document.documentElement.classList.remove("tp-no-scroll");
+    exitFs();
+  }
+
+  fqDualViewBtn.addEventListener("click", enterFqDualView);
+  exitFqDualBtn.addEventListener("click", exitFqDualView);
+  document.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement) fqDualView.style.display = "none";
+  });
 
   // ---------- Mode switch ----------
   modeSwitch.querySelectorAll(".mode-btn").forEach((btn) => {
@@ -272,7 +269,10 @@ document.addEventListener("DOMContentLoaded", () => {
       quizPanel.style.display = isQuiz ? "" : "none";
       battlePanel.style.display = isQuiz ? "none" : "";
 
-      if (!isQuiz) stopBattleTimer();
+      if (isQuiz) {
+        stopBattleTimer();
+        exitFqDualView();
+      }
     });
   });
 

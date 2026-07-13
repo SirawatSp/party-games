@@ -37,10 +37,11 @@
   <div class="panel reveal-up" id="rulesBattle" style="display:none;">
     <h2>วิธีเล่น · Flash Quiz Battle</h2>
     <ol>
-      <li>ใส่ชื่อ 2 ทีมที่จะมาดวลกัน แล้วกด "เริ่มดวล" — แต่ละฝั่งจะได้เวลาสะสมฝั่งละ 60 วินาที เหมือนนาฬิกาจับเวลาหมากรุก</li>
-      <li>นาฬิกาฝั่งไหนกำลังเดินอยู่คือตาของฝั่งนั้น อ่านคำถามแล้วช่วยกันตอบ เวลาจะเดินไปเรื่อย ๆ จนกว่าจะกดสลับตา</li>
-      <li>กด "เฉลย 🔍" ดูคำตอบ แล้วให้วงช่วยตัดสินว่าตอบถูกไหม กด "ถูก ✅" หรือ "ผิด ❌" เพื่อสลับนาฬิกาไปอีกฝั่งพร้อมคำถามใหม่</li>
+      <li>กด "เริ่มดวล" — แต่ละฝั่งจะได้เวลาสะสมฝั่งละ 60 วินาที เหมือนนาฬิกาจับเวลาหมากรุก ไม่ต้องใส่ชื่อผู้เล่น</li>
+      <li>นาฬิกาฝั่งไหนกำลังเดินอยู่คือตาของฝั่งนั้น อ่านคำถามแล้วช่วยกันตอบ เวลาจะเดินไปเรื่อย ๆ</li>
+      <li>ตอบเสร็จแล้วแตะที่นาฬิกาฝั่งตัวเองเพื่อสลับตาไปอีกฝั่งพร้อมคำถามใหม่ (กด "เฉลย 🔍" ดูคำตอบได้ก่อนสลับ)</li>
       <li>ฝั่งไหนเวลาหมดก่อนแพ้ทันที ยิ่งตอบเร็วยิ่งเหลือเวลาไปกดดันอีกฝั่ง!</li>
+      <li>เล่นแบบนั่งตรงข้ามกันได้ — กด "เล่นเต็มจอ" วางมือถือราบไว้กลางโต๊ะ อีกฝั่งจะเห็นนาฬิกาและคำถามหันหน้าเข้าหาตัวเองพอดี</li>
     </ol>
   </div>
 
@@ -67,41 +68,32 @@
 
   <div id="battlePanel" style="display:none;">
     <div class="fq-stage reveal-up">
-      <div id="battleSetupPanel">
-        <h3 class="fq-h3">ใครดวลกับใคร?</h3>
-        <p class="fq-hint">ใส่ชื่อให้ครบ 2 ฝั่ง (Battle เล่นได้ทีละคู่แบบนาฬิกาหมากรุก)</p>
-        <div class="fq-add-row">
-          <input type="text" id="teamNameInput" class="fq-input" placeholder="พิมพ์ชื่อทีม/ผู้เล่น" maxlength="20">
-          <button class="btn secondary" id="addTeamBtn">+ เพิ่ม</button>
-        </div>
-        <div class="fq-error" id="battleSetupError"></div>
-        <div class="fq-chips" id="teamChips"></div>
+      <div id="battleIntroPanel">
+        <h3 class="fq-h3">พร้อมดวลหรือยัง?</h3>
+        <p class="fq-hint">สองฝั่งได้เวลาสะสมฝั่งละ 60 วินาที แตะนาฬิกาฝั่งตัวเองเพื่อสลับตา</p>
         <div class="controls" style="justify-content:center; display:flex; margin-top:22px;">
-          <button class="btn" id="startBattleBtn" disabled>เริ่มดวล →</button>
+          <button class="btn" id="startBattleBtn">เริ่มดวล →</button>
         </div>
       </div>
 
       <div id="battlePlayPanel" style="display:none;">
         <div class="fq-clocks" id="battleClocks">
-          <div class="fq-clock" id="clockA">
-            <div class="fq-clock-name" id="clockNameA"></div>
+          <button type="button" class="fq-clock" id="clockA">
+            <div class="fq-clock-name">ฝั่ง 1</div>
             <div class="fq-clock-time" id="clockTimeA">1:00</div>
-            <div class="fq-clock-score" id="clockScoreA"></div>
-          </div>
+          </button>
           <div class="fq-clock-vs">⏱</div>
-          <div class="fq-clock" id="clockB">
-            <div class="fq-clock-name" id="clockNameB"></div>
+          <button type="button" class="fq-clock" id="clockB">
+            <div class="fq-clock-name">ฝั่ง 2</div>
             <div class="fq-clock-time" id="clockTimeB">1:00</div>
-            <div class="fq-clock-score" id="clockScoreB"></div>
-          </div>
+          </button>
         </div>
         <div class="fq-turn" id="battleTurnLabel"></div>
         <div class="fq-question" id="battleQuestionText"></div>
         <div id="battleAnswerBox" class="fq-answer-box" style="display:none;"></div>
         <div class="controls" style="justify-content:center; display:flex; gap:12px; flex-wrap:wrap; margin-top:18px;">
           <button class="btn secondary" id="revealBattleAnswerBtn">เฉลย 🔍</button>
-          <button class="btn" id="correctBtn" style="display:none; background:var(--lime); color:#1a2400;">ถูก ✅ สลับตา</button>
-          <button class="btn secondary" id="wrongBtn" style="display:none;">ผิด ❌ สลับตา</button>
+          <button class="btn secondary" id="fqDualViewBtn">เล่นเต็มจอ 📱</button>
         </div>
       </div>
 
@@ -116,6 +108,30 @@
   </div>
 
   <footer>ข้อมูลรวบรวมเพื่อความบันเทิง เล่นสนุก ๆ ในวงเพื่อน 😄</footer>
+</div>
+
+<div id="fqDualView" class="fq-dual" style="display:none;">
+  <div class="fq-dual-half fq-dual-top">
+    <button type="button" class="fq-dual-clock" id="dualClockTop">
+      <div class="fq-dual-clock-name">ฝั่ง 2</div>
+      <div class="fq-dual-clock-time" id="dualClockTimeTop">1:00</div>
+    </button>
+    <div class="fq-dual-question" id="dualQuestionTop"></div>
+    <div id="dualAnswerTop" class="fq-dual-answer" style="display:none;"></div>
+    <button class="btn secondary fq-dual-reveal" id="dualRevealTop">เฉลย 🔍</button>
+  </div>
+
+  <button class="fq-dual-exit" id="exitFqDualBtn" aria-label="ออกจากเต็มจอ">✕</button>
+
+  <div class="fq-dual-half fq-dual-bottom">
+    <button type="button" class="fq-dual-clock" id="dualClockBottom">
+      <div class="fq-dual-clock-name">ฝั่ง 1</div>
+      <div class="fq-dual-clock-time" id="dualClockTimeBottom">1:00</div>
+    </button>
+    <div class="fq-dual-question" id="dualQuestionBottom"></div>
+    <div id="dualAnswerBottom" class="fq-dual-answer" style="display:none;"></div>
+    <button class="btn secondary fq-dual-reveal" id="dualRevealBottom">เฉลย 🔍</button>
+  </div>
 </div>
 
 <script src="data/flashquiz.js"></script>
