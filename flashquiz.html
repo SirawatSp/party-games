@@ -17,7 +17,7 @@
   <section class="page-head reveal-up">
     <span class="kicker" style="background:var(--coral); color:#3a0e08;">12 · ความรู้รอบตัวตอบไว</span>
     <h1>Flash Quiz</h1>
-    <p>คำถามความรู้รอบตัวสไตล์ตอบไว มี 2 โหมด — "Flash Quiz" เปิดทบทวนเล่นกันเรื่อย ๆ ไม่มีเวลา และ "Flash Quiz Battle" แบ่งทีมดวลกันจับเวลาแข่งคะแนน</p>
+    <p>คำถามความรู้รอบตัวสไตล์ตอบไว มี 2 โหมด — "Flash Quiz" เปิดทบทวนเล่นกันเรื่อย ๆ ไม่มีเวลา และ "Flash Quiz Battle" ดวล 1 ต่อ 1 แบบนาฬิกาจับเวลาหมากรุก ใครเวลาหมดก่อนแพ้ทันที</p>
   </section>
 
   <div class="mode-switch reveal-up" id="modeSwitch">
@@ -37,10 +37,10 @@
   <div class="panel reveal-up" id="rulesBattle" style="display:none;">
     <h2>วิธีเล่น · Flash Quiz Battle</h2>
     <ol>
-      <li>ใส่ชื่อทีมหรือผู้เล่นในวงให้ครบ (อย่างน้อย 2 ทีม) แล้วกด "เริ่มดวล"</li>
-      <li>ผลัดกันเป็นเจ้าของตา ระบบสุ่มคำถามพร้อมจับเวลา 7 วินาที ต้องตอบให้ทันก่อนหมดเวลา</li>
-      <li>ตอบเสร็จแล้วให้วงช่วยกันตัดสินว่าตอบถูกไหม แล้วกด "ถูก ✅" หรือ "ผิด ❌" ให้ทีมนั้น</li>
-      <li>ตอบถูกได้ 1 คะแนน ทีมแรกที่ทำครบ 10 คะแนนชนะการดวล</li>
+      <li>ใส่ชื่อ 2 ทีมที่จะมาดวลกัน แล้วกด "เริ่มดวล" — แต่ละฝั่งจะได้เวลาสะสมฝั่งละ 60 วินาที เหมือนนาฬิกาจับเวลาหมากรุก</li>
+      <li>นาฬิกาฝั่งไหนกำลังเดินอยู่คือตาของฝั่งนั้น อ่านคำถามแล้วช่วยกันตอบ เวลาจะเดินไปเรื่อย ๆ จนกว่าจะกดสลับตา</li>
+      <li>กด "เฉลย 🔍" ดูคำตอบ แล้วให้วงช่วยตัดสินว่าตอบถูกไหม กด "ถูก ✅" หรือ "ผิด ❌" เพื่อสลับนาฬิกาไปอีกฝั่งพร้อมคำถามใหม่</li>
+      <li>ฝั่งไหนเวลาหมดก่อนแพ้ทันที ยิ่งตอบเร็วยิ่งเหลือเวลาไปกดดันอีกฝั่ง!</li>
     </ol>
   </div>
 
@@ -69,6 +69,7 @@
     <div class="fq-stage reveal-up">
       <div id="battleSetupPanel">
         <h3 class="fq-h3">ใครดวลกับใคร?</h3>
+        <p class="fq-hint">ใส่ชื่อให้ครบ 2 ฝั่ง (Battle เล่นได้ทีละคู่แบบนาฬิกาหมากรุก)</p>
         <div class="fq-add-row">
           <input type="text" id="teamNameInput" class="fq-input" placeholder="พิมพ์ชื่อทีม/ผู้เล่น" maxlength="20">
           <button class="btn secondary" id="addTeamBtn">+ เพิ่ม</button>
@@ -81,21 +82,32 @@
       </div>
 
       <div id="battlePlayPanel" style="display:none;">
-        <div class="fq-scoreboard" id="battleScoreboard"></div>
+        <div class="fq-clocks" id="battleClocks">
+          <div class="fq-clock" id="clockA">
+            <div class="fq-clock-name" id="clockNameA"></div>
+            <div class="fq-clock-time" id="clockTimeA">1:00</div>
+            <div class="fq-clock-score" id="clockScoreA"></div>
+          </div>
+          <div class="fq-clock-vs">⏱</div>
+          <div class="fq-clock" id="clockB">
+            <div class="fq-clock-name" id="clockNameB"></div>
+            <div class="fq-clock-time" id="clockTimeB">1:00</div>
+            <div class="fq-clock-score" id="clockScoreB"></div>
+          </div>
+        </div>
         <div class="fq-turn" id="battleTurnLabel"></div>
-        <div class="fq-timer" id="battleTimer">7</div>
         <div class="fq-question" id="battleQuestionText"></div>
         <div id="battleAnswerBox" class="fq-answer-box" style="display:none;"></div>
         <div class="controls" style="justify-content:center; display:flex; gap:12px; flex-wrap:wrap; margin-top:18px;">
           <button class="btn secondary" id="revealBattleAnswerBtn">เฉลย 🔍</button>
-          <button class="btn" id="correctBtn" style="display:none; background:var(--lime); color:#1a2400;">ถูก ✅</button>
-          <button class="btn secondary" id="wrongBtn" style="display:none;">ผิด ❌</button>
+          <button class="btn" id="correctBtn" style="display:none; background:var(--lime); color:#1a2400;">ถูก ✅ สลับตา</button>
+          <button class="btn secondary" id="wrongBtn" style="display:none;">ผิด ❌ สลับตา</button>
         </div>
       </div>
 
       <div id="battleEndPanel" style="display:none;">
         <h3 class="fq-h3" id="battleEndTitle">🏆 ชนะการดวล!</h3>
-        <p class="fq-hint">เก็บครบ 10 คะแนนก่อนใครก่อน</p>
+        <p class="fq-hint" id="battleEndHint">เวลาของอีกฝั่งหมดก่อน</p>
         <div class="controls" style="justify-content:center; display:flex; margin-top:14px;">
           <button class="btn" id="resetBattleBtn">เริ่มดวลใหม่ ↻</button>
         </div>

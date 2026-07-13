@@ -10,8 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     thai: "ไทย", general: "ทั่วไป", science: "วิทยาศาสตร์", history: "ประวัติศาสตร์",
     movie: "หนัง/การ์ตูน", music: "เพลง", sport: "กีฬา", game: "เกม"
   };
-  const TURN_SECONDS = 7;
-  const SCORE_TO_WIN = 10;
+  const TIME_BANK_SECONDS = 60;
 
   // ---------- Flash Quiz (flip-card review mode) ----------
   const cardHolder = document.getElementById("cardHolder");
@@ -82,23 +81,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const startBattleBtn = document.getElementById("startBattleBtn");
   const battleSetupError = document.getElementById("battleSetupError");
 
-  const battleScoreboard = document.getElementById("battleScoreboard");
   const battleTurnLabel = document.getElementById("battleTurnLabel");
-  const battleTimer = document.getElementById("battleTimer");
   const battleQuestionText = document.getElementById("battleQuestionText");
   const battleAnswerBox = document.getElementById("battleAnswerBox");
   const revealBattleAnswerBtn = document.getElementById("revealBattleAnswerBtn");
   const correctBtn = document.getElementById("correctBtn");
   const wrongBtn = document.getElementById("wrongBtn");
 
+  const clockNameA = document.getElementById("clockNameA");
+  const clockTimeA = document.getElementById("clockTimeA");
+  const clockScoreA = document.getElementById("clockScoreA");
+  const clockA = document.getElementById("clockA");
+  const clockNameB = document.getElementById("clockNameB");
+  const clockTimeB = document.getElementById("clockTimeB");
+  const clockScoreB = document.getElementById("clockScoreB");
+  const clockB = document.getElementById("clockB");
+
   const battleEndTitle = document.getElementById("battleEndTitle");
+  const battleEndHint = document.getElementById("battleEndHint");
   const resetBattleBtn = document.getElementById("resetBattleBtn");
 
   let teams = [];
   let usedBattleIndexes = [];
   let currentTeamIdx = 0;
   let currentBattleQuestion = null;
-  let battleSecondsLeft = TURN_SECONDS;
   let battleTimerInterval = null;
 
   function renderTeamChips() {
@@ -113,18 +119,22 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       teamChips.appendChild(chip);
     });
-    startBattleBtn.disabled = teams.length < 2;
+    startBattleBtn.disabled = teams.length !== 2;
   }
 
   function addTeam() {
     const name = teamNameInput.value.trim();
     if (!name) return;
+    if (teams.length >= 2) {
+      battleSetupError.textContent = "ครบ 2 ฝั่งแล้ว ลบออกก่อนถ้าจะเปลี่ยน";
+      return;
+    }
     if (teams.some((t) => t.name === name)) {
       battleSetupError.textContent = "มีชื่อนี้แล้ว ลองชื่ออื่นดูนะ";
       return;
     }
     battleSetupError.textContent = "";
-    teams.push({ name, score: 0 });
+    teams.push({ name, score: 0, timeLeft: TIME_BANK_SECONDS });
     teamNameInput.value = "";
     teamNameInput.focus();
     renderTeamChips();
@@ -145,16 +155,26 @@ document.addEventListener("DOMContentLoaded", () => {
     return FLASHQUIZ_LIST[idx];
   }
 
-  function renderBattleScoreboard() {
-    battleScoreboard.innerHTML = "";
-    teams.forEach((t, i) => {
-      const row = document.createElement("div");
-      row.className = "fq-score-row" + (i === currentTeamIdx ? " current" : "");
-      row.innerHTML =
-        '<span class="fq-score-name">' + t.name + "</span>" +
-        '<span class="fq-score-num">' + t.score + "</span>";
-      battleScoreboard.appendChild(row);
-    });
+  function fmtClock(seconds) {
+    const s = Math.max(0, Math.ceil(seconds));
+    const m = Math.floor(s / 60);
+    const rem = s % 60;
+    return m + ":" + String(rem).padStart(2, "0");
+  }
+
+  function renderClocks() {
+    const [a, b] = teams;
+    clockNameA.textContent = a.name;
+    clockTimeA.textContent = fmtClock(a.timeLeft);
+    clockScoreA.textContent = "ถูก " + a.score + " ข้อ";
+    clockNameB.textContent = b.name;
+    clockTimeB.textContent = fmtClock(b.timeLeft);
+    clockScoreB.textContent = "ถูก " + b.score + " ข้อ";
+
+    clockA.classList.toggle("active", currentTeamIdx === 0);
+    clockB.classList.toggle("active", currentTeamIdx === 1);
+    clockA.classList.toggle("low", a.timeLeft <= 10);
+    clockB.classList.toggle("low", b.timeLeft <= 10);
   }
 
   function stopBattleTimer() {
@@ -171,26 +191,31 @@ document.addEventListener("DOMContentLoaded", () => {
     revealBattleAnswerBtn.style.display = "";
     correctBtn.style.display = "none";
     wrongBtn.style.display = "none";
-    battleTurnLabel.textContent = "ตาของ " + teams[currentTeamIdx].name;
-    renderBattleScoreboard();
+    battleTurnLabel.textContent = "⏱ นาฬิกาฝั่ง " + teams[currentTeamIdx].name + " กำลังเดิน";
+    renderClocks();
 
-    battleSecondsLeft = TURN_SECONDS;
-    battleTimer.textContent = battleSecondsLeft;
-    battleTimer.classList.remove("low");
     stopBattleTimer();
     battleTimerInterval = setInterval(() => {
-      battleSecondsLeft--;
-      battleTimer.textContent = battleSecondsLeft;
-      if (battleSecondsLeft <= 2) battleTimer.classList.add("low");
-      if (battleSecondsLeft <= 0) {
+      teams[currentTeamIdx].timeLeft--;
+      renderClocks();
+      if (teams[currentTeamIdx].timeLeft <= 0) {
         stopBattleTimer();
-        revealBattleAnswer();
+        endBattle(currentTeamIdx);
       }
     }, 1000);
   }
 
-  function revealBattleAnswer() {
+  function endBattle(loserIdx) {
     stopBattleTimer();
+    const loser = teams[loserIdx];
+    const winner = teams[1 - loserIdx];
+    battlePlayPanel.style.display = "none";
+    battleEndTitle.textContent = "🏆 " + winner.name + " ชนะการดวล!";
+    battleEndHint.textContent = "เพราะเวลาของฝั่ง " + loser.name + " หมดก่อน";
+    battleEndPanel.style.display = "";
+  }
+
+  function revealBattleAnswer() {
     battleAnswerBox.innerHTML =
       '<div class="fq-answer-label">คำตอบ</div>' +
       '<div class="fq-answer-num">' + currentBattleQuestion.answer + "</div>";
@@ -203,17 +228,9 @@ document.addEventListener("DOMContentLoaded", () => {
   revealBattleAnswerBtn.addEventListener("click", revealBattleAnswer);
 
   function afterJudged(wasCorrect) {
+    stopBattleTimer();
     if (wasCorrect) teams[currentTeamIdx].score++;
-
-    const champion = teams.find((t) => t.score >= SCORE_TO_WIN);
-    if (champion) {
-      battlePlayPanel.style.display = "none";
-      battleEndTitle.textContent = "🏆 " + champion.name + " ชนะการดวล!";
-      battleEndPanel.style.display = "";
-      return;
-    }
-
-    currentTeamIdx = (currentTeamIdx + 1) % teams.length;
+    currentTeamIdx = 1 - currentTeamIdx;
     startBattleTurn();
   }
 
@@ -221,7 +238,8 @@ document.addEventListener("DOMContentLoaded", () => {
   wrongBtn.addEventListener("click", () => afterJudged(false));
 
   startBattleBtn.addEventListener("click", () => {
-    if (teams.length < 2) return;
+    if (teams.length !== 2) return;
+    teams.forEach((t) => { t.timeLeft = TIME_BANK_SECONDS; t.score = 0; });
     currentTeamIdx = 0;
     usedBattleIndexes = [];
     battleSetupPanel.style.display = "none";
