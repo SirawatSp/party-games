@@ -17,6 +17,8 @@
   --gold: #ffd23f;
   --sky: #38bdf8;
   --coral: #ff6f61;
+  --mint: #34d399;
+  --rose: #fb7185;
   --text: #f6eef9;
   --text-dim: #b6a3c2;
   --line: #3a2245;
@@ -84,7 +86,7 @@ a{color:inherit; text-decoration:none;}
   color:var(--lime);
   text-transform:uppercase;
 }
-.marquee span::after{content:"\00a0 \2726 \00a0 ปาร์ตี้ \00a0 \2726 \00a0 เกมวงเหล้า \00a0 \2726 \00a0 Insider \00a0 \2726 \00a0 เกมหมวดหมู่ \00a0 \2726 \00a0 She's a 10 but \00a0 \2726 \00a0 ทริเวียหลุดโลก \00a0 \2726 \00a0 Wavelength \00a0 \2726 \00a0 ใครแม่นสุด \00a0 \2726 \00a0 จัดแถวชีวิต \00a0 \2726 \00a0 ใครคือที่สุด \00a0 \2726 \00a0 รู้ไหมใครสั่ง \00a0 \2726 \00a0 สปีดตัวอักษร \00a0 \2726 \00a0 Flash Quiz \00a0 \2726 \00a0 ";}
+.marquee span::after{content:"\00a0 \2726 \00a0 ปาร์ตี้ \00a0 \2726 \00a0 เกมวงเหล้า \00a0 \2726 \00a0 Insider \00a0 \2726 \00a0 เกมหมวดหมู่ \00a0 \2726 \00a0 She's a 10 but \00a0 \2726 \00a0 ทริเวียหลุดโลก \00a0 \2726 \00a0 Wavelength \00a0 \2726 \00a0 ใครแม่นสุด \00a0 \2726 \00a0 จัดแถวชีวิต \00a0 \2726 \00a0 ใครคือที่สุด \00a0 \2726 \00a0 รู้ไหมใครสั่ง \00a0 \2726 \00a0 สปีดตัวอักษร \00a0 \2726 \00a0 Flash Quiz \00a0 \2726 \00a0 ถามให้ลึก \00a0 \2726 \00a0 ";}
 @keyframes scroll{ 0%{transform:translateX(0);} 100%{transform:translateX(-100%);} }
 
 /* ---------- top nav ---------- */
@@ -220,6 +222,8 @@ a{color:inherit; text-decoration:none;}
 .chip-gold .glow{background:var(--gold);}
 .chip-sky .glow{background:var(--sky);}
 .chip-coral .glow{background:var(--coral);}
+.chip-mint .glow{background:var(--mint);}
+.chip-rose .glow{background:var(--rose);}
 
 /* ---------- footer ---------- */
 footer{
@@ -263,6 +267,7 @@ footer{
   box-shadow:none;
 }
 .btn.secondary:hover{border-color:var(--lime); color:var(--lime);}
+.btn.secondary.timer-running{border-color:var(--mint); color:var(--mint);}
 
 /* ---------- section card (rules panels) ---------- */
 .panel{

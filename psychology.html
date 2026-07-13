@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ถามให้ลึก — คำถามจิตวิทยาช่วยรันบทสนทนา</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <div class="brand"><span class="dot">●</span> วงกำลังจะเหงา</div>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--mint); color:#022016;">13 · คำถามจิตวิทยา</span>
+    <h1>ถามให้ลึก</h1>
+    <p>คำถามจิตวิทยาสไตล์เปิดบทสนทนา ใช้เมื่ออยากคุยกันให้ลึกกว่าเดิม ไม่มีคำตอบถูกผิด ไม่มีแพ้ชนะ — สุ่มคำถามแล้วผลัดกันตอบ ฟังกันด้วยใจเปิดกว้าง</p>
+  </section>
+
+  <div class="panel reveal-up" id="rulesPsy">
+    <h2>วิธีเล่น · ถามให้ลึก</h2>
+    <ol>
+      <li>นั่งล้อมวง เลือกระดับความลึกที่อยากคุยกัน (เบา ๆ / กลาง ๆ / ลึกซึ้ง) แล้วกดสุ่มคำถาม</li>
+      <li>อ่านคำถามออกเสียงให้วงฟัง ผลัดกันตอบทีละคน คนอื่นตั้งใจฟังโดยไม่ตัดสินหรือแซว</li>
+      <li>ใครยังไม่พร้อมตอบข้อไหนสามารถ "ผ่าน" ได้เสมอ ไม่มีการบังคับ</li>
+      <li>อยากเพิ่มจังหวะการคุยให้กระชับ กดปุ่ม "จับเวลา 60 วิ" ให้แต่ละคนตอบในเวลาที่กำหนดได้</li>
+      <li>คำถามระดับลึกซึ้งอาจแตะความรู้สึกส่วนตัว เล่นด้วยความเข้าใจและให้เกียรติกัน เหมาะกับวงที่ไว้ใจกันแล้ว</li>
+    </ol>
+  </div>
+
+  <div class="tags reveal-up" id="levelTags">
+    <span class="tag active" data-level="all">ทั้งหมด</span>
+    <span class="tag" data-level="light">เบา ๆ 🙂</span>
+    <span class="tag" data-level="medium">กลาง ๆ 💬</span>
+    <span class="tag" data-level="deep">ลึกซึ้ง 💭</span>
+  </div>
+
+  <div class="deck reveal-up">
+    <div id="psyCardHolder"></div>
+  </div>
+
+  <div class="controls" style="justify-content:center; display:flex; gap:12px; flex-wrap:wrap; margin-bottom:60px;">
+    <button class="btn" id="psyNextBtn">คำถามถัดไป →</button>
+    <button class="btn secondary" id="psyTimerBtn">จับเวลา 60 วิ ⏱</button>
+  </div>
+
+  <footer>ใช้คุยเล่นเพื่อความสนุกและความเข้าใจกันในวงเพื่อน ไม่ใช่เครื่องมือวินิจฉัยทางจิตวิทยา 😊</footer>
+</div>
+
+<script src="data/psychology.js"></script>
+<script src="js/main.js"></script>
+<script src="js/psychology.js"></script>
+</body>
+</html>
