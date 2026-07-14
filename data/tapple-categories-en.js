@@ -19,5 +19,18 @@ const TAPPLE_CATEGORIES_EN = [
   "Zoo Animals", "Desert Animals", "Arctic Animals", "Mythical Creatures", "Extinct Animals",
   "Things That Are Cold", "Things That Are Round", "Things You Recycle", "Musical Notes",
   "Coffee Shop Drinks", "Things in a Classroom", "Things in a Gym", "Party Games",
-  "Things at a Wedding", "Superstitions", "Things That Fly", "Things Underwater"
+  "Things at a Wedding", "Superstitions", "Things That Fly", "Things Underwater",
+
+  "Fictional Wizards", "Fictional Detectives", "Pirates in Movies", "Robots in Movies",
+  "Famous Painters", "Famous Scientists", "Famous Explorers", "Nobel Prize Categories",
+  "World Landmarks", "National Parks", "Deserts", "Volcanoes", "Waterfalls", "Lakes",
+  "Airlines", "Types of Bread", "Types of Cheese", "Types of Pasta", "Street Food",
+  "Salad Ingredients", "Soup Types", "BBQ Foods", "Breakfast Cereals", "Candy Brands",
+  "Perfume Brands", "Makeup Brands", "Skincare Brands", "Watch Brands", "Bag Brands",
+  "Yoga Poses", "Gym Equipment", "Running Events", "Winter Sports", "Water Sports",
+  "Extreme Sports", "Chess Pieces", "Poker Terms", "Casino Games", "Puzzle Types",
+  "Streaming Services", "Web Browsers", "Operating Systems", "Coding Languages",
+  "Types of Robots", "Types of Dinosaurs", "Prehistoric Animals", "Ocean Zones",
+  "Constellations", "Types of Clouds", "Types of Rocks", "Renewable Energy Sources",
+  "Holidays", "Wedding Traditions", "Birthday Traditions", "Graduation Traditions"
 ];
