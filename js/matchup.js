@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const passPanel = document.getElementById("muPass");
   const guessPanel = document.getElementById("muGuess");
   const revealPanel = document.getElementById("muReveal");
+  const gameEndPanel = document.getElementById("muGameEnd");
 
   // setup elements
   const nameInput = document.getElementById("muNameInput");
@@ -41,6 +42,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const scoreBox = document.getElementById("muScore");
   const nextBtn = document.getElementById("muNextBtn");
   const repair2Btn = document.getElementById("muRepair2Btn");
+  const endTitle = document.getElementById("muEndTitle");
+  const endScore = document.getElementById("muEndScore");
+  const endLeaderboard = document.getElementById("muEndLeaderboard");
+  const endRepairBtn = document.getElementById("muEndRepairBtn");
 
   let names = [];
   let groups = [];        // array of arrays of names (pairs, plus maybe one trio)
@@ -56,10 +61,11 @@ document.addEventListener("DOMContentLoaded", () => {
   let guessers = [];       // [{name, pick}]
   let guessPos = 0;
   let score = { correct: 0, total: 0 };
+  let playerStats = {};   // name -> {correct, total} across all rounds this session
 
   // ---------- name management + wheel ----------
   function showOnly(panel) {
-    [setupPanel, pairsPanel, choosePanel, passPanel, guessPanel, revealPanel]
+    [setupPanel, pairsPanel, choosePanel, passPanel, guessPanel, revealPanel, gameEndPanel]
       .forEach((p) => { p.style.display = p === panel ? "" : "none"; });
   }
 
@@ -221,14 +227,37 @@ document.addEventListener("DOMContentLoaded", () => {
     groups = makeGroups();
     roundIdx = 0;
     score = { correct: 0, total: 0 };
+    playerStats = {};
     usedQuestions = [];
     renderPairList();
     showOnly(pairsPanel);
   }
 
+  // show a final score summary before letting the group reshuffle and start over
+  function showGameEnd() {
+    const pct = score.total ? Math.round((score.correct / score.total) * 100) : 0;
+    endScore.textContent = "รวมทั้งวง: ทายถูก " + score.correct + " จาก " + score.total + " ครั้ง (" + pct + "%)";
+
+    const rows = Object.keys(playerStats)
+      .map((name) => ({ name, ...playerStats[name], pct: playerStats[name].total ? playerStats[name].correct / playerStats[name].total : 0 }))
+      .sort((a, b) => b.pct - a.pct || b.total - a.total);
+
+    endTitle.textContent = rows.length && rows[0].correct > 0
+      ? "🏆 " + rows[0].name + " รู้ใจคู่ตัวเองที่สุดในวง!"
+      : "🏁 จบเกม! สรุปผลรอบนี้";
+
+    endLeaderboard.innerHTML = rows.map((r, i) =>
+      '<div class="mu-pair-row"><span class="mu-pair-num">' + (i + 1) + '</span>' +
+      '<span class="mu-pair-names">' + r.name + " — ทายถูก " + r.correct + "/" + r.total + " (" + Math.round(r.pct * 100) + "%)</span></div>"
+    ).join("");
+
+    showOnly(gameEndPanel);
+  }
+
   shuffleBtn.addEventListener("click", doShuffle);
   repairBtn.addEventListener("click", regroup);
-  repair2Btn.addEventListener("click", regroup);
+  repair2Btn.addEventListener("click", showGameEnd);
+  endRepairBtn.addEventListener("click", regroup);
 
   // ---------- rounds ----------
   function pickQuestion() {
@@ -305,6 +334,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     score.total += guessers.length;
     score.correct += correctCount;
+    guessers.forEach((g) => {
+      const stats = playerStats[g.name] || (playerStats[g.name] = { correct: 0, total: 0 });
+      stats.total++;
+      if (g.pick === chooserPick) stats.correct++;
+    });
 
     revealEmoji.textContent = allCorrect ? "🎯" : (anyCorrect ? "😅" : "😵");
     revealVerdict.textContent = allCorrect ? "ทายถูกหมด!" : (anyCorrect ? "ทายถูกบางส่วน" : "ทายผิด!");
