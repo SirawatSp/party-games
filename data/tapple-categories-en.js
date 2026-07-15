@@ -32,5 +32,9 @@ const TAPPLE_CATEGORIES_EN = [
   "Streaming Services", "Web Browsers", "Operating Systems", "Coding Languages",
   "Types of Robots", "Types of Dinosaurs", "Prehistoric Animals", "Ocean Zones",
   "Constellations", "Types of Clouds", "Types of Rocks", "Renewable Energy Sources",
-  "Holidays", "Wedding Traditions", "Birthday Traditions", "Graduation Traditions"
+  "Holidays", "Wedding Traditions", "Birthday Traditions", "Graduation Traditions",
+  "Types of Farm Animals", "Types of Reptiles", "Types of Whales", "Types of Sharks",
+  "Types of Guitars", "Types of Drums", "Types of Dance", "Circus Acts",
+  "School Clubs", "Types of Notebooks", "Types of Furniture", "Kitchen Tools",
+  "Types of Tents", "Hiking Trails", "Board Game Names", "Card Game Names"
 ];

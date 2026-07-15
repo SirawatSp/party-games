@@ -35,6 +35,9 @@ const CHARADES_WORDS = [
   { word: "โคอาล่า", cat: "animal" },
   { word: "อูฐ", cat: "animal" },
   { word: "แรด", cat: "animal" },
+  { word: "เหยี่ยว", cat: "animal" },
+  { word: "นากทะเล", cat: "animal" },
+  { word: "กวางเรนเดียร์", cat: "animal" },
 
   // ---------- อาหาร/เครื่องดื่ม ----------
   { word: "ส้มตำ", cat: "food" },
@@ -72,6 +75,9 @@ const CHARADES_WORDS = [
   { word: "แตงโม", cat: "food" },
   { word: "สับปะรด", cat: "food" },
   { word: "องุ่น", cat: "food" },
+  { word: "ข้าวซอย", cat: "food" },
+  { word: "สุกี้", cat: "food" },
+  { word: "ขนมครก", cat: "food" },
 
   // ---------- ของใช้ในชีวิตประจำวัน ----------
   { word: "ร่ม", cat: "object" },
@@ -109,6 +115,9 @@ const CHARADES_WORDS = [
   { word: "ที่ชาร์จมือถือ", cat: "object" },
   { word: "หูฟัง", cat: "object" },
   { word: "กระเป๋าสตางค์", cat: "object" },
+  { word: "ร่มพับ", cat: "object" },
+  { word: "เข็มขัดนิรภัย", cat: "object" },
+  { word: "ที่เปิดขวด", cat: "object" },
 
   // ---------- อาชีพ ----------
   { word: "หมอ", cat: "job" },
@@ -141,6 +150,9 @@ const CHARADES_WORDS = [
   { word: "ช่างตัดผม", cat: "job" },
   { word: "สัตวแพทย์", cat: "job" },
   { word: "นักบัญชี", cat: "job" },
+  { word: "เชฟขนม", cat: "job" },
+  { word: "พนักงานขับรถ", cat: "job" },
+  { word: "ล่าม", cat: "job" },
 
   // ---------- สถานที่ ----------
   { word: "โรงเรียน", cat: "place" },
@@ -173,6 +185,9 @@ const CHARADES_WORDS = [
   { word: "ตลาดน้ำ", cat: "place" },
   { word: "เกาะ", cat: "place" },
   { word: "ภูเขาไฟ", cat: "place" },
+  { word: "สนามกอล์ฟ", cat: "place" },
+  { word: "อุโมงค์", cat: "place" },
+  { word: "สะพานแขวน", cat: "place" },
 
   // ---------- กีฬา/กิจกรรมยามว่าง ----------
   { word: "ฟุตบอล", cat: "sport" },
@@ -205,6 +220,9 @@ const CHARADES_WORDS = [
   { word: "หมากรุก", cat: "sport" },
   { word: "โยนโบว์ลิ่ง", cat: "sport" },
   { word: "วิ่งผลัด", cat: "sport" },
+  { word: "เซปักตะกร้อ", cat: "sport" },
+  { word: "ไตรกีฬา", cat: "sport" },
+  { word: "สนุกเกอร์", cat: "sport" },
 
   // ---------- หนัง/การ์ตูน/ซีรีส์ ----------
   { word: "โดราเอมอน", cat: "movie" },
@@ -237,6 +255,9 @@ const CHARADES_WORDS = [
   { word: "พี่มาก..พระโขนง", cat: "movie" },
   { word: "ฉลาดเกมส์โกง", cat: "movie" },
   { word: "แฟนฉัน", cat: "movie" },
+  { word: "ทอย สตอรี่", cat: "movie" },
+  { word: "อัพ ปู่ซ่าบ้านลอยฟ้า", cat: "movie" },
+  { word: "เชร็ค", cat: "movie" },
 
   // ---------- คำกริยา/ท่าทาง ----------
   { word: "กระโดด", cat: "action" },
@@ -274,6 +295,9 @@ const CHARADES_WORDS = [
   { word: "เป่าลูกโป่ง", cat: "action" },
   { word: "กระพือปีกบิน", cat: "action" },
   { word: "ผูกเชือกรองเท้า", cat: "action" },
+  { word: "กระโดดเชือก", cat: "action" },
+  { word: "ล้างหน้า", cat: "action" },
+  { word: "ผูกโบว์", cat: "action" },
 
   // ---------- ประเทศ/เมืองดัง ----------
   { word: "ไทย", cat: "country" },
@@ -305,5 +329,8 @@ const CHARADES_WORDS = [
   { word: "ตุรกี", cat: "country" },
   { word: "ดูไบ", cat: "country" },
   { word: "นิวซีแลนด์", cat: "country" },
-  { word: "ไอซ์แลนด์", cat: "country" }
+  { word: "ไอซ์แลนด์", cat: "country" },
+  { word: "บรูไน", cat: "country" },
+  { word: "กัมพูชา", cat: "country" },
+  { word: "ลาว", cat: "country" }
 ];
