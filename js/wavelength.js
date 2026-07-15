@@ -27,9 +27,12 @@ document.addEventListener("DOMContentLoaded", () => {
     return [CX - radius * Math.cos(rad), CY - radius * Math.sin(rad)];
   }
 
+  function clampAngle(a) {
+    return Math.max(0, Math.min(180, a));
+  }
+
   function sectorPath(a1, a2) {
-    const clamp = (a) => Math.max(0, Math.min(180, a));
-    a1 = clamp(a1); a2 = clamp(a2);
+    a1 = clampAngle(a1); a2 = clampAngle(a2);
     const [x1, y1] = pt(a1, R);
     const [x2, y2] = pt(a2, R);
     return "M" + CX + "," + CY + " L" + x1.toFixed(1) + "," + y1.toFixed(1) +
@@ -47,13 +50,15 @@ document.addEventListener("DOMContentLoaded", () => {
     ];
     targetGroup.innerHTML = "";
     zones.forEach(([a1, a2, score]) => {
+      const c1 = clampAngle(a1), c2 = clampAngle(a2);
+      if (c2 <= c1) return; // zone fully clipped off the edge of the dial — nothing to draw
       const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
       p.setAttribute("d", sectorPath(a1, a2));
       p.setAttribute("fill", COLORS[score]);
       p.setAttribute("opacity", score === 4 ? "0.95" : score === 3 ? "0.8" : "0.65");
       targetGroup.appendChild(p);
-      // ตัวเลขคะแนนกลางโซน
-      const mid = (a1 + a2) / 2;
+      // ตัวเลขคะแนนกลางโซน (จากมุมที่ถูก clamp แล้ว)
+      const mid = (c1 + c2) / 2;
       const [tx, ty] = pt(mid, R * 0.86);
       const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
       t.setAttribute("x", tx.toFixed(1));
@@ -87,8 +92,8 @@ document.addEventListener("DOMContentLoaded", () => {
     leftLabel.textContent = "← " + l;
     rightLabel.textContent = r + " →";
 
-    // สุ่มตำแหน่งเป้าให้โซนทั้งหมดอยู่ในวงล้อพอดี
-    target = BAND_2 + Math.random() * (180 - BAND_2 * 2);
+    // สุ่มตำแหน่งเป้าได้เต็มครึ่งวงกลม (0-180) — โซนที่เลยขอบจะถูกตัดออกตอนวาด
+    target = Math.random() * 180;
     drawTarget();
 
     peeking = false;
