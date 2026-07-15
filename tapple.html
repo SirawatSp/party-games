@@ -28,6 +28,7 @@
       <li>ฝั่งที่นาฬิกาเดินอยู่ต้องพูดคำในหมวดที่ขึ้นต้นด้วยตัวอักษรที่ยังเหลือ แล้วแตะตัวอักษรนั้น — ตาจะสลับ นาฬิกาอีกฝั่งเดินต่อทันที</li>
       <li>ห้ามใช้ตัวอักษรซ้ำและห้ามตอบคำซ้ำ ถ้าอีกฝั่งค้านว่าคำตอบผิดกติกา ต้องตอบใหม่โดยนาฬิกายังเดินอยู่</li>
       <li>ใครเวลาหมดก่อน (หรือกดยอมแพ้) แพ้รอบนั้น — ถ้าตัวอักษรหมดกระดาน ฝั่งที่เหลือเวลามากกว่าชนะ</li>
+      <li>นั่งตรงข้ามกันได้! กด "เต็มจอ" แล้ววางมือถือราบกลางโต๊ะ จอจะแบ่งครึ่งบน-ล่าง ฝั่งบนหมุนกลับหัวให้อ่านจากฝั่งตัวเองพอดี</li>
       <li>ชนะครบ 3 รอบก่อน เป็นแชมป์!</li>
     </ol>
   </div>
@@ -82,8 +83,9 @@
       <div class="tp-letters" id="letterGrid"></div>
       <p class="tp-hint" style="margin-top:16px;">พูดคำในหมวด แล้วแตะตัวอักษรขึ้นต้น — ตาจะสลับไปอีกฝั่งทันที</p>
 
-      <div class="controls" style="justify-content:center; display:flex; margin-top:14px;">
+      <div class="controls" style="justify-content:center; display:flex; gap:12px; flex-wrap:wrap; margin-top:14px;">
         <button class="btn secondary" id="giveUpBtn">คิดไม่ออก ยอมแพ้ 🏳</button>
+        <button class="btn secondary" id="dualViewBtn">เต็มจอ นั่งตรงข้ามกัน 📱</button>
       </div>
     </div>
 
@@ -107,6 +109,30 @@
   </div>
 
   <footer>เล่นด้วยความรับผิดชอบ ดื่มพอดี ไม่ขับรถ</footer>
+</div>
+
+<div id="dualView" class="tpb-dual" style="display:none;">
+  <div class="tpb-dual-half tpb-dual-top" id="dualHalfTop">
+    <div class="tpb-dual-cat" id="dualCatTop"></div>
+    <div class="tpb-dual-clock" id="dualClockTop">
+      <span class="tpb-clock-side">ฝั่ง 2</span>
+      <span class="tpb-clock-time" id="dualTimeTop">1:00</span>
+      <span class="tpb-clock-wins" id="dualWinsTop"></span>
+    </div>
+    <div class="tpb-dual-letters" id="dualLettersTop"></div>
+    <button class="btn secondary tpb-dual-giveup" id="dualGiveUpTop">ยอมแพ้ 🏳</button>
+  </div>
+  <div class="tpb-dual-half tpb-dual-bottom" id="dualHalfBottom">
+    <div class="tpb-dual-cat" id="dualCatBottom"></div>
+    <div class="tpb-dual-clock" id="dualClockBottom">
+      <span class="tpb-clock-side">ฝั่ง 1</span>
+      <span class="tpb-clock-time" id="dualTimeBottom">1:00</span>
+      <span class="tpb-clock-wins" id="dualWinsBottom"></span>
+    </div>
+    <div class="tpb-dual-letters" id="dualLettersBottom"></div>
+    <button class="btn secondary tpb-dual-giveup" id="dualGiveUpBottom">ยอมแพ้ 🏳</button>
+  </div>
+  <button class="tpb-dual-exit" id="exitDualViewBtn" aria-label="ออกจากเต็มจอ">✕</button>
 </div>
 
 <script src="data/tapple-categories.js"></script>

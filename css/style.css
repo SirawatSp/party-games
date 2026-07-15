@@ -717,6 +717,61 @@ footer{
   font-size:clamp(28px,6vw,38px); margin-top:12px;
 }
 
+/* face-to-face fullscreen (top half rotated for the opposite seat) */
+.tpb-dual{
+  position:fixed; inset:0; z-index:2000;
+  width:100vw; height:100vh; height:100dvh;
+  background:var(--bg);
+  display:flex; flex-direction:column;
+  overflow:hidden;
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
+  touch-action:manipulation;
+}
+.tpb-dual-half{
+  flex:1 1 50%; min-height:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:8px; padding:10px 14px; overflow:hidden;
+  user-select:none; -webkit-user-select:none;
+  -webkit-tap-highlight-color:transparent;
+  transition:background .2s;
+}
+.tpb-dual-half.active{background:rgba(56,189,248,.07);}
+.tpb-dual-half.low.active{background:rgba(255,47,135,.08);}
+.tpb-dual-top{transform:rotate(180deg);}
+.tpb-dual-bottom{border-top:1px solid var(--line);}
+.tpb-dual-cat{
+  font-family:'Kanit',sans-serif; font-weight:800;
+  font-size:clamp(15px,4vw,22px); color:var(--sky); text-align:center;
+}
+.tpb-dual-clock{
+  display:flex; align-items:center; gap:12px;
+  padding:4px 18px; border-radius:14px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.03);
+  transition:border-color .2s, box-shadow .2s, opacity .2s;
+}
+.tpb-dual-clock:not(.active){opacity:.55;}
+.tpb-dual-clock.active{
+  border-color:var(--sky);
+  box-shadow:0 0 22px -6px rgba(56,189,248,.55);
+}
+.tpb-dual-clock.low.active{border-color:var(--pink); box-shadow:0 0 22px -6px rgba(255,47,135,.65);}
+.tpb-dual-clock .tpb-clock-time{font-size:clamp(24px,6vw,34px); margin:0;}
+.tpb-dual-letters{
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(26px, 1fr));
+  gap:5px; width:100%; max-width:380px;
+}
+.tpb-dual-letters .tp-letter{font-size:13px; padding:7px 0;}
+.tpb-dual-giveup{font-size:12px; padding:7px 14px;}
+.tpb-dual-exit{
+  position:absolute; top:50%; right:10px; transform:translateY(-50%);
+  z-index:2001;
+  width:40px; height:40px; border-radius:50%;
+  background:var(--bg-card); border:1px solid var(--line); color:var(--text-dim);
+  font-size:16px; cursor:pointer;
+}
+
 .tp-letters{
   display:grid; grid-template-columns:repeat(auto-fill, minmax(44px, 1fr));
   gap:8px; max-width:620px; margin:0 auto;

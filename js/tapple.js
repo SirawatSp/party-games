@@ -24,9 +24,29 @@ document.addEventListener("DOMContentLoaded", () => {
   const categoryText = document.getElementById("categoryText");
   const letterGrid = document.getElementById("letterGrid");
   const giveUpBtn = document.getElementById("giveUpBtn");
-  const clockEls = [document.getElementById("clockA"), document.getElementById("clockB")];
-  const timeEls = [document.getElementById("clockTimeA"), document.getElementById("clockTimeB")];
-  const winEls = [document.getElementById("clockWinsA"), document.getElementById("clockWinsB")];
+  const dualViewBtn = document.getElementById("dualViewBtn");
+
+  const dualView = document.getElementById("dualView");
+  const exitDualViewBtn = document.getElementById("exitDualViewBtn");
+  const dualGiveUpTop = document.getElementById("dualGiveUpTop");
+  const dualGiveUpBottom = document.getElementById("dualGiveUpBottom");
+
+  // Side 0 = ฝั่ง 1 = main clockA + fullscreen bottom half (upright).
+  // Side 1 = ฝั่ง 2 = main clockB + fullscreen top half (rotated 180deg).
+  const categoryEls = [categoryText, document.getElementById("dualCatBottom"), document.getElementById("dualCatTop")];
+  const letterGridEls = [letterGrid, document.getElementById("dualLettersBottom"), document.getElementById("dualLettersTop")];
+  const sideTimeEls = [
+    [document.getElementById("clockTimeA"), document.getElementById("dualTimeBottom")],
+    [document.getElementById("clockTimeB"), document.getElementById("dualTimeTop")]
+  ];
+  const sideWinEls = [
+    [document.getElementById("clockWinsA"), document.getElementById("dualWinsBottom")],
+    [document.getElementById("clockWinsB"), document.getElementById("dualWinsTop")]
+  ];
+  const sideClockEls = [
+    [document.getElementById("clockA"), document.getElementById("dualClockBottom"), document.getElementById("dualHalfBottom")],
+    [document.getElementById("clockB"), document.getElementById("dualClockTop"), document.getElementById("dualHalfTop")]
+  ];
 
   const roundEndTitle = document.getElementById("roundEndTitle");
   const roundEndReason = document.getElementById("roundEndReason");
@@ -89,23 +109,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderClocks() {
     [0, 1].forEach((i) => {
-      timeEls[i].textContent = fmtClock(times[i]);
-      winEls[i].textContent = "ชนะ " + wins[i] + " รอบ";
-      clockEls[i].classList.toggle("active", roundLive && activeSide === i);
-      clockEls[i].classList.toggle("low", times[i] <= 10);
+      sideTimeEls[i].forEach((el) => { el.textContent = fmtClock(times[i]); });
+      sideWinEls[i].forEach((el) => { el.textContent = "ชนะ " + wins[i] + " รอบ"; });
+      sideClockEls[i].forEach((el) => {
+        el.classList.toggle("active", roundLive && activeSide === i);
+        el.classList.toggle("low", times[i] <= 10);
+      });
     });
   }
 
   function renderLetters() {
-    letterGrid.innerHTML = "";
-    currentLetters.forEach((letter) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "tp-letter" + (lockedLetters.has(letter) ? " used" : "");
-      btn.textContent = letter;
-      btn.disabled = lockedLetters.has(letter);
-      btn.addEventListener("click", () => handleLetterTap(letter));
-      letterGrid.appendChild(btn);
+    letterGridEls.forEach((container) => {
+      container.innerHTML = "";
+      currentLetters.forEach((letter) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "tp-letter" + (lockedLetters.has(letter) ? " used" : "");
+        btn.textContent = letter;
+        btn.disabled = lockedLetters.has(letter);
+        btn.addEventListener("click", () => handleLetterTap(letter));
+        container.appendChild(btn);
+      });
     });
   }
 
@@ -133,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
     times = [timeBank, timeBank];
     activeSide = startingSide;
     roundLive = true;
-    categoryText.textContent = pendingCategory;
+    categoryEls.forEach((el) => { el.textContent = pendingCategory; });
     renderLetters();
     renderClocks();
     showOnly(gamePanel);
@@ -167,14 +191,20 @@ document.addEventListener("DOMContentLoaded", () => {
     renderClocks();
   }
 
-  giveUpBtn.addEventListener("click", () => {
-    if (!roundLive) return;
-    endRound(1 - activeSide, "ฝั่ง " + (activeSide + 1) + " ยอมแพ้");
-  });
+  function giveUp(side) {
+    // only the side whose clock is running can concede
+    if (!roundLive || side !== activeSide) return;
+    endRound(1 - side, "ฝั่ง " + (side + 1) + " ยอมแพ้");
+  }
+
+  giveUpBtn.addEventListener("click", () => giveUp(activeSide));
+  dualGiveUpBottom.addEventListener("click", () => giveUp(0));
+  dualGiveUpTop.addEventListener("click", () => giveUp(1));
 
   function endRound(winnerIdx, reason) {
     stopTimer();
     roundLive = false;
+    exitDualView();
     startingSide = 1 - startingSide;
 
     if (winnerIdx === null) {
@@ -199,11 +229,48 @@ document.addEventListener("DOMContentLoaded", () => {
   function resetMatch() {
     stopTimer();
     roundLive = false;
+    exitDualView();
     wins = [0, 0];
     startingSide = 0;
     usedCategoryIndexes = [];
     showOnly(setupPanel);
   }
+
+  // ---------- face-to-face fullscreen view ----------
+  function requestFs(el) {
+    const method = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+    if (method) {
+      const result = method.call(el);
+      if (result && result.catch) result.catch(() => {});
+    }
+  }
+
+  function exitFs() {
+    const method = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+    if (method && (document.fullscreenElement || document.webkitFullscreenElement)) {
+      const result = method.call(document);
+      if (result && result.catch) result.catch(() => {});
+    }
+  }
+
+  function enterDualView() {
+    dualView.style.display = "flex";
+    document.documentElement.classList.add("tp-no-scroll");
+    requestFs(dualView);
+  }
+
+  function exitDualView() {
+    if (dualView.style.display === "none") return;
+    dualView.style.display = "none";
+    document.documentElement.classList.remove("tp-no-scroll");
+    exitFs();
+  }
+
+  dualViewBtn.addEventListener("click", enterDualView);
+  exitDualViewBtn.addEventListener("click", exitDualView);
+  document.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement) exitDualView();
+  });
 
   backSetupBtn.addEventListener("click", resetMatch);
   resetGameBtn.addEventListener("click", resetMatch);
