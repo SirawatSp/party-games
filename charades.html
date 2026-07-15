@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ใบ้คำ ดวลไว — เกมใบ้คำ 1v1</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <a class="brand-logo" href="index.html"><img class="brand-img" src="assets/logo.png" width="720" height="416" alt="Party Games — วงกำลังจะเหงา"></a>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--milktea); color:#2b1400;">16 · ใบ้คำ 1v1</span>
+    <h1>ใบ้คำ ดวลไว</h1>
+    <p>ดัดแปลงจากเกมใบ้คำสไตล์ชาเย็น — ฝั่งหนึ่งถือมือถือเห็นคำแล้วใบ้ให้อีกฝั่งทาย ภายในเวลาที่มี ทายถูกกี่คำก็ได้แต้มเท่านั้น สลับกันใบ้ทีละรอบ จบแมตช์แล้วดูว่าใครทายเก่งกว่ากัน!</p>
+  </section>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเล่น</h2>
+    <ol>
+      <li>เลือกหมวดคำและตั้งค่ากติกา (เวลาต่อรอบ, จำนวนรอบต่อคน) แล้วกด "เริ่มดวล"</li>
+      <li>ส่งมือถือให้ "ฝั่งที่ใบ้" ถือไว้คนเดียว หันจอเข้าหาตัวเอง — อีกฝั่งห้ามดูจอ มีหน้าที่ฟังคำใบ้แล้วทายออกเสียง</li>
+      <li>คนใบ้เห็นคำบนจอ ต้องอธิบายด้วยคำพูด (ห้ามพูดคำนั้นตรง ๆ) ให้อีกฝั่งทายให้ถูก</li>
+      <li>ทายถูกแล้วกด "✅ ถูก" เพื่อไปคำถัดไป หรือกด "⏭ ข้าม" ถ้าติดคำนั้นจริง ๆ — นาฬิกานับถอยหลังเดินตลอดจนหมดเวลา</li>
+      <li>หมดเวลาแล้วจะเห็นสรุปรายการคำในรอบนั้น กดแก้ไขได้ถ้ากดผิดคำไหน แล้วกด "ยืนยันคะแนน"</li>
+      <li>สลับให้อีกฝั่งเป็นคนใบ้บ้าง เล่นจนครบจำนวนรอบที่ตั้งไว้ ฝั่งที่ทายถูกรวมมากกว่าชนะแมตช์ (เสมอมีรอบตัดสิน)</li>
+    </ol>
+  </div>
+
+  <div class="cw-stage reveal-up">
+    <div id="setupPanel">
+      <h3 class="cw-h3">หมวดคำ</h3>
+      <div class="tags" id="categoryChips"></div>
+
+      <h3 class="cw-h3" style="margin-top:24px;">เวลาต่อรอบ</h3>
+      <div class="tp-mode-switch" id="timeSwitch">
+        <button type="button" class="tp-mode-btn" data-sec="30">30 วิ</button>
+        <button type="button" class="tp-mode-btn active" data-sec="45">45 วิ</button>
+        <button type="button" class="tp-mode-btn" data-sec="60">60 วิ</button>
+      </div>
+
+      <h3 class="cw-h3" style="margin-top:24px;">กี่รอบต่อคน</h3>
+      <div class="tp-mode-switch" id="roundsSwitch">
+        <button type="button" class="tp-mode-btn" data-n="1">1 รอบ</button>
+        <button type="button" class="tp-mode-btn active" data-n="2">2 รอบ</button>
+        <button type="button" class="tp-mode-btn" data-n="3">3 รอบ</button>
+      </div>
+
+      <div class="controls" style="justify-content:center; display:flex; margin-top:26px;">
+        <button class="btn" id="startMatchBtn">เริ่มดวล 🫖</button>
+      </div>
+    </div>
+
+    <div id="passPanel" style="display:none;" class="gn-pass">
+      <div class="gn-pass-icon">🤫</div>
+      <div class="gn-pass-text" id="passText"></div>
+      <div class="controls" style="justify-content:center; display:flex; margin-top:14px;">
+        <button class="btn" id="passBtn">พร้อมแล้ว เริ่มรอบ →</button>
+      </div>
+    </div>
+
+    <div id="playPanel" style="display:none;">
+      <div class="cw-turn" id="playTurn"></div>
+      <div class="cw-timer" id="playTimer">0:45</div>
+      <div class="cw-word" id="playWord"></div>
+      <div class="controls" style="justify-content:center; display:flex; gap:14px; flex-wrap:wrap; margin-top:22px;">
+        <button class="btn secondary cw-skip" id="skipBtn">⏭ ข้าม</button>
+        <button class="btn cw-correct" id="correctBtn">✅ ถูก</button>
+      </div>
+    </div>
+
+    <div id="recapPanel" style="display:none;">
+      <h3 class="cw-h3" id="recapTitle"></h3>
+      <div class="cw-recap-list" id="recapList"></div>
+      <p class="tp-hint">แตะรายการไหนก็ได้เพื่อสลับ ถูก/ข้าม ถ้ากดผิดตอนเล่น</p>
+      <div class="controls" style="justify-content:center; display:flex; margin-top:18px;">
+        <button class="btn" id="confirmScoreBtn">ยืนยันคะแนน →</button>
+      </div>
+    </div>
+
+    <div id="matchEndPanel" style="display:none;">
+      <h3 class="cw-h3" id="matchEndTitle">🏆 จบแมตช์!</h3>
+      <div class="cw-final-score" id="matchEndScore"></div>
+      <p class="tp-hint" id="matchEndHint"></p>
+      <div class="controls" style="justify-content:center; display:flex; gap:12px; flex-wrap:wrap; margin-top:16px;">
+        <button class="btn" id="tiebreakBtn" style="display:none;">รอบตัดสิน 🔥</button>
+        <button class="btn secondary" id="resetMatchBtn">เริ่มแมตช์ใหม่ ↻</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>เล่นด้วยความรับผิดชอบ ดื่มพอดี ไม่ขับรถ</footer>
+</div>
+
+<script src="data/charades.js"></script>
+<script src="js/main.js"></script>
+<script src="js/charades.js"></script>
+</body>
+</html>
