@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const COLORS = { 4: "#d6ff3d", 3: "#2be6ff", 2: "#ffb703" };
 
   let target = 90;
-  let lastPairIndex = -1;
+  const drawPair = createPicker(WAVELENGTH_PAIRS);
   let peeking = false;
   let hasPeeked = false;
   let revealed = false;
@@ -83,12 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function newRound() {
-    let idx;
-    do {
-      idx = Math.floor(Math.random() * WAVELENGTH_PAIRS.length);
-    } while (WAVELENGTH_PAIRS.length > 1 && idx === lastPairIndex);
-    lastPairIndex = idx;
-    const [l, r] = WAVELENGTH_PAIRS[idx];
+    const [l, r] = drawPair();
     leftLabel.textContent = "← " + l;
     rightLabel.textContent = r + " →";
 

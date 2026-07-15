@@ -13,11 +13,15 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   let activeCat = "all";
-  let lastIndex = -1;
+  let drawNext = null;
   let current = null;
 
   function pool() {
     return activeCat === "all" ? THISORTHAT_LIST : THISORTHAT_LIST.filter((p) => p.cat === activeCat);
+  }
+
+  function refreshPicker() {
+    drawNext = createPicker(pool());
   }
 
   function renderPair() {
@@ -30,14 +34,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function next() {
-    const list = pool();
-    if (!list.length) return;
-    let idx;
-    do {
-      idx = Math.floor(Math.random() * list.length);
-    } while (list.length > 1 && idx === lastIndex);
-    lastIndex = idx;
-    current = list[idx];
+    if (!drawNext) return;
+    const item = drawNext();
+    if (!item) return;
+    current = item;
     renderPair();
   }
 
@@ -56,10 +56,11 @@ document.addEventListener("DOMContentLoaded", () => {
       totTags.querySelectorAll(".tag").forEach((t) => t.classList.remove("active"));
       tagEl.classList.add("active");
       activeCat = tagEl.dataset.cat;
-      lastIndex = -1;
+      refreshPicker();
       next();
     });
   });
 
+  refreshPicker();
   next();
 });

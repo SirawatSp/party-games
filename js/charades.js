@@ -39,9 +39,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let roundsPerPlayer = 2;
   let totalRounds = 4;
 
-  let usedWordIndexes = [];
+  let drawWord = createPicker(CHARADES_WORDS);
   let currentWord = null;
-  let currentWordIdx = -1;
   let roundIdx = 0;
   let roundWords = [];   // [{word, correct}] in play order this round
   let timeLeft = 45;
@@ -92,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
   startMatchBtn.addEventListener("click", () => {
     totalRounds = roundsPerPlayer * 2;
     roundIdx = 0;
-    usedWordIndexes = [];
+    drawWord = createPicker(pool());
     score = [0, 0];
     goToPass();
   });
@@ -107,15 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ---------- play round ----------
   function pickWord() {
-    const list = pool();
-    if (!list.length) return null;
-    if (usedWordIndexes.length >= list.length) usedWordIndexes = [];
-    let idx;
-    do {
-      idx = Math.floor(Math.random() * list.length);
-    } while (usedWordIndexes.includes(idx));
-    usedWordIndexes.push(idx);
-    return list[idx];
+    return drawWord() || null;
   }
 
   function fmtClock(seconds) {

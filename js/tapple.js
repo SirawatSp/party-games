@@ -62,8 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let timeBank = 60;
   let currentLetters = TH_LETTERS;
   let currentCategories = TAPPLE_CATEGORIES;
+  let drawCategory = createPicker(currentCategories);
 
-  let usedCategoryIndexes = [];
   let lockedLetters = new Set();
   let wins = [0, 0];
   let times = [60, 60];
@@ -93,13 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   function pickCategory() {
-    if (usedCategoryIndexes.length >= currentCategories.length) usedCategoryIndexes = [];
-    let idx;
-    do {
-      idx = Math.floor(Math.random() * currentCategories.length);
-    } while (usedCategoryIndexes.includes(idx));
-    usedCategoryIndexes.push(idx);
-    return currentCategories[idx];
+    return drawCategory();
   }
 
   function fmtClock(seconds) {
@@ -232,7 +226,6 @@ document.addEventListener("DOMContentLoaded", () => {
     exitDualView();
     wins = [0, 0];
     startingSide = 0;
-    usedCategoryIndexes = [];
     showOnly(setupPanel);
   }
 
@@ -278,9 +271,9 @@ document.addEventListener("DOMContentLoaded", () => {
   startGameBtn.addEventListener("click", () => {
     currentLetters = mode === "en" ? EN_LETTERS : TH_LETTERS;
     currentCategories = mode === "en" ? TAPPLE_CATEGORIES_EN : TAPPLE_CATEGORIES;
+    drawCategory = createPicker(currentCategories);
     wins = [0, 0];
     startingSide = 0;
-    usedCategoryIndexes = [];
     showCategoryPanel();
   });
 });

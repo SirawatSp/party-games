@@ -5,12 +5,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const TAG_LABEL = { funny: "ฮา", dealbreaker: "จุดพัง", wholesome: "น่ารักกด+" };
   let activeTag = "all";
-  let lastIndex = -1;
+  let drawNext = null;
 
   function pool() {
     return activeTag === "all"
       ? TEN_BUT_LIST
       : TEN_BUT_LIST.filter((q) => q.tag === activeTag);
+  }
+
+  function refreshPicker() {
+    drawNext = createPicker(pool());
   }
 
   function renderCard(item) {
@@ -25,14 +29,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function next() {
-    const list = pool();
-    if (!list.length) return;
-    let idx;
-    do {
-      idx = Math.floor(Math.random() * list.length);
-    } while (list.length > 1 && idx === lastIndex);
-    lastIndex = idx;
-    renderCard(list[idx]);
+    if (!drawNext) return;
+    const item = drawNext();
+    if (!item) return;
+    renderCard(item);
   }
 
   nextBtn.addEventListener("click", next);
@@ -42,10 +42,11 @@ document.addEventListener("DOMContentLoaded", () => {
       filterTags.querySelectorAll(".tag").forEach((t) => t.classList.remove("active"));
       tagEl.classList.add("active");
       activeTag = tagEl.dataset.tag;
-      lastIndex = -1;
+      refreshPicker();
       next();
     });
   });
 
+  refreshPicker();
   next();
 });

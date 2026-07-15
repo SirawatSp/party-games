@@ -1,3 +1,31 @@
+// ตัวสุ่มแบบ "shuffle bag" ใช้ร่วมกันทุกเกม: การันตีว่าทุกข้อในลิสต์จะถูกสุ่มขึ้นมา
+// ครบทุกตัวก่อนที่จะเริ่มวนซ้ำ และตอนวนรอบใหม่ก็จะไม่ออกซ้ำกับตัวสุดท้ายของรอบก่อน
+// ทำให้สุ่มได้กระจายจริง ไม่ออกซ้ำในเวลาใกล้กันหรือเดาลำดับได้
+function createPicker(list) {
+  let bag = [];
+  let lastIdx = null;
+
+  function refill() {
+    bag = list.map((_, i) => i);
+    for (let i = bag.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [bag[i], bag[j]] = [bag[j], bag[i]];
+    }
+    // กันไม่ให้ตัวแรกของถุงใหม่ซ้ำกับตัวสุดท้ายที่เพิ่งออกไปตอนจบถุงก่อน
+    if (bag.length > 1 && bag[bag.length - 1] === lastIdx) {
+      [bag[bag.length - 1], bag[0]] = [bag[0], bag[bag.length - 1]];
+    }
+  }
+
+  return function pick() {
+    if (!list.length) return undefined;
+    if (bag.length === 0) refill();
+    const idx = bag.pop();
+    lastIdx = idx;
+    return list[idx];
+  };
+}
+
 // พฤติกรรมร่วมของทุกหน้า: scroll-reveal animation
 document.addEventListener("DOMContentLoaded", () => {
   const items = document.querySelectorAll(".reveal-up");

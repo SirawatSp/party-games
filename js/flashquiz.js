@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const quizScoreResetBtn = document.getElementById("quizScoreResetBtn");
 
   let activeTag = "all";
-  let lastIndex = -1;
+  let drawNext = null;
   let current = null;
   let revealed = false;
   let quizCorrect = 0;
@@ -27,6 +27,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function pool() {
     return activeTag === "all" ? FLASHQUIZ_LIST : FLASHQUIZ_LIST.filter((q) => q.tag === activeTag);
+  }
+
+  function refreshPicker() {
+    drawNext = createPicker(pool());
   }
 
   function updateQuizScoreText() {
@@ -75,14 +79,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function next() {
-    const list = pool();
-    if (!list.length) return;
-    let idx;
-    do {
-      idx = Math.floor(Math.random() * list.length);
-    } while (list.length > 1 && idx === lastIndex);
-    lastIndex = idx;
-    current = list[idx];
+    if (!drawNext) return;
+    const item = drawNext();
+    if (!item) return;
+    current = item;
     revealed = false;
     renderCard();
   }
@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
       filterTags.querySelectorAll(".tag").forEach((t) => t.classList.remove("active"));
       tagEl.classList.add("active");
       activeTag = tagEl.dataset.tag;
-      lastIndex = -1;
+      refreshPicker();
       next();
     });
   });
@@ -145,20 +145,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const side1ClockEls = [document.getElementById("clockB"), document.getElementById("dualClockTop"), document.getElementById("dualHalfTop")];
 
   let sides = [{ timeLeft: TIME_BANK_SECONDS, correct: 0 }, { timeLeft: TIME_BANK_SECONDS, correct: 0 }];
-  let usedBattleIndexes = [];
+  let drawBattleQuestion = createPicker(FLASHQUIZ_LIST);
   let currentSideIdx = 0;
   let currentBattleQuestion = null;
   let battleTimerInterval = null;
   let battleAnswerRevealed = false;
 
   function pickBattleQuestion() {
-    if (usedBattleIndexes.length >= FLASHQUIZ_LIST.length) usedBattleIndexes = [];
-    let idx;
-    do {
-      idx = Math.floor(Math.random() * FLASHQUIZ_LIST.length);
-    } while (usedBattleIndexes.includes(idx));
-    usedBattleIndexes.push(idx);
-    return FLASHQUIZ_LIST[idx];
+    return drawBattleQuestion();
   }
 
   function fmtClock(seconds) {
@@ -273,7 +267,7 @@ document.addEventListener("DOMContentLoaded", () => {
   startBattleBtn.addEventListener("click", () => {
     sides = [{ timeLeft: TIME_BANK_SECONDS, correct: 0 }, { timeLeft: TIME_BANK_SECONDS, correct: 0 }];
     currentSideIdx = 0;
-    usedBattleIndexes = [];
+    drawBattleQuestion = createPicker(FLASHQUIZ_LIST);
     battleIntroPanel.style.display = "none";
     battleEndPanel.style.display = "none";
     battlePlayPanel.style.display = "";
@@ -343,5 +337,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  refreshPicker();
   next();
 });

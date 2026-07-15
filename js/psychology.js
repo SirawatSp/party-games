@@ -9,13 +9,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const TIMER_SECONDS = 60;
 
   let activeLevel = "all";
-  let lastIndex = -1;
+  let drawNext = null;
   let current = null;
   let timerInterval = null;
   let timerLeft = TIMER_SECONDS;
 
   function pool() {
     return activeLevel === "all" ? PSYCHOLOGY_LIST : PSYCHOLOGY_LIST.filter((q) => q.level === activeLevel);
+  }
+
+  function refreshPicker() {
+    drawNext = createPicker(pool());
   }
 
   function stopTimer() {
@@ -41,14 +45,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function next() {
     stopTimer();
-    const list = pool();
-    if (!list.length) return;
-    let idx;
-    do {
-      idx = Math.floor(Math.random() * list.length);
-    } while (list.length > 1 && idx === lastIndex);
-    lastIndex = idx;
-    current = list[idx];
+    if (!drawNext) return;
+    const item = drawNext();
+    if (!item) return;
+    current = item;
     renderCard();
   }
 
@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
       levelTags.querySelectorAll(".tag").forEach((t) => t.classList.remove("active"));
       tagEl.classList.add("active");
       activeLevel = tagEl.dataset.level;
-      lastIndex = -1;
+      refreshPicker();
       next();
     });
   });
@@ -85,5 +85,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1000);
   });
 
+  refreshPicker();
   next();
 });

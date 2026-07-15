@@ -4,15 +4,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const catList = document.getElementById("catList");
   const catCount = document.getElementById("catCount");
 
-  let lastIndex = -1;
+  const drawCategory = createPicker(CATEGORIES);
 
   function pickCategory() {
-    let idx;
-    do {
-      idx = Math.floor(Math.random() * CATEGORIES.length);
-    } while (CATEGORIES.length > 1 && idx === lastIndex);
-    lastIndex = idx;
-    catText.textContent = CATEGORIES[idx];
+    catText.textContent = drawCategory();
   }
 
   newCatBtn.addEventListener("click", pickCategory);

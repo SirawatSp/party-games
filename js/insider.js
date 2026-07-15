@@ -7,15 +7,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const hideBtn = document.getElementById("hideBtn");
 
   let current = null;
-  let lastIndex = -1;
+  const drawWord = createPicker(INSIDER_WORDS);
 
   function pickWord() {
-    let idx;
-    do {
-      idx = Math.floor(Math.random() * INSIDER_WORDS.length);
-    } while (INSIDER_WORDS.length > 1 && idx === lastIndex);
-    lastIndex = idx;
-    current = INSIDER_WORDS[idx];
+    current = drawWord();
     catEl.textContent = "หมวด: " + current.category;
     wordEl.textContent = current.word;
   }

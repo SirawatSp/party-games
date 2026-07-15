@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let wheelAngle = 0;
   let spinning = false;
 
-  let usedQuestions = [];
+  let drawQuestion = createPicker(MATCHUP_LIST);
   let currentQ = null;
   let currentGroup = null;
   let chooserName = null;
@@ -228,7 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
     roundIdx = 0;
     score = { correct: 0, total: 0 };
     playerStats = {};
-    usedQuestions = [];
+    drawQuestion = createPicker(MATCHUP_LIST);
     renderPairList();
     showOnly(pairsPanel);
   }
@@ -261,13 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ---------- rounds ----------
   function pickQuestion() {
-    if (usedQuestions.length >= MATCHUP_LIST.length) usedQuestions = [];
-    let idx;
-    do {
-      idx = Math.floor(Math.random() * MATCHUP_LIST.length);
-    } while (usedQuestions.includes(idx));
-    usedQuestions.push(idx);
-    return MATCHUP_LIST[idx];
+    return drawQuestion();
   }
 
   function startRound() {

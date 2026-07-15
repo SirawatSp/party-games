@@ -8,18 +8,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const answerBox = document.getElementById("answerBox");
   const nextQuestionBtn = document.getElementById("nextQuestionBtn");
 
-  let usedIndexes = [];
   let currentQuestion = null;
-
-  function pickQuestion() {
-    if (usedIndexes.length >= GUESS_NUMBER_LIST.length) usedIndexes = [];
-    let idx;
-    do {
-      idx = Math.floor(Math.random() * GUESS_NUMBER_LIST.length);
-    } while (usedIndexes.includes(idx));
-    usedIndexes.push(idx);
-    return GUESS_NUMBER_LIST[idx];
-  }
+  const pickQuestion = createPicker(GUESS_NUMBER_LIST);
 
   function fmtNum(n) {
     return Number(n).toLocaleString("th-TH", { maximumFractionDigits: 3 });

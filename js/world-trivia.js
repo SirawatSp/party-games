@@ -12,13 +12,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let mode = "tf";
   let activeTag = "all";
-  let lastIndex = -1;
+  let drawNext = null;
   let current = null;
   let revealed = false;
 
   function pool() {
     const list = mode === "tf" ? WORLD_TRIVIA : WORLD_TRIVIA_QA;
     return activeTag === "all" ? list : list.filter((q) => q.tag === activeTag);
+  }
+
+  function refreshPicker() {
+    drawNext = createPicker(pool());
   }
 
   function renderCard() {
@@ -57,14 +61,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function next() {
-    const list = pool();
-    if (!list.length) return;
-    let idx;
-    do {
-      idx = Math.floor(Math.random() * list.length);
-    } while (list.length > 1 && idx === lastIndex);
-    lastIndex = idx;
-    current = list[idx];
+    if (!drawNext) return;
+    const item = drawNext();
+    if (!item) return;
+    current = item;
     revealed = false;
     renderCard();
   }
@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
         container.querySelectorAll(".tag").forEach((t) => t.classList.remove("active"));
         tagEl.classList.add("active");
         activeTag = tagEl.dataset.tag;
-        lastIndex = -1;
+        refreshPicker();
         next();
       });
     });
@@ -103,10 +103,11 @@ document.addEventListener("DOMContentLoaded", () => {
         c.querySelector('.tag[data-tag="all"]').classList.add("active");
       });
       activeTag = "all";
-      lastIndex = -1;
+      refreshPicker();
       next();
     });
   });
 
+  refreshPicker();
   next();
 });
