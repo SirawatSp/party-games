@@ -4,21 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "บ", "ป", "ผ", "ฝ", "พ", "ฟ", "ภ", "ม", "ย", "ร", "ล", "ว", "ศ", "ส", "ห", "อ"
   ];
   const EN_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-
-  const TURN_SECONDS = 10;
-  const CARDS_TO_WIN = 3;
-  const PLAYER_COLORS = [
-    "--sky", "--pink", "--lime", "--gold", "--violet",
-    "--teal", "--crimson", "--orange", "--indigo", "--cyan", "--amber"
-  ];
-  // Up to 4 seats arranged around the phone: south = default/near side, north = opposite
-  // side (rotated 180deg), west/east = the two side seats (rotated +-90deg).
-  const SEAT_DEFS = {
-    1: ["south"],
-    2: ["north", "south"],
-    3: ["north", "west", "south"],
-    4: ["north", "west", "east", "south"]
-  };
+  const WINS_TO_CHAMPION = 3;
 
   const setupPanel = document.getElementById("setupPanel");
   const categoryPanel = document.getElementById("categoryPanel");
@@ -26,58 +12,51 @@ document.addEventListener("DOMContentLoaded", () => {
   const roundEndPanel = document.getElementById("roundEndPanel");
   const gameEndPanel = document.getElementById("gameEndPanel");
 
+  const modeSwitch = document.getElementById("modeSwitch");
+  const timeSwitch = document.getElementById("timeSwitch");
+  const startGameBtn = document.getElementById("startGameBtn");
+
   const categoryPreviewText = document.getElementById("categoryPreviewText");
+  const startSideHint = document.getElementById("startSideHint");
   const rerollCategoryBtn = document.getElementById("rerollCategoryBtn");
   const beginRoundBtn = document.getElementById("beginRoundBtn");
 
-  const modeSwitch = document.getElementById("modeSwitch");
-  const playerNameInput = document.getElementById("playerNameInput");
-  const addPlayerBtn = document.getElementById("addPlayerBtn");
-  const playerChips = document.getElementById("playerChips");
-  const startGameBtn = document.getElementById("startGameBtn");
-  const setupError = document.getElementById("setupError");
-
-  const scoreboard = document.getElementById("scoreboard");
-  const mainEliminateBtn = document.getElementById("eliminateBtn");
-  const dualViewBtn = document.getElementById("dualViewBtn");
+  const categoryText = document.getElementById("categoryText");
+  const letterGrid = document.getElementById("letterGrid");
+  const giveUpBtn = document.getElementById("giveUpBtn");
+  const clockEls = [document.getElementById("clockA"), document.getElementById("clockB")];
+  const timeEls = [document.getElementById("clockTimeA"), document.getElementById("clockTimeB")];
+  const winEls = [document.getElementById("clockWinsA"), document.getElementById("clockWinsB")];
 
   const roundEndTitle = document.getElementById("roundEndTitle");
-  const roundEndScoreboard = document.getElementById("roundEndScoreboard");
+  const roundEndReason = document.getElementById("roundEndReason");
+  const matchScore = document.getElementById("matchScore");
   const nextRoundBtn = document.getElementById("nextRoundBtn");
+  const backSetupBtn = document.getElementById("backSetupBtn");
 
   const gameEndTitle = document.getElementById("gameEndTitle");
   const gameEndHint = document.getElementById("gameEndHint");
   const resetGameBtn = document.getElementById("resetGameBtn");
 
-  const dualView = document.getElementById("dualView");
-  const dualPanesEl = document.getElementById("dualPanes");
-  const exitDualViewBtn = document.getElementById("exitDualViewBtn");
-
-  const mainCategoryEl = document.getElementById("categoryText");
-  const mainTurnEl = document.getElementById("turnLabel");
-  const mainTimerEl = document.getElementById("timerNum");
-  const mainLetterGridEl = document.getElementById("letterGrid");
-
-  // These registries always start with the main-panel element, then get the dual-view
-  // seat panes appended once buildDualPanes() runs at game start.
-  let categoryEls = [mainCategoryEl];
-  let turnEls = [mainTurnEl];
-  let timerEls = [mainTimerEl];
-  let letterGridContainers = [mainLetterGridEl];
-  let eliminateBtnEls = [mainEliminateBtn];
-
   let mode = "th";
+  let timeBank = 60;
   let currentLetters = TH_LETTERS;
   let currentCategories = TAPPLE_CATEGORIES;
 
-  let players = [];
   let usedCategoryIndexes = [];
   let lockedLetters = new Set();
-  let roundAlive = [];
-  let currentTurnIdx = 0;
-  let currentTurnColorVar = "--sky";
-  let secondsLeft = TURN_SECONDS;
+  let wins = [0, 0];
+  let times = [60, 60];
+  let activeSide = 0;
+  let startingSide = 0;   // alternates every round for fairness
+  let pendingCategory = null;
+  let roundLive = false;
   let timerInterval = null;
+
+  function showOnly(panel) {
+    [setupPanel, categoryPanel, gamePanel, roundEndPanel, gameEndPanel]
+      .forEach((p) => { p.style.display = p === panel ? "" : "none"; });
+  }
 
   modeSwitch.querySelectorAll(".tp-mode-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -86,38 +65,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  function renderChips() {
-    playerChips.innerHTML = "";
-    players.forEach((p, i) => {
-      const chip = document.createElement("span");
-      chip.className = "tp-chip";
-      chip.innerHTML = p.name + ' <button aria-label="ลบ">×</button>';
-      chip.querySelector("button").addEventListener("click", () => {
-        players.splice(i, 1);
-        renderChips();
-      });
-      playerChips.appendChild(chip);
+  timeSwitch.querySelectorAll(".tp-mode-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      timeBank = Number(btn.dataset.sec);
+      timeSwitch.querySelectorAll(".tp-mode-btn").forEach((b) => b.classList.toggle("active", b === btn));
     });
-    startGameBtn.disabled = players.length < 2;
-  }
-
-  function addPlayer() {
-    const name = playerNameInput.value.trim();
-    if (!name) return;
-    if (players.some((p) => p.name === name)) {
-      setupError.textContent = "มีชื่อนี้ในวงแล้ว ลองชื่ออื่นดูนะ";
-      return;
-    }
-    setupError.textContent = "";
-    players.push({ name, cards: 0, color: "--sky" });
-    playerNameInput.value = "";
-    playerNameInput.focus();
-    renderChips();
-  }
-
-  addPlayerBtn.addEventListener("click", addPlayer);
-  playerNameInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") { e.preventDefault(); addPlayer(); }
   });
 
   function pickCategory() {
@@ -130,81 +82,30 @@ document.addEventListener("DOMContentLoaded", () => {
     return currentCategories[idx];
   }
 
-  function renderScoreboard(target) {
-    target.innerHTML = "";
-    players.forEach((p, i) => {
-      const row = document.createElement("div");
-      const isAlive = roundAlive.includes(i);
-      const isCurrent = target === scoreboard && isAlive && roundAlive[currentTurnIdx] === i;
-      row.className = "tp-score-row" +
-        (target === scoreboard && !isAlive ? " out" : "") +
-        (isCurrent ? " current" : "");
-      if (isCurrent) row.style.setProperty("--tc", "var(" + p.color + ")");
-      row.innerHTML =
-        '<span class="tp-score-name">' + p.name + "</span>" +
-        '<span class="tp-score-cards">' + "🃏".repeat(p.cards) + "</span>";
-      target.appendChild(row);
+  function fmtClock(seconds) {
+    const s = Math.max(0, seconds);
+    return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+  }
+
+  function renderClocks() {
+    [0, 1].forEach((i) => {
+      timeEls[i].textContent = fmtClock(times[i]);
+      winEls[i].textContent = "ชนะ " + wins[i] + " รอบ";
+      clockEls[i].classList.toggle("active", roundLive && activeSide === i);
+      clockEls[i].classList.toggle("low", times[i] <= 10);
     });
   }
 
-  function renderLetterGrids() {
-    letterGridContainers.forEach((container) => {
-      container.innerHTML = "";
-      currentLetters.forEach((letter) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "tp-letter" + (lockedLetters.has(letter) ? " used" : "");
-        btn.textContent = letter;
-        btn.disabled = lockedLetters.has(letter);
-        btn.addEventListener("click", () => handleLetterTap(letter));
-        container.appendChild(btn);
-      });
-    });
-  }
-
-  function buildDualPanes() {
-    dualPanesEl.innerHTML = "";
-    categoryEls = [mainCategoryEl];
-    turnEls = [mainTurnEl];
-    timerEls = [mainTimerEl];
-    letterGridContainers = [mainLetterGridEl];
-    eliminateBtnEls = [mainEliminateBtn];
-
-    const seatCount = Math.min(Math.max(players.length, 1), 4);
-    dualPanesEl.className = "tp-dual-cross seats-" + seatCount;
-
-    SEAT_DEFS[seatCount].forEach((seatKey) => {
-      const pane = document.createElement("div");
-      pane.className = "tp-seat tp-seat-" + seatKey;
-      pane.innerHTML =
-        '<div class="tp-dual-turn"></div>' +
-        '<div class="tp-dual-category"></div>' +
-        '<div class="tp-dual-timer">' + TURN_SECONDS + "</div>" +
-        '<div class="tp-dual-letters"></div>' +
-        '<button type="button" class="btn secondary tp-dual-eliminate">ตกรอบ ❌</button>';
-      dualPanesEl.appendChild(pane);
-
-      turnEls.push(pane.querySelector(".tp-dual-turn"));
-      categoryEls.push(pane.querySelector(".tp-dual-category"));
-      timerEls.push(pane.querySelector(".tp-dual-timer"));
-      letterGridContainers.push(pane.querySelector(".tp-dual-letters"));
-      const elimBtn = pane.querySelector(".tp-dual-eliminate");
-      elimBtn.addEventListener("click", () => {
-        stopTimer();
-        eliminateCurrent();
-      });
-      eliminateBtnEls.push(elimBtn);
-    });
-  }
-
-  function setAllText(els, text) {
-    els.forEach((el) => { el.textContent = text; });
-  }
-
-  function applyTurnBadge(text, colorVar) {
-    turnEls.forEach((el) => {
-      el.textContent = text;
-      el.style.background = "var(" + colorVar + ")";
+  function renderLetters() {
+    letterGrid.innerHTML = "";
+    currentLetters.forEach((letter) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "tp-letter" + (lockedLetters.has(letter) ? " used" : "");
+      btn.textContent = letter;
+      btn.disabled = lockedLetters.has(letter);
+      btn.addEventListener("click", () => handleLetterTap(letter));
+      letterGrid.appendChild(btn);
     });
   }
 
@@ -215,37 +116,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function startTurn() {
-    secondsLeft = TURN_SECONDS;
-    setAllText(timerEls, secondsLeft);
-    timerEls.forEach((el) => el.classList.remove("low"));
-    const playerIdx = roundAlive[currentTurnIdx];
-    currentTurnColorVar = players[playerIdx].color;
-    applyTurnBadge("👉 ตาของ " + players[playerIdx].name, currentTurnColorVar);
-    renderScoreboard(scoreboard);
-
-    stopTimer();
-    timerInterval = setInterval(() => {
-      secondsLeft--;
-      setAllText(timerEls, secondsLeft);
-      if (secondsLeft <= 3) timerEls.forEach((el) => el.classList.add("low"));
-      if (secondsLeft <= 0) {
-        stopTimer();
-        eliminateCurrent();
-      }
-    }, 1000);
-  }
-
-  let pendingCategory = null;
-
   function showCategoryPanel() {
     pendingCategory = pickCategory();
     categoryPreviewText.textContent = pendingCategory;
-    setupPanel.style.display = "none";
-    gamePanel.style.display = "none";
-    roundEndPanel.style.display = "none";
-    gameEndPanel.style.display = "none";
-    categoryPanel.style.display = "";
+    startSideHint.textContent = "รอบนี้ฝั่ง " + (startingSide + 1) + " เริ่มก่อน";
+    showOnly(categoryPanel);
   }
 
   rerollCategoryBtn.addEventListener("click", () => {
@@ -254,134 +129,91 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   beginRoundBtn.addEventListener("click", () => {
-    setAllText(categoryEls, pendingCategory);
     lockedLetters = new Set();
-    roundAlive = players.map((_, i) => i);
-    currentTurnIdx = 0;
-    renderLetterGrids();
-    categoryPanel.style.display = "none";
-    gamePanel.style.display = "";
-    startTurn();
+    times = [timeBank, timeBank];
+    activeSide = startingSide;
+    roundLive = true;
+    categoryText.textContent = pendingCategory;
+    renderLetters();
+    renderClocks();
+    showOnly(gamePanel);
+
+    stopTimer();
+    timerInterval = setInterval(() => {
+      times[activeSide]--;
+      renderClocks();
+      if (times[activeSide] <= 0) {
+        endRound(1 - activeSide, "เวลาฝั่ง " + (activeSide + 1) + " หมดก่อน");
+      }
+    }, 1000);
   });
 
   function handleLetterTap(letter) {
-    if (lockedLetters.has(letter)) return;
+    if (!roundLive || lockedLetters.has(letter)) return;
     lockedLetters.add(letter);
-    renderLetterGrids();
-    stopTimer();
+    renderLetters();
 
     if (lockedLetters.size >= currentLetters.length) {
-      endRound(null);
+      // board exhausted — more time left on the clock wins
+      if (times[0] === times[1]) {
+        endRound(null, "ตัวอักษรหมดกระดานและเวลาเหลือเท่ากันพอดี");
+      } else {
+        const winner = times[0] > times[1] ? 0 : 1;
+        endRound(winner, "ตัวอักษรหมดกระดาน — ฝั่ง " + (winner + 1) + " เหลือเวลามากกว่า");
+      }
       return;
     }
-    currentTurnIdx = (currentTurnIdx + 1) % roundAlive.length;
-    startTurn();
+    activeSide = 1 - activeSide;
+    renderClocks();
   }
 
-  function eliminateCurrent() {
-    roundAlive.splice(currentTurnIdx, 1);
-    if (currentTurnIdx >= roundAlive.length) currentTurnIdx = 0;
-
-    if (roundAlive.length <= 1) {
-      endRound(roundAlive.length === 1 ? roundAlive[0] : null);
-    } else {
-      startTurn();
-    }
-  }
-
-  mainEliminateBtn.addEventListener("click", () => {
-    stopTimer();
-    eliminateCurrent();
+  giveUpBtn.addEventListener("click", () => {
+    if (!roundLive) return;
+    endRound(1 - activeSide, "ฝั่ง " + (activeSide + 1) + " ยอมแพ้");
   });
 
-  function endRound(winnerIdx) {
+  function endRound(winnerIdx, reason) {
     stopTimer();
-    gamePanel.style.display = "none";
-    exitDualView();
+    roundLive = false;
+    startingSide = 1 - startingSide;
 
     if (winnerIdx === null) {
-      roundEndTitle.textContent = "ตัวอักษรหมด! รอบนี้ไม่มีใครได้ป้าย";
+      roundEndTitle.textContent = "🤝 เสมอ!";
     } else {
-      players[winnerIdx].cards++;
-      roundEndTitle.textContent = "🎉 " + players[winnerIdx].name + " ชนะรอบนี้! ได้ป้ายหมวด";
+      wins[winnerIdx]++;
+      if (wins[winnerIdx] >= WINS_TO_CHAMPION) {
+        gameEndTitle.textContent = "🏆 ฝั่ง " + (winnerIdx + 1) + " เป็นแชมป์!";
+        gameEndHint.textContent = "ชนะครบ " + WINS_TO_CHAMPION + " รอบก่อน — สกอร์รวม " + wins[0] + " : " + wins[1];
+        showOnly(gameEndPanel);
+        return;
+      }
+      roundEndTitle.textContent = "🎉 ฝั่ง " + (winnerIdx + 1) + " ชนะรอบนี้!";
     }
-    renderScoreboard(roundEndScoreboard);
-
-    const champion = players.find((p) => p.cards >= CARDS_TO_WIN);
-    if (champion) {
-      gameEndTitle.textContent = "🏆 " + champion.name + " ชนะเกม!";
-      gameEndHint.textContent = "เก็บครบ " + CARDS_TO_WIN + " ป้ายหมวดก่อนใคร";
-      roundEndPanel.style.display = "none";
-      gameEndPanel.style.display = "";
-    } else {
-      roundEndPanel.style.display = "";
-    }
+    roundEndReason.textContent = reason;
+    matchScore.textContent = wins[0] + " : " + wins[1];
+    showOnly(roundEndPanel);
   }
 
   nextRoundBtn.addEventListener("click", showCategoryPanel);
 
+  function resetMatch() {
+    stopTimer();
+    roundLive = false;
+    wins = [0, 0];
+    startingSide = 0;
+    usedCategoryIndexes = [];
+    showOnly(setupPanel);
+  }
+
+  backSetupBtn.addEventListener("click", resetMatch);
+  resetGameBtn.addEventListener("click", resetMatch);
+
   startGameBtn.addEventListener("click", () => {
-    if (players.length < 2) return;
-    players.forEach((p, i) => { p.color = PLAYER_COLORS[i % PLAYER_COLORS.length]; });
     currentLetters = mode === "en" ? EN_LETTERS : TH_LETTERS;
     currentCategories = mode === "en" ? TAPPLE_CATEGORIES_EN : TAPPLE_CATEGORIES;
-    buildDualPanes();
+    wins = [0, 0];
+    startingSide = 0;
+    usedCategoryIndexes = [];
     showCategoryPanel();
   });
-
-  resetGameBtn.addEventListener("click", () => {
-    stopTimer();
-    exitDualView();
-    players = [];
-    usedCategoryIndexes = [];
-    dualPanesEl.innerHTML = "";
-    categoryEls = [mainCategoryEl];
-    turnEls = [mainTurnEl];
-    timerEls = [mainTimerEl];
-    letterGridContainers = [mainLetterGridEl];
-    eliminateBtnEls = [mainEliminateBtn];
-    renderChips();
-    categoryPanel.style.display = "none";
-    gamePanel.style.display = "none";
-    roundEndPanel.style.display = "none";
-    gameEndPanel.style.display = "none";
-    setupPanel.style.display = "";
-  });
-
-  function requestFs(el) {
-    const method = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
-    if (method) {
-      const result = method.call(el);
-      if (result && result.catch) result.catch(() => {});
-    }
-  }
-
-  function exitFs() {
-    const method = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
-    if (method && (document.fullscreenElement || document.webkitFullscreenElement)) {
-      const result = method.call(document);
-      if (result && result.catch) result.catch(() => {});
-    }
-  }
-
-  function enterDualView() {
-    dualView.style.display = "block";
-    document.documentElement.classList.add("tp-no-scroll");
-    requestFs(dualView);
-  }
-
-  function exitDualView() {
-    if (dualView.style.display === "none") return;
-    dualView.style.display = "none";
-    document.documentElement.classList.remove("tp-no-scroll");
-    exitFs();
-  }
-
-  dualViewBtn.addEventListener("click", enterDualView);
-  exitDualViewBtn.addEventListener("click", exitDualView);
-  document.addEventListener("fullscreenchange", () => {
-    if (!document.fullscreenElement) exitDualView();
-  });
-
-  renderChips();
 });
