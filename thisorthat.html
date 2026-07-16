@@ -17,8 +17,13 @@
   <section class="page-head reveal-up">
     <span class="kicker" style="background:var(--rose); color:#3a0410;">14 · เลือกอย่างใดอย่างหนึ่ง</span>
     <h1>This or That</h1>
-    <p>สุ่มคู่ตัวเลือกออกมา แล้วให้ทุกคนในวงเลือกฝั่งพร้อมกัน ใครเลือกเหมือนกันก็เข้าใจกันไว คนไหนเลือกต่างก็เถียงกันมันส์ ๆ ได้เลย มีคลังกว่า 500 คู่หลายหมวดให้สุ่มเล่น</p>
+    <p>สุ่มคู่ตัวเลือกออกมา แล้วให้ทุกคนในวงเลือกฝั่งพร้อมกัน ใครเลือกเหมือนกันก็เข้าใจกันไว คนไหนเลือกต่างก็เถียงกันมันส์ ๆ ได้เลย มีคลังกว่า 500 คู่หลายหมวดให้สุ่มเล่น หรือสลับไปโหมดทัวร์นาเมนต์สถาปนิกระดับโลก เล่นจนจบบัลลังก์เพื่อโหวตหาอันดับ 1 ก็ได้</p>
   </section>
+
+  <div class="tp-mode-switch reveal-up" id="totModeSwitch" style="margin-bottom:22px;">
+    <button type="button" class="tp-mode-btn active" data-mode="endless">สุ่มไม่รู้จบ 🔀</button>
+    <button type="button" class="tp-mode-btn" data-mode="bracket">ทัวร์นาเมนต์สถาปนิก 🏛️</button>
+  </div>
 
   <div class="panel reveal-up" id="rulesTot">
     <h2>วิธีเล่น · This or That</h2>
@@ -47,7 +52,7 @@
     <span class="tag" data-cat="weird">มันส์ๆ 🤪</span>
   </div>
 
-  <div class="tot-stage reveal-up">
+  <div class="tot-stage reveal-up" id="endlessStage">
     <div class="tot-cat" id="totCatLabel">หมวด</div>
     <div class="tot-options" id="totOptions">
       <button type="button" class="tot-option" id="totOptionA"></button>
@@ -57,14 +62,57 @@
     <div class="tot-picked-label" id="totPickedLabel"></div>
   </div>
 
-  <div class="controls" style="justify-content:center; display:flex; margin-bottom:60px;">
+  <div class="controls" id="endlessControls" style="justify-content:center; display:flex; margin-bottom:60px;">
     <button class="btn" id="totNextBtn">คู่ต่อไป →</button>
+  </div>
+
+  <div class="panel reveal-up" id="rulesArch" style="display:none;">
+    <h2>วิธีเล่น · ทัวร์นาเมนต์สถาปนิกระดับโลก</h2>
+    <ol>
+      <li>เลือกจำนวนสถาปนิกที่จะแข่ง (8 หรือ 16 คน) ระบบจะสุ่มจับคู่ปะทะกันทีละคู่</li>
+      <li>อ่านชื่อและผลงานเด่นของแต่ละคนให้วงฟัง แล้วช่วยกันโหวตว่าใครเจ๋งกว่า</li>
+      <li>ผู้ชนะแต่ละคู่จะได้ไปต่อในรอบถัดไป จนกว่าจะเหลือคนเดียว</li>
+      <li>เล่นจนจบบัลลังก์เพื่อดูว่าใครคืออันดับ 1 พร้อมดูเส้นทางที่ผ่านมาทั้งหมด</li>
+    </ol>
+  </div>
+
+  <div class="tot-stage reveal-up" id="archStage" style="display:none;">
+    <div id="archSetup">
+      <h3 class="mu-h3" style="color:var(--rose);">เลือกขนาดทัวร์นาเมนต์</h3>
+      <div class="tp-mode-switch" id="archSizeSwitch">
+        <button type="button" class="tp-mode-btn" data-n="8">8 คน</button>
+        <button type="button" class="tp-mode-btn active" data-n="16">16 คน</button>
+      </div>
+      <div class="controls" style="justify-content:center; display:flex; margin-top:22px;">
+        <button class="btn" id="archStartBtn">เริ่มทัวร์นาเมนต์ 🏆</button>
+      </div>
+    </div>
+
+    <div id="archMatch" style="display:none;">
+      <div class="tot-cat" id="archRoundLabel">รอบ</div>
+      <div class="tot-options" id="archOptions">
+        <button type="button" class="tot-option" id="archOptionA"></button>
+        <div class="tot-vs">VS</div>
+        <button type="button" class="tot-option" id="archOptionB"></button>
+      </div>
+    </div>
+
+    <div id="archResult" style="display:none;">
+      <div class="mu-reveal-emoji">🏆</div>
+      <h3 class="mu-h3" id="archChampionName" style="color:var(--rose);"></h3>
+      <p class="tp-hint" id="archChampionBlurb"></p>
+      <div class="cw-recap-list" id="archPathList" style="margin-top:18px;"></div>
+      <div class="controls" style="justify-content:center; display:flex; margin-top:20px;">
+        <button class="btn secondary" id="archReplayBtn">เล่นทัวร์นาเมนต์ใหม่ ↻</button>
+      </div>
+    </div>
   </div>
 
   <footer>เล่นเพื่อความสนุก ไม่มีคำตอบถูกผิด แค่เปิดบทสนทนาในวงเพื่อน 😄</footer>
 </div>
 
 <script src="data/thisorthat.js"></script>
+<script src="data/architects.js"></script>
 <script src="js/main.js"></script>
 <script src="js/thisorthat.js"></script>
 </body>
