@@ -332,5 +332,41 @@ const CHARADES_WORDS = [
   { word: "ไอซ์แลนด์", cat: "country" },
   { word: "บรูไน", cat: "country" },
   { word: "กัมพูชา", cat: "country" },
-  { word: "ลาว", cat: "country" }
+  { word: "ลาว", cat: "country" },
+
+  { word: "จามรี", cat: "animal" },
+  { word: "แรดดำ", cat: "animal" },
+  { word: "ปลาไหลไฟฟ้า", cat: "animal" },
+
+  { word: "ปอเปี๊ยะสด", cat: "food" },
+  { word: "หมูสะเต๊ะ", cat: "food" },
+  { word: "ข้าวเกรียบกุ้ง", cat: "food" },
+
+  { word: "เตียงนอน", cat: "object" },
+  { word: "โคมไฟตั้งโต๊ะ", cat: "object" },
+  { word: "พรมเช็ดเท้า", cat: "object" },
+
+  { word: "นักโบราณคดี", cat: "job" },
+  { word: "นักดับเพลิงป่า", cat: "job" },
+  { word: "พนักงานเสิร์ฟ", cat: "job" },
+
+  { word: "ตลาดกลางคืน", cat: "place" },
+  { word: "หอคอยชมวิว", cat: "place" },
+  { word: "สวนสัตว์กลางแจ้ง", cat: "place" },
+
+  { word: "ปีนเชือก", cat: "sport" },
+  { word: "ยิงธนูสนาม", cat: "sport" },
+  { word: "ว่ายน้ำผลัด", cat: "sport" },
+
+  { word: "อเวนเจอร์ส เอนด์เกม", cat: "movie" },
+  { word: "โคโคะ", cat: "movie" },
+  { word: "อินไซด์เอาท์", cat: "movie" },
+
+  { word: "ปีนต้นไม้", cat: "action" },
+  { word: "เป่านกหวีด", cat: "action" },
+  { word: "จูงสุนัขเดินเล่น", cat: "action" },
+
+  { word: "โมร็อกโก", cat: "country" },
+  { word: "อาร์เจนตินา", cat: "country" },
+  { word: "โปรตุเกส", cat: "country" }
 ];

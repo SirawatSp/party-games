@@ -36,5 +36,14 @@ const TAPPLE_CATEGORIES_EN = [
   "Types of Farm Animals", "Types of Reptiles", "Types of Whales", "Types of Sharks",
   "Types of Guitars", "Types of Drums", "Types of Dance", "Circus Acts",
   "School Clubs", "Types of Notebooks", "Types of Furniture", "Kitchen Tools",
-  "Types of Tents", "Hiking Trails", "Board Game Names", "Card Game Names"
+  "Types of Tents", "Hiking Trails", "Board Game Names", "Card Game Names",
+  "Types of Trees", "Types of Flowers", "Types of Mushrooms", "Garden Tools",
+  "Types of Rice Dishes", "Types of Noodles", "Types of Dumplings", "Types of Curry",
+  "Types of Soup", "Types of Salad", "Types of Sandwiches", "Types of Tacos",
+  "Types of Bones", "Types of Exercises", "Yoga Studios", "Types of Stretches",
+  "Newspaper Names", "Magazine Names", "TV Channel Names", "News Anchors",
+  "Bank Names", "Credit Card Brands", "Insurance Companies", "Stock Market Terms",
+  "Motorcycle Brands", "Car Parts", "Types of Fuel", "Types of Tires",
+  "Home Appliance Brands", "Bedroom Items", "Kitchen Appliances", "Cleaning Supplies",
+  "Rock Bands", "Pop Singers", "Hip Hop Artists", "Music Festivals"
 ];
