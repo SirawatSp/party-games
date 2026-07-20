@@ -39,16 +39,32 @@
       <span id="rightLabel">ขวา →</span>
     </div>
     <div class="wl-dial">
-      <svg viewBox="0 0 400 214">
-        <path d="M28,200 A172,172 0 0 1 372,200 Z" fill="#241430" stroke="#3a2245" stroke-width="2"/>
+      <svg viewBox="0 0 400 218">
+        <defs>
+          <linearGradient id="wlSpectrum" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#2be6ff"/>
+            <stop offset="50%" stop-color="#9d6bff"/>
+            <stop offset="100%" stop-color="#ff8a3d"/>
+          </linearGradient>
+          <radialGradient id="wlDialBg" cx="50%" cy="92%" r="95%">
+            <stop offset="0%" stop-color="#301b40"/>
+            <stop offset="60%" stop-color="#241430"/>
+            <stop offset="100%" stop-color="#190c21"/>
+          </radialGradient>
+          <filter id="wlNeedleGlow" x="-60%" y="-60%" width="220%" height="220%">
+            <feDropShadow dx="0" dy="0" stdDeviation="3.5" flood-color="#ff2f87" flood-opacity="0.75"/>
+          </filter>
+        </defs>
+        <path d="M28,200 A172,172 0 0 1 372,200 Z" fill="url(#wlDialBg)" stroke="#3a2245" stroke-width="2"/>
         <g id="ticks"></g>
         <g id="targetGroup" style="display:none;"></g>
         <g id="coverGroup">
           <text x="200" y="120" class="wl-cover-q">?</text>
         </g>
-        <line id="needle" x1="200" y1="200" x2="200" y2="42" stroke="#ff2f87" stroke-width="5" stroke-linecap="round"/>
-        <circle cx="200" cy="200" r="12" fill="#ff2f87"/>
-        <path d="M20,200 A180,180 0 0 1 380,200" fill="none" stroke="#3a2245" stroke-width="2"/>
+        <path d="M16,200 A184,184 0 0 1 384,200" fill="none" stroke="url(#wlSpectrum)" stroke-width="7" stroke-linecap="round" opacity="0.95"/>
+        <line id="needle" x1="200" y1="200" x2="200" y2="46" stroke="#ff2f87" stroke-width="5" stroke-linecap="round" filter="url(#wlNeedleGlow)"/>
+        <circle cx="200" cy="200" r="13" fill="#1c0f24" stroke="#ff2f87" stroke-width="4"/>
+        <circle cx="200" cy="200" r="4.5" fill="#ff2f87"/>
       </svg>
     </div>
     <input type="range" id="dialSlider" class="wl-slider" min="0" max="180" step="0.5" value="90">

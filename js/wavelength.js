@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const COLORS = { 4: "#d6ff3d", 3: "#2be6ff", 2: "#ffb703" };
 
   let target = 90;
+  let lastTarget = -999;
   const drawPair = createPicker(WAVELENGTH_PAIRS);
   let peeking = false;
   let hasPeeked = false;
@@ -56,6 +57,8 @@ document.addEventListener("DOMContentLoaded", () => {
       p.setAttribute("d", sectorPath(a1, a2));
       p.setAttribute("fill", COLORS[score]);
       p.setAttribute("opacity", score === 4 ? "0.95" : score === 3 ? "0.8" : "0.65");
+      p.setAttribute("stroke", "#190c21");
+      p.setAttribute("stroke-width", "1.5");
       targetGroup.appendChild(p);
       // ตัวเลขคะแนนกลางโซน (จากมุมที่ถูก clamp แล้ว)
       const mid = (c1 + c2) / 2;
@@ -70,12 +73,19 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function setNeedle(angle) {
-    needle.setAttribute("transform", "rotate(" + (angle - 90) + " " + CX + " " + CY + ")");
+    // ใช้ CSS transform เพื่อให้เข็มเคลื่อนแบบลื่น (มี transition ใน stylesheet)
+    needle.style.transform = "rotate(" + (angle - 90) + "deg)";
   }
 
   function setTargetVisible(show) {
     targetGroup.style.display = show ? "" : "none";
     coverGroup.style.display = show ? "none" : "";
+    if (show) {
+      // เล่นอนิเมชันเด้งทุกครั้งที่โซนเป้าโผล่
+      targetGroup.classList.remove("wl-pop");
+      void targetGroup.getBoundingClientRect();
+      targetGroup.classList.add("wl-pop");
+    }
   }
 
   function updatePeekBtn() {
@@ -88,7 +98,11 @@ document.addEventListener("DOMContentLoaded", () => {
     rightLabel.textContent = r + " →";
 
     // สุ่มตำแหน่งเป้าได้เต็มครึ่งวงกลม (0-180) — โซนที่เลยขอบจะถูกตัดออกตอนวาด
-    target = Math.random() * 180;
+    // และบังคับให้ห่างจากเป้ารอบก่อนอย่างน้อย 25 องศา จะได้ไม่ออกจุดเดิมซ้ำ ๆ
+    do {
+      target = Math.random() * 180;
+    } while (Math.abs(target - lastTarget) < 25);
+    lastTarget = target;
     drawTarget();
 
     peeking = false;

@@ -536,6 +536,16 @@ footer{
 .wl-labels span:last-child{color:var(--orange); text-align:right;}
 .wl-dial{max-width:560px; margin:0 auto;}
 .wl-dial svg{width:100%; height:auto; display:block;}
+#needle{
+  transform-box:view-box; transform-origin:50% 91.7%;
+  transition:transform .14s ease-out;
+}
+#targetGroup{transform-box:view-box; transform-origin:50% 91.7%;}
+#targetGroup.wl-pop{animation:wlPop .5s cubic-bezier(.2,1.4,.4,1);}
+@keyframes wlPop{
+  from{opacity:0; transform:scale(.85);}
+  to{opacity:1; transform:scale(1);}
+}
 .wl-score-num{
   font-family:'Kanit',sans-serif; font-weight:800; font-size:15px;
   fill:#1a0410; text-anchor:middle; dominant-baseline:middle;
