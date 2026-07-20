@@ -51,7 +51,8 @@
             <stop offset="60%" stop-color="#241430"/>
             <stop offset="100%" stop-color="#190c21"/>
           </radialGradient>
-          <filter id="wlNeedleGlow" x="-60%" y="-60%" width="220%" height="220%">
+          <!-- ต้องใช้ userSpaceOnUse: เข็มเป็นเส้นแนวตั้ง bbox กว้าง 0 ถ้าใช้ objectBoundingBox พื้นที่ filter จะว่างและเข็มไม่ถูกวาด -->
+          <filter id="wlNeedleGlow" filterUnits="userSpaceOnUse" x="-20" y="-20" width="440" height="258">
             <feDropShadow dx="0" dy="0" stdDeviation="3.5" flood-color="#ff2f87" flood-opacity="0.75"/>
           </filter>
         </defs>
