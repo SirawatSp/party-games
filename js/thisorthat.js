@@ -9,7 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const CAT_LABEL = {
     food: "อาหาร", lifestyle: "ไลฟ์สไตล์", entertain: "บันเทิง", travel: "ท่องเที่ยว",
     tech: "เทคโนโลยี", fantasy: "แฟนตาซี", love: "ความรัก", party: "ปาร์ตี้",
-    sport: "กีฬา", animal: "สัตว์/ธรรมชาติ", work: "งาน/เรียน", weird: "มันส์ๆ"
+    sport: "กีฬา", animal: "สัตว์/ธรรมชาติ", work: "งาน/เรียน", weird: "มันส์ๆ",
+    rather: "Would You Rather"
   };
 
   let activeCat = "all";
