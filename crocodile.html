@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>จระเข้งับนิ้ว — เกมวัดดวงกดฟัน</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <a class="brand-logo" href="index.html"><img class="brand-img" src="assets/logo.png" width="720" height="416" alt="Party Games — วงกำลังจะเหงา"></a>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--croc); color:#02240f;">17 · เกมวัดดวง</span>
+    <h1>จระเข้งับนิ้ว</h1>
+    <p>ดัดแปลงจากของเล่นสุดคลาสสิก — จระเข้อ้าปากรอ มีฟันผุซ่อนอยู่ ผลัดกันกดฟันคนละซี่ ใครกดโดนซี่ต้องห้าม โดนงับเต็มปาก! ยิ่งฟันเหลือน้อย ยิ่งลุ้นหนัก</p>
+  </section>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเล่น</h2>
+    <ol>
+      <li>ตั้งค่าจำนวนฟันกับจำนวนฟันผุ แล้วกด "เริ่มเกม" — ระบบจะสุ่มซี่อันตรายแบบลับ ๆ ทุกครั้ง</li>
+      <li>วางมือถือกลางวง แล้วผลัดกันกดฟันคนละ 1 ซี่ วนไปเรื่อย ๆ</li>
+      <li>กดโดนซี่ปลอดภัย ฟันจะยุบลงไป — รอดตัว ส่งต่อให้คนถัดไป</li>
+      <li>ใครกดโดนฟันผุ จระเข้งับทันที! คนนั้นแพ้ รับบทลงโทษของวง (ดื่ม จิบ หรือทำตามข้อตกลง)</li>
+      <li>แถบ "โอกาสโดนงับ" จะขยับขึ้นเรื่อย ๆ ตามฟันที่เหลือ ใครใจไม่ถึงดูแล้วจะยิ่งสั่น</li>
+      <li>จบรอบกด "รอบใหม่" สุ่มฟันผุตำแหน่งใหม่ เล่นวนได้เรื่อย ๆ</li>
+    </ol>
+  </div>
+
+  <div class="croc-stage reveal-up">
+    <div id="setupPanel">
+      <h3 class="croc-h3">จำนวนฟัน</h3>
+      <div class="tp-mode-switch" id="teethSwitch">
+        <button type="button" class="tp-mode-btn" data-n="12">12 ซี่</button>
+        <button type="button" class="tp-mode-btn active" data-n="16">16 ซี่</button>
+        <button type="button" class="tp-mode-btn" data-n="20">20 ซี่</button>
+      </div>
+
+      <h3 class="croc-h3" style="margin-top:24px;">ฟันผุ (ซี่อันตราย)</h3>
+      <div class="tp-mode-switch" id="trapSwitch">
+        <button type="button" class="tp-mode-btn active" data-n="1">1 ซี่</button>
+        <button type="button" class="tp-mode-btn" data-n="2">2 ซี่</button>
+      </div>
+
+      <div class="controls" style="justify-content:center; display:flex; margin-top:26px;">
+        <button class="btn" id="startBtn">เริ่มเกม 🐊</button>
+      </div>
+    </div>
+
+    <div id="gamePanel" style="display:none;">
+      <div class="croc-status">
+        <span id="safeCount"></span>
+        <span id="riskText"></span>
+      </div>
+      <div class="croc-risk-bar"><div class="croc-risk-fill" id="riskFill"></div></div>
+
+      <div class="croc-scene" id="crocScene">
+        <div class="croc-head" id="crocHead">
+          <div class="croc-top">
+            <div class="croc-eye"><div class="croc-pupil"></div></div>
+            <div class="croc-eye"><div class="croc-pupil"></div></div>
+            <div class="croc-nostril"></div>
+            <div class="croc-nostril"></div>
+            <div class="croc-top-teeth"></div>
+          </div>
+          <div class="croc-mouth">
+            <div class="croc-teeth-grid" id="teethGrid"></div>
+          </div>
+          <div class="croc-bottom"></div>
+        </div>
+        <div class="croc-flash" id="crocFlash"></div>
+      </div>
+
+      <div class="croc-hint" id="crocHint">ผลัดกันกดฟันคนละ 1 ซี่ — ขอให้โชคดี 🙏</div>
+
+      <div id="biteResult" class="croc-result" style="display:none;">
+        <div class="croc-result-title">🐊 งับ!!</div>
+        <div class="croc-result-msg" id="biteMsg"></div>
+      </div>
+
+      <div class="controls" style="justify-content:center; display:flex; gap:12px; flex-wrap:wrap; margin-top:20px;">
+        <button class="btn" id="newRoundBtn" style="display:none;">รอบใหม่ ↻</button>
+        <button class="btn secondary" id="backSetupBtn">ตั้งค่าใหม่ ⚙️</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>เล่นด้วยความรับผิดชอบ ดื่มพอดี ไม่ขับรถ</footer>
+</div>
+
+<script src="js/main.js"></script>
+<script src="js/crocodile.js"></script>
+</body>
+</html>

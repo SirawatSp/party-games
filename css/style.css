@@ -21,6 +21,7 @@
   --rose: #fb7185;
   --grape: #a855f7;
   --milktea: #e8965f;
+  --croc: #4ade80;
   --text: #f6eef9;
   --text-dim: #b6a3c2;
   --line: #3a2245;
@@ -88,7 +89,7 @@ a{color:inherit; text-decoration:none;}
   color:var(--lime);
   text-transform:uppercase;
 }
-.marquee span::after{content:"\00a0 \2726 \00a0 ปาร์ตี้ \00a0 \2726 \00a0 เกมวงเหล้า \00a0 \2726 \00a0 Insider \00a0 \2726 \00a0 เกมหมวดหมู่ \00a0 \2726 \00a0 She's a 10 but \00a0 \2726 \00a0 ทริเวียหลุดโลก \00a0 \2726 \00a0 Wavelength \00a0 \2726 \00a0 ใครแม่นสุด \00a0 \2726 \00a0 จัดแถวชีวิต \00a0 \2726 \00a0 ใครคือที่สุด \00a0 \2726 \00a0 รู้ไหมใครสั่ง \00a0 \2726 \00a0 สปีดตัวอักษร \00a0 \2726 \00a0 Flash Quiz \00a0 \2726 \00a0 ถามให้ลึก \00a0 \2726 \00a0 This or That \00a0 \2726 \00a0 จับคู่ รู้จายยยย \00a0 \2726 \00a0 ใบ้คำ ดวลไว \00a0 \2726 \00a0 ";}
+.marquee span::after{content:"\00a0 \2726 \00a0 ปาร์ตี้ \00a0 \2726 \00a0 เกมวงเหล้า \00a0 \2726 \00a0 Insider \00a0 \2726 \00a0 เกมหมวดหมู่ \00a0 \2726 \00a0 She's a 10 but \00a0 \2726 \00a0 ทริเวียหลุดโลก \00a0 \2726 \00a0 Wavelength \00a0 \2726 \00a0 ใครแม่นสุด \00a0 \2726 \00a0 จัดแถวชีวิต \00a0 \2726 \00a0 ใครคือที่สุด \00a0 \2726 \00a0 รู้ไหมใครสั่ง \00a0 \2726 \00a0 สปีดตัวอักษร \00a0 \2726 \00a0 Flash Quiz \00a0 \2726 \00a0 ถามให้ลึก \00a0 \2726 \00a0 This or That \00a0 \2726 \00a0 จับคู่ รู้จายยยย \00a0 \2726 \00a0 ใบ้คำ ดวลไว \00a0 \2726 \00a0 จระเข้งับนิ้ว \00a0 \2726 \00a0 ";}
 @keyframes scroll{ 0%{transform:translateX(0);} 100%{transform:translateX(-100%);} }
 
 /* ---------- top nav ---------- */
@@ -243,6 +244,7 @@ a{color:inherit; text-decoration:none;}
 .chip-rose .glow{background:var(--rose);}
 .chip-grape .glow{background:var(--grape);}
 .chip-milktea .glow{background:var(--milktea);}
+.chip-croc .glow{background:var(--croc);}
 
 /* ---------- footer ---------- */
 footer{
@@ -1165,3 +1167,121 @@ html.tp-no-scroll, html.tp-no-scroll body{overflow:hidden; height:100%; overscro
 /* scroll reveal */
 .reveal-up{opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s ease;}
 .reveal-up.in{opacity:1; transform:translateY(0);}
+
+/* ================= CROCODILE (จระเข้งับนิ้ว) ================= */
+.croc-stage{
+  background:var(--bg-card); border:1px solid var(--line); border-radius:var(--radius);
+  padding:28px 22px; margin:26px 0;
+}
+.croc-h3{font-size:19px; margin-bottom:14px; color:var(--croc);}
+.croc-status{
+  display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  font-weight:700; font-size:15px; color:var(--text-dim); margin-bottom:8px;
+}
+.croc-status #riskText{color:var(--amber);}
+.croc-risk-bar{
+  height:8px; border-radius:99px; background:#2a1836; overflow:hidden; margin-bottom:20px;
+}
+.croc-risk-fill{
+  height:100%; width:0; border-radius:99px; background:var(--croc);
+  transition:width .35s ease, background .35s ease;
+}
+.croc-risk-fill.hot{background:var(--crimson);}
+
+.croc-scene{position:relative; max-width:560px; margin:0 auto;}
+.croc-head{position:relative;}
+.croc-top{
+  position:relative; height:96px;
+  background:linear-gradient(180deg, #34a05a 0%, #237b43 80%);
+  border:2px solid #1b5e33; border-bottom:none;
+  border-radius:48px 48px 8px 8px;
+  transform-origin:50% 100%;
+  transition:transform .12s cubic-bezier(.7,0,1,.6);
+  z-index:2;
+}
+/* งับ: ขากรรไกรบนสไลด์ลงมาปิดปาก */
+.croc-head.bite .croc-top{transform:translateY(86%) scaleY(.45);}
+.croc-eye{
+  position:absolute; top:-20px; width:44px; height:44px; border-radius:50%;
+  background:#f8f4e6; border:2px solid #1b5e33;
+}
+.croc-eye:nth-child(1){left:18%;}
+.croc-eye:nth-child(2){right:18%;}
+.croc-pupil{
+  position:absolute; left:50%; top:52%; width:14px; height:20px; border-radius:50%;
+  background:#132015; transform:translate(-50%,-50%);
+}
+.croc-head.bite .croc-eye{height:12px; top:-2px; border-radius:99px; background:#237b43;}
+.croc-head.bite .croc-pupil{display:none;}
+.croc-nostril{
+  position:absolute; top:18px; width:12px; height:12px; border-radius:50%;
+  background:#16502a;
+}
+.croc-nostril:nth-child(3){left:42%;}
+.croc-nostril:nth-child(4){right:42%;}
+/* แถวฟันสามเหลี่ยมของขากรรไกรบน ชี้ลง */
+.croc-top-teeth{
+  position:absolute; left:6px; right:6px; bottom:-14px; height:15px;
+  background:conic-gradient(from -45deg at 50% 100%, #fdf6ec 0 90deg, transparent 90deg);
+  background-size:26px 15px; background-repeat:repeat-x;
+  filter:drop-shadow(0 1px 0 #1b5e33);
+}
+.croc-mouth{
+  background:linear-gradient(180deg, #5e1030 0%, #7c1a3f 100%);
+  border-left:2px solid #1b5e33; border-right:2px solid #1b5e33;
+  padding:26px 18px 18px;
+}
+.croc-teeth-grid{
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(52px, 1fr));
+  gap:10px;
+}
+.croc-tooth{
+  height:56px; border:none; cursor:pointer;
+  border-radius:10px 10px 18px 18px;
+  background:linear-gradient(180deg, #ffffff 0%, #efe6d8 100%);
+  box-shadow:0 4px 0 #b8a88f, inset 0 -3px 6px rgba(0,0,0,.08);
+  transition:transform .08s ease, opacity .2s ease;
+}
+.croc-tooth:active{transform:translateY(3px);}
+.croc-tooth.pressed{
+  transform:translateY(6px); box-shadow:none; opacity:.32; cursor:default;
+  background:#cbbfae;
+}
+.croc-tooth.trap{
+  background:linear-gradient(180deg, #ff5d5d 0%, #c81e3e 100%);
+  box-shadow:0 0 18px rgba(255,61,84,.8); opacity:1; transform:none;
+}
+.croc-bottom{
+  height:34px;
+  background:linear-gradient(180deg, #2c8a4e 0%, #1e6b3a 100%);
+  border:2px solid #1b5e33; border-top:none;
+  border-radius:8px 8px 26px 26px;
+}
+.croc-flash{
+  position:absolute; inset:0; border-radius:26px; pointer-events:none;
+  background:var(--crimson); opacity:0; z-index:3;
+}
+.croc-flash.flash{animation:crocFlash .5s ease-out;}
+@keyframes crocFlash{ 0%{opacity:.55;} 100%{opacity:0;} }
+.croc-scene.shake{animation:crocShake .45s ease-in-out;}
+@keyframes crocShake{
+  0%,100%{transform:translateX(0);}
+  15%{transform:translateX(-9px) rotate(-1deg);}
+  35%{transform:translateX(8px) rotate(1deg);}
+  55%{transform:translateX(-6px);}
+  75%{transform:translateX(4px);}
+}
+.croc-hint{
+  text-align:center; color:var(--text-dim); font-size:15px; margin-top:18px; min-height:22px;
+}
+.croc-result{text-align:center; margin-top:18px;}
+.croc-result-title{
+  font-family:'Kanit',sans-serif; font-weight:800; font-size:44px; line-height:1.1;
+  color:var(--crimson); text-shadow:0 0 24px rgba(255,61,84,.5);
+}
+.croc-result-msg{color:var(--text); font-size:16px; margin-top:8px;}
+@media (max-width:480px){
+  .croc-teeth-grid{grid-template-columns:repeat(auto-fill, minmax(44px, 1fr)); gap:8px;}
+  .croc-tooth{height:48px;}
+  .croc-eye{width:36px; height:36px; top:-16px;}
+}
