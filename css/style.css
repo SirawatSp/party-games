@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,400;0,600;0,700;0,800;1,700&family=Sarabun:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bungee&family=Kanit:ital,wght@0,400;0,600;0,700;0,800;1,700&family=Sarabun:wght@300;400;500;600;700&display=swap');
 
 :root{
   --bg: #0c0710;
@@ -215,9 +215,22 @@ a{color:inherit; text-decoration:none;}
   letter-spacing:.1em;
 }
 .card h3{
-  font-size:26px;
-  margin:10px 0 8px;
+  --marquee: var(--accent, var(--lime));
+  font-family:'Bungee','Kanit',sans-serif;
+  font-weight:400;
+  font-size:clamp(19px, 4.6vw, 25px);
+  line-height:1.25;
+  letter-spacing:.01em;
+  text-align:center;
+  margin:12px 0 14px;
+  padding:12px 14px;
   position:relative; z-index:1;
+  color:var(--marquee);
+  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.4)), var(--bg-alt);
+  border:3px solid var(--marquee);
+  border-radius:12px;
+  text-shadow:0 0 10px var(--marquee), 0 0 22px color-mix(in srgb, var(--marquee) 60%, transparent);
+  box-shadow:inset 0 0 0 2px rgba(0,0,0,.45), 0 0 20px -6px var(--marquee);
 }
 .card p{
   color:var(--text-dim);
@@ -237,24 +250,24 @@ a{color:inherit; text-decoration:none;}
 .card:hover .go svg{transform:translateX(6px);}
 
 /* accent chip colors per card */
-.chip-pink .glow{background:var(--pink);}
-.chip-cyan .glow{background:var(--cyan);}
-.chip-lime .glow{background:var(--lime);}
-.chip-amber .glow{background:var(--amber);}
-.chip-violet .glow{background:var(--violet);}
-.chip-orange .glow{background:var(--orange);}
-.chip-teal .glow{background:var(--teal);}
-.chip-indigo .glow{background:var(--indigo);}
-.chip-crimson .glow{background:var(--crimson);}
-.chip-gold .glow{background:var(--gold);}
-.chip-sky .glow{background:var(--sky);}
-.chip-coral .glow{background:var(--coral);}
-.chip-mint .glow{background:var(--mint);}
-.chip-rose .glow{background:var(--rose);}
-.chip-grape .glow{background:var(--grape);}
-.chip-milktea .glow{background:var(--milktea);}
-.chip-croc .glow{background:var(--croc);}
-.chip-taxi .glow{background:var(--taxi);}
+.chip-pink{--accent:var(--pink);} .chip-pink .glow{background:var(--pink);}
+.chip-cyan{--accent:var(--cyan);} .chip-cyan .glow{background:var(--cyan);}
+.chip-lime{--accent:var(--lime);} .chip-lime .glow{background:var(--lime);}
+.chip-amber{--accent:var(--amber);} .chip-amber .glow{background:var(--amber);}
+.chip-violet{--accent:var(--violet);} .chip-violet .glow{background:var(--violet);}
+.chip-orange{--accent:var(--orange);} .chip-orange .glow{background:var(--orange);}
+.chip-teal{--accent:var(--teal);} .chip-teal .glow{background:var(--teal);}
+.chip-indigo{--accent:var(--indigo);} .chip-indigo .glow{background:var(--indigo);}
+.chip-crimson{--accent:var(--crimson);} .chip-crimson .glow{background:var(--crimson);}
+.chip-gold{--accent:var(--gold);} .chip-gold .glow{background:var(--gold);}
+.chip-sky{--accent:var(--sky);} .chip-sky .glow{background:var(--sky);}
+.chip-coral{--accent:var(--coral);} .chip-coral .glow{background:var(--coral);}
+.chip-mint{--accent:var(--mint);} .chip-mint .glow{background:var(--mint);}
+.chip-rose{--accent:var(--rose);} .chip-rose .glow{background:var(--rose);}
+.chip-grape{--accent:var(--grape);} .chip-grape .glow{background:var(--grape);}
+.chip-milktea{--accent:var(--milktea);} .chip-milktea .glow{background:var(--milktea);}
+.chip-croc{--accent:var(--croc);} .chip-croc .glow{background:var(--croc);}
+.chip-taxi{--accent:var(--taxi);} .chip-taxi .glow{background:var(--taxi);}
 
 /* ---------- footer ---------- */
 footer{
