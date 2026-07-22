@@ -22,6 +22,7 @@
   --grape: #a855f7;
   --milktea: #e8965f;
   --croc: #4ade80;
+  --taxi: #ffe14d;
   --text: #f6eef9;
   --text-dim: #b6a3c2;
   --line: #3a2245;
@@ -89,7 +90,7 @@ a{color:inherit; text-decoration:none;}
   color:var(--lime);
   text-transform:uppercase;
 }
-.marquee span::after{content:"\00a0 \2726 \00a0 ปาร์ตี้ \00a0 \2726 \00a0 เกมวงเหล้า \00a0 \2726 \00a0 Insider \00a0 \2726 \00a0 เกมหมวดหมู่ \00a0 \2726 \00a0 She's a 10 but \00a0 \2726 \00a0 ทริเวียหลุดโลก \00a0 \2726 \00a0 Wavelength \00a0 \2726 \00a0 ใครแม่นสุด \00a0 \2726 \00a0 จัดแถวชีวิต \00a0 \2726 \00a0 ใครคือที่สุด \00a0 \2726 \00a0 รู้ไหมใครสั่ง \00a0 \2726 \00a0 สปีดตัวอักษร \00a0 \2726 \00a0 Flash Quiz \00a0 \2726 \00a0 ถามให้ลึก \00a0 \2726 \00a0 This or That \00a0 \2726 \00a0 จับคู่ รู้จายยยย \00a0 \2726 \00a0 ใบ้คำ ดวลไว \00a0 \2726 \00a0 จระเข้งับนิ้ว \00a0 \2726 \00a0 ";}
+.marquee span::after{content:"\00a0 \2726 \00a0 ปาร์ตี้ \00a0 \2726 \00a0 เกมวงเหล้า \00a0 \2726 \00a0 Insider \00a0 \2726 \00a0 เกมหมวดหมู่ \00a0 \2726 \00a0 She's a 10 but \00a0 \2726 \00a0 ทริเวียหลุดโลก \00a0 \2726 \00a0 Wavelength \00a0 \2726 \00a0 ใครแม่นสุด \00a0 \2726 \00a0 จัดแถวชีวิต \00a0 \2726 \00a0 ใครคือที่สุด \00a0 \2726 \00a0 รู้ไหมใครสั่ง \00a0 \2726 \00a0 สปีดตัวอักษร \00a0 \2726 \00a0 Flash Quiz \00a0 \2726 \00a0 ถามให้ลึก \00a0 \2726 \00a0 This or That \00a0 \2726 \00a0 จับคู่ รู้จายยยย \00a0 \2726 \00a0 ใบ้คำ ดวลไว \00a0 \2726 \00a0 จระเข้งับนิ้ว \00a0 \2726 \00a0 แท็กซี่พาไป \00a0 \2726 \00a0 ";}
 @keyframes scroll{ 0%{transform:translateX(0);} 100%{transform:translateX(-100%);} }
 
 /* ---------- top nav ---------- */
@@ -245,6 +246,7 @@ a{color:inherit; text-decoration:none;}
 .chip-grape .glow{background:var(--grape);}
 .chip-milktea .glow{background:var(--milktea);}
 .chip-croc .glow{background:var(--croc);}
+.chip-taxi .glow{background:var(--taxi);}
 
 /* ---------- footer ---------- */
 footer{
@@ -1284,4 +1286,30 @@ html.tp-no-scroll, html.tp-no-scroll body{overflow:hidden; height:100%; overscro
   .croc-teeth-grid{grid-template-columns:repeat(auto-fill, minmax(44px, 1fr)); gap:8px;}
   .croc-tooth{height:48px;}
   .croc-eye{width:36px; height:36px; top:-16px;}
+}
+
+/* ================= TAXI (แท็กซี่พาไป) ================= */
+.tx-h3{font-size:19px; margin-bottom:14px; color:var(--taxi);}
+.tx-meter{
+  display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+  background:var(--taxi); color:#241a00;
+  font-family:'Kanit',sans-serif; font-weight:800; font-size:16px;
+  border-radius:14px; padding:10px 16px; margin-bottom:20px;
+  box-shadow:0 0 30px -8px rgba(255,225,77,.55);
+}
+.tx-timer{
+  font-size:22px; margin:0; color:#241a00;
+  background:#fff8dc; border-radius:10px; padding:2px 12px;
+}
+.tx-timer.low{color:#c81e3e;}
+.tx-dest-label{
+  text-align:center; color:var(--text-dim); font-size:15px; margin-bottom:6px;
+}
+.tx-warn{
+  text-align:center; color:var(--amber); font-size:13.5px; margin-top:14px;
+}
+.tx-best{
+  text-align:center; margin-top:20px; padding:10px 14px;
+  border:1px dashed var(--taxi); border-radius:12px;
+  color:var(--taxi); font-weight:700; font-size:15px;
 }
