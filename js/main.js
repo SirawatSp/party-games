@@ -26,6 +26,20 @@ function createPicker(list) {
   };
 }
 
+// หน้าแรก: แปะ label จำนวนโจทย์ปัจจุบันบนการ์ดแต่ละเกม (ข้อมูลมาจาก data/game-counts.js
+// ซึ่งสร้างอัตโนมัติจากคลังโจทย์จริง จะได้เช็คได้ตลอดว่าเกมไหนคลังเยอะหรือน้อย)
+document.addEventListener("DOMContentLoaded", () => {
+  if (typeof GAME_COUNTS === "undefined") return;
+  document.querySelectorAll(".card[href]").forEach((card) => {
+    const info = GAME_COUNTS[card.getAttribute("href")];
+    if (!info) return;
+    const badge = document.createElement("span");
+    badge.className = "card-count";
+    badge.textContent = info.count.toLocaleString("th-TH") + " " + info.unit;
+    card.appendChild(badge);
+  });
+});
+
 // พฤติกรรมร่วมของทุกหน้า: scroll-reveal animation
 document.addEventListener("DOMContentLoaded", () => {
   const items = document.querySelectorAll(".reveal-up");
