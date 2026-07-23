@@ -25,7 +25,7 @@
     <ol>
       <li>เลือกโหมดแข่ง — <b>ว่ายน้ำ 🏊</b> / <b>วิ่งแข่ง 🏃</b> / <b>ตะลุมบอน ⚔️</b> — และจำนวนนักแข่ง แล้วกด "สุ่มนักแข่ง"</li>
       <li>ระบบจะสุ่มสัตว์ขึ้นมาแข่ง แต่ละคนในวงเลือกเชียร์สัตว์ตัวที่ถูกใจ พิมพ์ชื่อใต้การ์ดตัวนั้นได้เลย (ใครไม่เชียร์ก็ข้ามได้)</li>
-      <li>กด "เริ่มแข่ง!" แล้วลุ้นไปพร้อมกัน ผลจะสุ่มสด ๆ ไม่ตายตัว — โหมดว่ายน้ำ/วิ่งแข่งดูอันดับเข้าเส้นชัย โหมดตะลุมบอนกดปะทะทีละยกจนเหลือแชมป์คนเดียว</li>
+      <li>กด "เริ่มแข่ง!" แล้วลุ้นไปพร้อมกัน ผลจะสุ่มสด ๆ ไม่ตายตัว — โหมดว่ายน้ำ/วิ่งแข่งดูอันดับเข้าเส้นชัย โหมดตะลุมบอนทุกตัวลงสนามพร้อมกัน เดินสุ่มชนกันเองอัตโนมัติ ใครโดนตีจนเลือดหมดก่อนตกรอบ เหลือตัวสุดท้ายคือแชมป์</li>
       <li>จบรอบดูว่าใครเชียร์ถูก แพ้-ชนะตัดสินกันตามธรรมเนียมวง แล้วกด "แข่งใหม่" สุ่มนักแข่งชุดใหม่เล่นได้เรื่อย ๆ</li>
     </ol>
   </div>
@@ -75,26 +75,8 @@
         <span id="battleAliveLabel"></span>
       </div>
 
-      <div class="rc-duel-stage" id="duelStage">
+      <div class="rc-melee-arena" id="meleeArena">
         <div class="rc-duel-ground"></div>
-        <div class="rc-duel-fighter rc-duel-left" id="duelLeft">
-          <div class="rc-duel-hpbar"><div class="rc-duel-hpfill" id="duelHpLeft"></div></div>
-          <div class="rc-duel-token" id="duelTokenLeft">❓</div>
-          <div class="rc-duel-name" id="duelNameLeft">เตรียมพร้อม</div>
-        </div>
-        <div class="rc-duel-vs" id="duelVs">VS</div>
-        <div class="rc-duel-fighter rc-duel-right" id="duelRight">
-          <div class="rc-duel-hpbar"><div class="rc-duel-hpfill" id="duelHpRight"></div></div>
-          <div class="rc-duel-token" id="duelTokenRight">❓</div>
-          <div class="rc-duel-name" id="duelNameRight">เตรียมพร้อม</div>
-        </div>
-        <div class="rc-duel-impact" id="duelImpact">💥</div>
-      </div>
-
-      <h4 class="rc-bench-title">นักสู้ที่เหลือ</h4>
-      <div class="rc-arena" id="battleArena"></div>
-      <div class="controls" style="justify-content:center; display:flex; margin-top:18px;">
-        <button class="btn" id="battleNextBtn">ปะทะยกต่อไป 👊</button>
       </div>
       <div class="rc-log" id="battleLog"></div>
     </div>

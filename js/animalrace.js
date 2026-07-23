@@ -19,20 +19,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const raceTrack = document.getElementById("raceTrack");
 
   const battleAliveLabel = document.getElementById("battleAliveLabel");
-  const battleArena = document.getElementById("battleArena");
-  const battleNextBtn = document.getElementById("battleNextBtn");
+  const meleeArena = document.getElementById("meleeArena");
   const battleLog = document.getElementById("battleLog");
-
-  const duelStage = document.getElementById("duelStage");
-  const duelLeft = document.getElementById("duelLeft");
-  const duelRight = document.getElementById("duelRight");
-  const duelTokenLeft = document.getElementById("duelTokenLeft");
-  const duelTokenRight = document.getElementById("duelTokenRight");
-  const duelNameLeft = document.getElementById("duelNameLeft");
-  const duelNameRight = document.getElementById("duelNameRight");
-  const duelHpLeft = document.getElementById("duelHpLeft");
-  const duelHpRight = document.getElementById("duelHpRight");
-  const duelImpact = document.getElementById("duelImpact");
 
   const resultTitle = document.getElementById("resultTitle");
   const resultBody = document.getElementById("resultBody");
@@ -112,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   startRaceBtn.addEventListener("click", () => {
-    if (mode === "battle") startBattle();
+    if (mode === "battle") startMelee();
     else startLaneRace();
   });
 
@@ -216,59 +204,34 @@ document.addEventListener("DOMContentLoaded", () => {
     showOnly(resultPanel);
   }
 
-  // ---------------- ตะลุมบอน (battle royale) ----------------
-  const BATTLE_LINES = [
+  // ---------------- ตะลุมบอน (battle royale — ทุกตัวลงสนามพร้อมกัน) ----------------
+  // ทุกตัวเดินสุ่มในสนามเดียวกัน ชนกันเมื่อไหร่ก็สุ่มว่าใครเป็นฝ่ายตี แล้วสุ่มดาเมจ
+  // ทุกตัวเริ่มด้วยเลือดเท่ากันหมด ไม่มีตัวไหนได้เปรียบโดยกำเนิด
+  const MELEE_HIT_LINES = [
     "{A} พุ่งเข้าใส่ {B} แบบไม่ทันตั้งตัว!",
     "{A} กับ {B} ปะทะกันมันส์หยุดโลก!",
     "{A} ใช้ท่าไม้ตายเข้าใส่ {B}!",
-    "{A} กับ {B} วิ่งเข้าใส่กันสุดแรง!",
+    "{A} กับ {B} ชนกันสุดแรง!",
     "สนามสั่นเมื่อ {A} เจอ {B}!",
   ];
-  const BATTLE_WIN_LINES = [
-    "🏆 {W} เอาชนะไปได้อย่างเหลือเชื่อ!",
-    "🏆 {W} ยืนหนึ่ง จบยกนี้ไปแบบสวย ๆ!",
-    "🏆 {W} รอดมาได้หวุดหวิด!",
-    "🏆 {W} จัดการคู่ต่อสู้เรียบร้อย!",
+  const MELEE_KO_LINES = [
+    "💀 {L} ถูก {W} น็อกร่วง!",
+    "💀 {L} หมดแรงเพราะฝีมือ {W}!",
+    "💀 {W} จัดการ {L} เรียบร้อย!",
+    "💀 {L} ไปไม่รอดเพราะ {W}!",
   ];
-  const drawBattleLine = () => BATTLE_LINES[Math.floor(Math.random() * BATTLE_LINES.length)];
-  const drawWinLine = () => BATTLE_WIN_LINES[Math.floor(Math.random() * BATTLE_WIN_LINES.length)];
+  const drawMeleeLine = () => MELEE_HIT_LINES[Math.floor(Math.random() * MELEE_HIT_LINES.length)];
+  const drawKoLine = () => MELEE_KO_LINES[Math.floor(Math.random() * MELEE_KO_LINES.length)];
 
-  let battleRacers = [];
+  const MELEE_MAX_HP = 100;
+  const TOKEN_SIZE = 46;        // px เส้นผ่านศูนย์กลาง hitbox
+  const HIT_COOLDOWN_MS = 550;  // กันโดนตีรัว ๆ ตอนยังชนกันอยู่
+  const MELEE_TICK_MS = 70;
+  const MELEE_MAX_TICKS = 500;  // เซฟตี้กันลูปค้าง (~35 วิ)
 
-  function startBattle() {
-    battleRacers = contestants.map((c) => ({ animal: c.animal, cheer: c.cheer, alive: true, el: null }));
-    battleLog.innerHTML = "";
-    renderBattleArena();
-    battleNextBtn.disabled = false;
-    battleNextBtn.textContent = "ปะทะยกต่อไป 👊";
-
-    duelTokenLeft.textContent = "❓";
-    duelTokenRight.textContent = "❓";
-    duelNameLeft.textContent = "เตรียมพร้อม";
-    duelNameRight.textContent = "เตรียมพร้อม";
-    duelHpLeft.style.width = "100%";
-    duelHpRight.style.width = "100%";
-    duelLeft.classList.remove("rc-duel-ko", "rc-duel-victor", "rc-duel-hit");
-    duelRight.classList.remove("rc-duel-ko", "rc-duel-victor", "rc-duel-hit");
-
-    showOnly(battlePanel);
-  }
-
-  function renderBattleArena() {
-    battleArena.innerHTML = "";
-    battleRacers.forEach((r) => {
-      const card = document.createElement("div");
-      card.className = "rc-arena-card" + (r.alive ? "" : " rc-arena-out");
-      card.innerHTML =
-        '<div class="rc-token">' + animalToken(r.animal) + "</div>" +
-        '<div class="rc-animal-name">' + r.animal.name + "</div>" +
-        (r.cheer ? '<div class="rc-cheer-tag">' + r.cheer + "</div>" : "");
-      battleArena.appendChild(card);
-      r.el = card;
-    });
-    const aliveCount = battleRacers.filter((r) => r.alive).length;
-    battleAliveLabel.textContent = "เหลือ " + aliveCount + " ตัว";
-  }
+  let meleeFighters = [];
+  let meleeTimer = null;
+  let meleeTickCount = 0;
 
   function addBattleLog(text) {
     const line = document.createElement("div");
@@ -277,89 +240,163 @@ document.addEventListener("DOMContentLoaded", () => {
     battleLog.prepend(line);
   }
 
-  // จัดฉากดวลสไตล์ออโต้แบทเทิล (Digimon World Championship / TFT / Dota Auto Chess):
-  // ตัดสินผู้ชนะแบบสุ่มไว้ล่วงหน้า แล้วจัดฉาก HP โดนตีสลับกัน 2 ครั้งแบบสุ่มฝั่ง
-  // ก่อนจบด้วยหมัดน็อกที่ลงกับฝ่ายแพ้เสมอ ให้ดูมีจังหวะหักมุมได้ก่อนถึงผลจริง
-  function runDuel(a, b, onDone) {
-    const aWins = Math.random() < 0.5;
-    const winner = aWins ? a : b;
-    const loser = aWins ? b : a;
-    const winnerSide = winner === a ? "left" : "right";
-    const loserSide = winnerSide === "left" ? "right" : "left";
-
-    duelTokenLeft.innerHTML = animalToken(a.animal);
-    duelNameLeft.textContent = a.animal.name;
-    duelTokenRight.innerHTML = animalToken(b.animal);
-    duelNameRight.textContent = b.animal.name;
-    duelHpLeft.style.width = "100%";
-    duelHpRight.style.width = "100%";
-    duelLeft.classList.remove("rc-duel-ko", "rc-duel-victor", "rc-duel-hit");
-    duelRight.classList.remove("rc-duel-ko", "rc-duel-victor", "rc-duel-hit");
-
-    let hpLeft = 100;
-    let hpRight = 100;
-
-    function strike(side, isFinal) {
-      duelStage.classList.remove("rc-duel-shake");
-      void duelStage.offsetWidth; // รีสตาร์ท animation
-      duelStage.classList.add("rc-duel-shake");
-      duelImpact.classList.remove("rc-duel-impact-play");
-      void duelImpact.offsetWidth;
-      duelImpact.classList.add("rc-duel-impact-play");
-      vibrateTimeout();
-
-      const dmg = isFinal ? 999 : 20 + Math.random() * 20;
-      const fighterEl = side === "left" ? duelLeft : duelRight;
-      const fillEl = side === "left" ? duelHpLeft : duelHpRight;
-      if (side === "left") hpLeft = Math.max(0, hpLeft - dmg);
-      else hpRight = Math.max(0, hpRight - dmg);
-      fillEl.style.width = (side === "left" ? hpLeft : hpRight) + "%";
-      fighterEl.classList.add("rc-duel-hit");
-      setTimeout(() => fighterEl.classList.remove("rc-duel-hit"), 260);
-    }
-
-    const preHits = [Math.random() < 0.5 ? "left" : "right", Math.random() < 0.5 ? "left" : "right"];
-    const hitSequence = preHits.concat([loserSide]);
-
-    let t = 550;
-    hitSequence.forEach((side, idx) => {
-      const isFinal = idx === hitSequence.length - 1;
-      setTimeout(() => strike(side, isFinal), t);
-      t += 520;
-    });
-
-    setTimeout(() => {
-      duelLeft.classList.add(winnerSide === "left" ? "rc-duel-victor" : "rc-duel-ko");
-      duelRight.classList.add(winnerSide === "right" ? "rc-duel-victor" : "rc-duel-ko");
-      setTimeout(() => onDone(winner, loser), 850);
-    }, t + 150);
+  function positionToken(f) {
+    f.el.style.transform = "translate(" + f.x + "px, " + f.y + "px)";
   }
 
-  battleNextBtn.addEventListener("click", () => {
-    const alive = battleRacers.filter((r) => r.alive);
-    if (alive.length <= 1) return;
-    const [a, b] = shuffleSample(alive, 2);
-    battleNextBtn.disabled = true;
-    a.el.classList.add("rc-arena-fighting");
-    b.el.classList.add("rc-arena-fighting");
-    addBattleLog(drawBattleLine().replace("{A}", a.animal.name).replace("{B}", b.animal.name));
+  function updateAliveLabel() {
+    const aliveCount = meleeFighters.filter((f) => f.alive).length;
+    battleAliveLabel.textContent = "เหลือ " + aliveCount + " ตัว";
+  }
 
-    runDuel(a, b, (winner, loser) => {
-      loser.alive = false;
-      a.el.classList.remove("rc-arena-fighting");
-      b.el.classList.remove("rc-arena-fighting");
-      addBattleLog(drawWinLine().replace("{W}", winner.animal.name));
-      renderBattleArena();
+  function spawnImpact(x, y) {
+    const el = document.createElement("div");
+    el.className = "rc-melee-impact";
+    el.textContent = "💥";
+    el.style.left = x + "px";
+    el.style.top = y + "px";
+    meleeArena.appendChild(el);
+    setTimeout(() => el.remove(), 500);
+  }
 
-      const stillAlive = battleRacers.filter((r) => r.alive);
-      if (stillAlive.length <= 1) {
-        battleNextBtn.disabled = true;
-        setTimeout(() => showBattleResult(stillAlive[0]), 700);
-      } else {
-        battleNextBtn.disabled = false;
-      }
+  function startMelee() {
+    clearInterval(meleeTimer);
+    meleeArena.querySelectorAll(".rc-melee-token, .rc-melee-impact").forEach((el) => el.remove());
+    battleLog.innerHTML = "";
+    showOnly(battlePanel);
+
+    const w = meleeArena.clientWidth;
+    const h = meleeArena.clientHeight;
+
+    meleeFighters = contestants.map((c) => {
+      const el = document.createElement("div");
+      el.className = "rc-melee-token";
+      el.innerHTML =
+        '<div class="rc-melee-hpbar"><div class="rc-melee-hpfill"></div></div>' +
+        '<div class="rc-melee-emoji">' + animalToken(c.animal) + "</div>" +
+        '<div class="rc-melee-name">' + c.animal.name + "</div>";
+      meleeArena.appendChild(el);
+      const hpFillEl = el.querySelector(".rc-melee-hpfill");
+      hpFillEl.style.width = "100%";
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 0.8 + Math.random() * 1.6;
+      return {
+        animal: c.animal,
+        cheer: c.cheer,
+        hp: MELEE_MAX_HP,
+        alive: true,
+        x: Math.random() * Math.max(1, w - TOKEN_SIZE),
+        y: Math.random() * Math.max(1, h - TOKEN_SIZE),
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        cooldownUntil: 0,
+        target: null,
+        el,
+        hpFillEl,
+      };
     });
-  });
+    meleeFighters.forEach(positionToken);
+
+    updateAliveLabel();
+    meleeTickCount = 0;
+    meleeTimer = setInterval(meleeTick, MELEE_TICK_MS);
+  }
+
+  function meleeTick() {
+    meleeTickCount++;
+    const w = meleeArena.clientWidth;
+    const h = meleeArena.clientHeight;
+    const now = performance.now();
+    const alive = meleeFighters.filter((f) => f.alive);
+
+    // แต่ละตัวสุ่มเลือกคู่ปรับเป้าหมายเป็นระยะแล้วพุ่งเข้าหาแบบไม่ตรงเป๊ะ (ผสมทิศเดิมเข้าไปให้ดูเป็นธรรมชาติ)
+    // ทำให้ชนกันบ่อยพอจะจบเกมได้ไว แทนที่จะเดินสุ่มเรื่อยเปื่อยจนกว่าจะบังเอิญเจอกัน
+    alive.forEach((f) => {
+      if (!f.target || !f.target.alive || Math.random() < 0.1) {
+        const others = alive.filter((o) => o !== f);
+        f.target = others.length ? others[Math.floor(Math.random() * others.length)] : null;
+      }
+      let dirX = f.vx;
+      let dirY = f.vy;
+      if (f.target) {
+        const tx = f.target.x - f.x;
+        const ty = f.target.y - f.y;
+        const tlen = Math.sqrt(tx * tx + ty * ty) || 1;
+        dirX = f.vx * 0.35 + (tx / tlen) * 0.65;
+        dirY = f.vy * 0.35 + (ty / tlen) * 0.65;
+      }
+      const dlen = Math.sqrt(dirX * dirX + dirY * dirY) || 1;
+      const speed = 2.2 + Math.random() * 1.4;
+      f.vx = (dirX / dlen) * speed;
+      f.vy = (dirY / dlen) * speed;
+      f.x += f.vx;
+      f.y += f.vy;
+      if (f.x < 0) { f.x = 0; f.vx *= -1; }
+      if (f.x > w - TOKEN_SIZE) { f.x = w - TOKEN_SIZE; f.vx *= -1; }
+      if (f.y < 0) { f.y = 0; f.vy *= -1; }
+      if (f.y > h - TOKEN_SIZE) { f.y = h - TOKEN_SIZE; f.vy *= -1; }
+      positionToken(f);
+    });
+
+    // ตรวจชนกัน (hitbox แบบวงกลม) แล้วสุ่มว่าใครตี ใครโดน
+    for (let i = 0; i < alive.length; i++) {
+      for (let j = i + 1; j < alive.length; j++) {
+        const A = alive[i];
+        const B = alive[j];
+        if (!A.alive || !B.alive) continue;
+        if (now < A.cooldownUntil || now < B.cooldownUntil) continue;
+        const dx = A.x - B.x;
+        const dy = A.y - B.y;
+        if (Math.sqrt(dx * dx + dy * dy) < TOKEN_SIZE * 1.05) {
+          resolveHit(A, B, now);
+        }
+      }
+    }
+
+    const stillAlive = meleeFighters.filter((f) => f.alive);
+    if (stillAlive.length <= 1 || meleeTickCount >= MELEE_MAX_TICKS) {
+      clearInterval(meleeTimer);
+      vibrateTimeout();
+      const champion = stillAlive[0] || meleeFighters[meleeFighters.length - 1];
+      setTimeout(() => showBattleResult(champion), 600);
+    }
+  }
+
+  function resolveHit(A, B, now) {
+    const attacker = Math.random() < 0.5 ? A : B;
+    const defender = attacker === A ? B : A;
+    const dmg = 14 + Math.random() * 18; // ดาเมจสุ่มทุกครั้ง
+
+    defender.hp = Math.max(0, defender.hp - dmg);
+    defender.hpFillEl.style.width = defender.hp + "%";
+    defender.el.classList.add("rc-melee-hit");
+    setTimeout(() => defender.el.classList.remove("rc-melee-hit"), 240);
+    spawnImpact((attacker.x + defender.x) / 2 + TOKEN_SIZE / 2, (attacker.y + defender.y) / 2 + TOKEN_SIZE / 2);
+    vibrateTimeout();
+
+    A.cooldownUntil = now + HIT_COOLDOWN_MS;
+    B.cooldownUntil = now + HIT_COOLDOWN_MS;
+
+    // เด้งแยกทางกันหลังปะทะ กันโดนตีซ้ำรัว ๆ ตอนยังชนกันอยู่
+    const dx = defender.x - attacker.x || Math.random() - 0.5;
+    const dy = defender.y - attacker.y || Math.random() - 0.5;
+    const len = Math.sqrt(dx * dx + dy * dy) || 1;
+    defender.vx = (dx / len) * 1.6;
+    defender.vy = (dy / len) * 1.6;
+    attacker.vx = -(dx / len) * 1.2;
+    attacker.vy = -(dy / len) * 1.2;
+
+    if (Math.random() < 0.4) {
+      addBattleLog(drawMeleeLine().replace("{A}", attacker.animal.name).replace("{B}", defender.animal.name));
+    }
+
+    if (defender.hp <= 0 && defender.alive) {
+      defender.alive = false;
+      defender.el.classList.add("rc-melee-ko");
+      addBattleLog(drawKoLine().replace("{W}", attacker.animal.name).replace("{L}", defender.animal.name));
+      updateAliveLabel();
+    }
+  }
 
   function showBattleResult(champion) {
     resultTitle.textContent = "🏆 " + champion.animal.name + " คือแชมป์ตะลุมบอน!";
@@ -380,6 +417,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   raceBackSetupBtn.addEventListener("click", () => {
     clearInterval(raceTimer);
+    clearInterval(meleeTimer);
     showOnly(setupPanel);
   });
 });
