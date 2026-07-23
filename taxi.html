@@ -31,7 +31,7 @@
     </ol>
   </div>
 
-  <div class="croc-stage reveal-up">
+  <div class="tx-stage reveal-up">
     <div id="setupPanel">
       <h3 class="tx-h3">โซนสถานที่</h3>
       <div class="tags" id="zoneChips">
@@ -66,14 +66,31 @@
       <div class="tx-meter">
         <span>🚕 มิเตอร์</span>
         <span id="meterCount">ส่งแล้ว 0 ที่</span>
-        <span class="cw-timer tx-timer" id="playTimer">1:30</span>
+        <div class="tx-gauge">
+          <svg viewBox="0 0 100 55" class="tx-gauge-svg">
+            <path class="tx-gauge-track" d="M8,50 A42,42 0 0 1 92,50"></path>
+            <path class="tx-gauge-fill" id="txGaugeFill" d="M8,50 A42,42 0 0 1 92,50"></path>
+          </svg>
+        </div>
+        <span class="tx-timer" id="playTimer">1:30</span>
       </div>
-      <div class="tx-dest-label">พาฉันไปที่…</div>
-      <div class="cw-word" id="playPlace"></div>
-      <div class="tx-warn">🚫 ห้ามพูดคำในชื่อสถานที่ · ห้ามสะกด · ห้ามแปลตรง ๆ</div>
+
+      <div class="tx-drive-scene">
+        <div class="tx-skyline" aria-hidden="true">
+          <div class="tx-bldg"></div><div class="tx-bldg"></div><div class="tx-bldg"></div>
+          <div class="tx-bldg"></div><div class="tx-bldg"></div><div class="tx-bldg"></div>
+          <div class="tx-bldg"></div><div class="tx-bldg"></div><div class="tx-bldg"></div>
+          <div class="tx-bldg"></div>
+        </div>
+        <div class="tx-dest-label">พาฉันไปที่…</div>
+        <div class="tx-dest-card" id="playPlace"></div>
+        <div class="tx-warn">🚫 ห้ามพูดคำในชื่อสถานที่ · ห้ามสะกด · ห้ามแปลตรง ๆ</div>
+        <div class="tx-road" aria-hidden="true"><div class="tx-road-line"></div></div>
+      </div>
+
       <div class="controls" style="justify-content:center; display:flex; gap:14px; flex-wrap:wrap; margin-top:22px;">
-        <button class="btn secondary cw-skip" id="skipBtn">🔁 เปลี่ยนที่</button>
-        <button class="btn cw-correct" id="arriveBtn">📍 ถึงแล้ว!</button>
+        <button class="btn secondary tx-pedal tx-pedal-brake" id="skipBtn">🔁 เปลี่ยนที่</button>
+        <button class="btn tx-pedal tx-pedal-go" id="arriveBtn">📍 ถึงแล้ว!</button>
       </div>
     </div>
 

@@ -15,6 +15,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const playPlace = document.getElementById("playPlace");
   const skipBtn = document.getElementById("skipBtn");
   const arriveBtn = document.getElementById("arriveBtn");
+  const txGaugeFill = document.getElementById("txGaugeFill");
+  const gaugeLen = txGaugeFill.getTotalLength();
+  txGaugeFill.style.strokeDasharray = gaugeLen;
 
   const recapTitle = document.getElementById("recapTitle");
   const recapList = document.getElementById("recapList");
@@ -58,6 +61,12 @@ document.addEventListener("DOMContentLoaded", () => {
     return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
   }
 
+  function updateGauge() {
+    const ratio = Math.max(0, timeLeft / timeBank);
+    txGaugeFill.style.strokeDashoffset = gaugeLen * (1 - ratio);
+    txGaugeFill.setAttribute("stroke", ratio > 0.5 ? "#4ade80" : ratio > 0.2 ? "#ffe14d" : "#ff3d54");
+  }
+
   function stopTimer() {
     if (timerInterval) {
       clearInterval(timerInterval);
@@ -90,6 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
     timeLeft = timeBank;
     playTimer.textContent = fmtClock(timeLeft);
     playTimer.classList.remove("low");
+    updateGauge();
     updateMeter();
     nextPlace();
     showOnly(playPanel);
@@ -98,6 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
     timerInterval = setInterval(() => {
       timeLeft--;
       playTimer.textContent = fmtClock(timeLeft);
+      updateGauge();
       if (timeLeft <= 5) playTimer.classList.add("low");
       if (timeLeft <= 0) {
         stopTimer();

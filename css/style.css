@@ -1311,31 +1311,113 @@ html.tp-no-scroll, html.tp-no-scroll body{overflow:hidden; height:100%; overscro
   .croc-eye{width:36px; height:36px; top:-16px;}
 }
 
-/* ================= TAXI (แท็กซี่พาไป) ================= */
+/* ================= TAXI (แท็กซี่พาไป) — ธีมนั่งรถแท็กซี่จริง ================= */
+.tx-stage{
+  background:var(--bg-card); border:1px solid var(--line); border-radius:var(--radius);
+  padding:28px 22px; margin:26px 0;
+}
 .tx-h3{font-size:19px; margin-bottom:14px; color:var(--taxi);}
-.tx-meter{
-  display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
-  background:var(--taxi); color:#241a00;
-  font-family:'Kanit',sans-serif; font-weight:800; font-size:16px;
-  border-radius:14px; padding:10px 16px; margin-bottom:20px;
-  box-shadow:0 0 30px -8px rgba(255,225,77,.55);
-}
-.tx-timer{
-  font-size:22px; margin:0; color:#241a00;
-  background:#fff8dc; border-radius:10px; padding:2px 12px;
-}
-.tx-timer.low{color:#c81e3e;}
-.tx-dest-label{
-  text-align:center; color:var(--text-dim); font-size:15px; margin-bottom:6px;
-}
-.tx-warn{
-  text-align:center; color:var(--amber); font-size:13.5px; margin-top:14px;
-}
 .tx-best{
   text-align:center; margin-top:20px; padding:10px 14px;
   border:1px dashed var(--taxi); border-radius:12px;
   color:var(--taxi); font-weight:700; font-size:15px;
 }
+
+/* -- คนขับพารถออก (pass panel) ให้ไอคอนแท็กซี่ส่ายนิด ๆ เหมือนสตาร์ทเครื่อง -- */
+.tx-stage .gn-pass-icon{animation:txIdle 1.6s ease-in-out infinite;}
+@keyframes txIdle{ 0%,100%{transform:rotate(-4deg);} 50%{transform:rotate(4deg);} }
+
+/* -- มิเตอร์แท็กซี่ดิจิทัล -- */
+.tx-meter{
+  display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+  background:#0c0710; color:var(--taxi);
+  font-family:'Kanit',sans-serif; font-weight:800; font-size:15px;
+  border:2px solid #3a2f10; border-radius:12px; padding:10px 16px; margin-bottom:16px;
+  box-shadow:inset 0 0 14px rgba(0,0,0,.6), 0 0 24px -10px var(--taxi);
+}
+.tx-meter span{text-shadow:0 0 8px rgba(255,225,77,.65);}
+.tx-timer{
+  font-size:22px; margin:0; color:var(--taxi);
+  background:#1a1206; border:1px solid #3a2f10; border-radius:8px; padding:2px 12px;
+  text-shadow:0 0 10px rgba(255,225,77,.7);
+}
+.tx-timer.low{color:#ff3d54; text-shadow:0 0 10px rgba(255,61,84,.8);}
+
+/* -- เกจวัดเวลาแบบมาตรวัดความเร็ว -- */
+.tx-gauge{width:58px; height:30px; flex-shrink:0;}
+.tx-gauge-svg{width:100%; height:100%; overflow:visible;}
+.tx-gauge-track{fill:none; stroke:#2a1e08; stroke-width:9; stroke-linecap:round;}
+.tx-gauge-fill{
+  fill:none; stroke:#4ade80; stroke-width:9; stroke-linecap:round;
+  transition:stroke-dashoffset .3s linear, stroke .3s ease;
+}
+
+/* -- ฉากขับรถยามพลบค่ำ: ตึกเป็นเงา + ถนนขีดกลางวิ่ง -- */
+.tx-drive-scene{
+  position:relative; overflow:hidden; border-radius:16px;
+  padding:22px 18px 48px;
+  background:linear-gradient(180deg, #2b1a4a 0%, #4a2b5c 42%, #241832 72%, #1c1220 100%);
+  box-shadow:0 0 0 1px var(--line), 0 18px 36px -18px rgba(0,0,0,.6);
+}
+.tx-skyline{
+  position:absolute; left:0; right:0; bottom:36px; height:64px;
+  display:flex; align-items:flex-end; gap:5px; padding:0 6px;
+  opacity:.5; pointer-events:none;
+}
+.tx-bldg{flex:1; background:#160e22; border-radius:2px 2px 0 0;}
+.tx-bldg:nth-child(1){height:36%;} .tx-bldg:nth-child(2){height:60%;}
+.tx-bldg:nth-child(3){height:44%;} .tx-bldg:nth-child(4){height:78%;}
+.tx-bldg:nth-child(5){height:52%;} .tx-bldg:nth-child(6){height:68%;}
+.tx-bldg:nth-child(7){height:40%;} .tx-bldg:nth-child(8){height:64%;}
+.tx-bldg:nth-child(9){height:48%;} .tx-bldg:nth-child(10){height:72%;}
+.tx-road{
+  position:absolute; left:0; right:0; bottom:0; height:36px;
+  background:linear-gradient(180deg, #1c1522 0%, #0a060f 100%);
+  border-top:2px solid var(--taxi);
+  overflow:hidden;
+}
+.tx-road-line{
+  position:absolute; top:50%; left:0; right:-44px; height:4px; transform:translateY(-50%);
+  background-image:repeating-linear-gradient(90deg, #fff 0 22px, transparent 22px 44px);
+  animation:txRoadScroll .6s linear infinite;
+}
+@keyframes txRoadScroll{ from{background-position-x:0;} to{background-position-x:-44px;} }
+
+.tx-dest-label{
+  position:relative; z-index:1;
+  text-align:center; color:#fff; font-size:14px; margin-bottom:10px;
+  text-shadow:0 2px 5px rgba(0,0,0,.55);
+}
+.tx-dest-card{
+  position:relative; z-index:1;
+  font-family:'Kanit',sans-serif; font-weight:800;
+  font-size:clamp(26px,6vw,40px); text-align:center; line-height:1.25;
+  color:#fff; min-height:1.3em;
+  background:linear-gradient(180deg, #0d9147, #086b34);
+  border:3px solid #fff; border-radius:10px;
+  padding:18px 20px; margin:0 auto; max-width:520px;
+  box-shadow:0 12px 24px -10px rgba(0,0,0,.55), inset 0 0 0 2px rgba(255,255,255,.15);
+}
+.tx-warn{
+  position:relative; z-index:1;
+  text-align:center; color:var(--amber); font-size:13.5px; margin-top:14px;
+  text-shadow:0 2px 5px rgba(0,0,0,.5);
+}
+
+/* -- ปุ่มสไตล์คันเร่ง/เบรก -- */
+.tx-pedal{border-radius:14px; font-weight:800;}
+.tx-pedal-go{
+  background:linear-gradient(180deg, #4ade80, #1e9e56); color:#04220f; border:none;
+  box-shadow:0 6px 0 #0f6b36, 0 10px 18px -6px rgba(74,222,128,.5);
+}
+.tx-pedal-go:hover{background:linear-gradient(180deg, #4ade80, #1e9e56);}
+.tx-pedal-go:active{transform:translateY(4px); box-shadow:0 2px 0 #0f6b36;}
+.tx-pedal-brake{
+  border-color:#ff3d54; color:#ff3d54;
+  box-shadow:0 6px 0 #7a1420, 0 10px 18px -8px rgba(255,61,84,.35);
+}
+.tx-pedal-brake:hover{border-color:#ff3d54; color:#ff3d54; background:rgba(255,61,84,.08);}
+.tx-pedal-brake:active{transform:translateY(4px); box-shadow:0 2px 0 #7a1420;}
 
 /* ================= RACE (สัตว์ซิ่งชิงแชมป์) ================= */
 .rc-stage{
