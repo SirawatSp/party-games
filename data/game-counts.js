@@ -14,7 +14,7 @@ const GAME_COUNTS = {
   "tenbut.html": { count: 355, unit: "มุก" },
   "thisorthat.html": { count: 1247, unit: "คู่" },
   "trivia.html": { count: 596, unit: "ข้อ" },
-  "wavelength.html": { count: 290, unit: "คู่คำ" },
+  "wavelength.html": { count: 350, unit: "คู่คำ" },
   "who-is-most.html": { count: 390, unit: "โจทย์" },
   "taxi.html": { count: 208, unit: "สถานที่" },
   "animalrace.html": { count: 20, unit: "ตัว" },
