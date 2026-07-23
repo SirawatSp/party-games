@@ -12,7 +12,7 @@ const GAME_COUNTS = {
   "psychology.html": { count: 129, unit: "คำถาม" },
   "tapple.html": { count: 482, unit: "หมวด" },
   "tenbut.html": { count: 355, unit: "มุก" },
-  "thisorthat.html": { count: 704, unit: "คู่" },
+  "thisorthat.html": { count: 1004, unit: "คู่" },
   "trivia.html": { count: 596, unit: "ข้อ" },
   "wavelength.html": { count: 290, unit: "คู่คำ" },
   "who-is-most.html": { count: 340, unit: "โจทย์" },
