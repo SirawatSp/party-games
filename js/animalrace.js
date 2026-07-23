@@ -8,10 +8,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const modeSwitch = document.getElementById("modeSwitch");
   const countSlider = document.getElementById("countSlider");
   const countReadout = document.getElementById("countReadout");
+  const tapModeRow = document.getElementById("tapModeRow");
+  const tapModeCheck = document.getElementById("tapModeCheck");
   const drawBtn = document.getElementById("drawBtn");
 
   const lineupTitle = document.getElementById("lineupTitle");
   const lineupGrid = document.getElementById("lineupGrid");
+  const lineupHint = document.getElementById("lineupHint");
   const startRaceBtn = document.getElementById("startRaceBtn");
   const redrawBtn = document.getElementById("redrawBtn");
 
@@ -32,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let mode = "swim";
   let racerCount = 6;
+  let tapModeOn = false;
   let contestants = []; // [{animal, cheer}]
   let raceTimer = null;
 
@@ -59,7 +63,11 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", () => {
       mode = btn.dataset.mode;
       modeSwitch.querySelectorAll(".tp-mode-btn").forEach((b) => b.classList.toggle("active", b === btn));
+      tapModeRow.style.display = mode === "battle" ? "none" : "";
     });
+  });
+  tapModeCheck.addEventListener("change", () => {
+    tapModeOn = tapModeCheck.checked;
   });
   countSlider.addEventListener("input", () => {
     racerCount = Number(countSlider.value);
@@ -72,6 +80,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderLineup() {
     lineupTitle.textContent = MODE_LABEL[mode] + " — เลือกเชียร์นักแข่ง";
+    lineupHint.textContent = tapModeOn && mode !== "battle"
+      ? "โหมดกดแข่งเปิดอยู่ — พิมพ์ชื่อคนเชียร์ = คนนั้นได้แตะจอช่วยเร่งตัวนั้นตอนแข่ง ตัวที่ไม่มีคนเชียร์จะวิ่งอัตโนมัติเต็มสปีดแทน"
+      : "พิมพ์ชื่อใต้ตัวที่เชียร์ได้ (ไม่บังคับ) แล้วกดเริ่มแข่ง";
     lineupGrid.innerHTML = "";
     contestants.forEach((c) => {
       const card = document.createElement("div");
@@ -108,23 +119,49 @@ document.addEventListener("DOMContentLoaded", () => {
   let raceTickCount = 0;
   const RACE_TICK_MS = 130;
   const MAX_TICKS = 420;
+  const TAP_MAX_PER_TICK = 6;  // เพดานจำนวนแตะที่นับต่อ tick กันมั่ว
+  const TAP_BOOST = 1.15;      // ความเร็วที่เพิ่มต่อการแตะ 1 ครั้ง
 
   function startLaneRace() {
     raceModeLabel.textContent = MODE_LABEL[mode];
     raceTrack.className = "rc-track rc-track-" + mode;
     raceTrack.innerHTML = "";
-    laneRacers = contestants.map((c) => ({ animal: c.animal, cheer: c.cheer, pos: 0, finished: false, place: null, el: null, tokenEl: null }));
+    laneRacers = contestants.map((c) => ({
+      animal: c.animal,
+      cheer: c.cheer,
+      pos: 0,
+      finished: false,
+      place: null,
+      el: null,
+      tokenEl: null,
+      tapCount: 0,
+      playerControlled: tapModeOn && !!c.cheer.trim(),
+    }));
 
     laneRacers.forEach((r) => {
       const lane = document.createElement("div");
-      lane.className = "rc-lane";
+      lane.className = "rc-lane" + (r.playerControlled ? " rc-lane-player" : "");
       lane.innerHTML =
-        '<div class="rc-lane-label">' + animalToken(r.animal) + " " + r.animal.name + "</div>" +
-        '<div class="rc-lane-track"><div class="rc-token rc-race-token">' + animalToken(r.animal) + "</div></div>";
+        '<div class="rc-lane-label">' + animalToken(r.animal) + " " + r.animal.name +
+          (r.cheer ? ' <span class="rc-lane-cheer">(' + r.cheer + ")</span>" : "") + "</div>" +
+        '<div class="rc-lane-track"><div class="rc-token rc-race-token">' + animalToken(r.animal) + "</div></div>" +
+        (r.playerControlled ? '<div class="rc-tap-hint">👆 แตะรัว ๆ ตรงนี้!</div>' : "");
       raceTrack.appendChild(lane);
       r.el = lane;
       r.tokenEl = lane.querySelector(".rc-race-token");
       r.tokenEl.style.left = "0%";
+
+      if (r.playerControlled) {
+        const hint = lane.querySelector(".rc-tap-hint");
+        hint.addEventListener("pointerdown", (e) => {
+          e.preventDefault();
+          if (r.finished) return;
+          r.tapCount++;
+          lane.classList.add("rc-lane-tapped");
+          clearTimeout(hint._tapTimer);
+          hint._tapTimer = setTimeout(() => lane.classList.remove("rc-lane-tapped"), 150);
+        });
+      }
     });
 
     showOnly(racePanel);
@@ -157,9 +194,18 @@ document.addEventListener("DOMContentLoaded", () => {
       laneRacers.forEach((r) => {
         if (r.finished) return;
         allDone = false;
-        let step = 1.6 + Math.random() * 3.2;
-        if (Math.random() < 0.07) step += 6 + Math.random() * 8; // ฮึดสปีดขึ้นกะทันหัน
-        if (Math.random() < 0.05) step *= 0.25; // สะดุด ชะลอจังหวะ
+        let step;
+        if (r.playerControlled) {
+          // ไม่กดแทบไม่ไปไหน (สไตล์ Track & Field) — ต้องแตะรัว ๆ ถึงจะเร่งได้จริง
+          step = 0.3 + Math.random() * 0.6;
+          const taps = Math.min(r.tapCount, TAP_MAX_PER_TICK);
+          step += taps * TAP_BOOST;
+          r.tapCount = 0;
+        } else {
+          step = 1.6 + Math.random() * 3.2;
+          if (Math.random() < 0.07) step += 6 + Math.random() * 8; // ฮึดสปีดขึ้นกะทันหัน
+          if (Math.random() < 0.05) step *= 0.25; // สะดุด ชะลอจังหวะ
+        }
         r.pos = Math.min(100, r.pos + step);
         r.tokenEl.style.left = Math.min(96, r.pos) + "%";
         if (r.pos >= 100) {
