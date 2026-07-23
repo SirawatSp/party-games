@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สัตว์ซิ่งชิงแชมป์ — เกมแข่งสัตว์เสี่ยงดวง</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <a class="brand-logo" href="index.html"><img class="brand-img" src="assets/logo.png" width="720" height="416" alt="Party Games — วงกำลังจะเหงา"></a>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--race); color:#2b0900;">19 · เกมเสี่ยงดวง</span>
+    <h1>สัตว์ซิ่งชิงแชมป์</h1>
+    <p>สุ่มสัตว์มาแข่งกันแบบไม่มีใครรู้ผลล่วงหน้า — เลือกโหมด สุ่มนักแข่ง แล้วเชียร์สัตว์ตัวที่ใช่ให้สุดใจ ผลจะสุ่มจริงทุกรอบ ใครเชียร์ถูกคนนั้นรอด ใครเชียร์ผิดดื่มตามธรรมเนียม 🍻</p>
+  </section>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเล่น</h2>
+    <ol>
+      <li>เลือกโหมดแข่ง — <b>ว่ายน้ำ 🏊</b> / <b>วิ่งแข่ง 🏃</b> / <b>ตะลุมบอน ⚔️</b> — และจำนวนนักแข่ง แล้วกด "สุ่มนักแข่ง"</li>
+      <li>ระบบจะสุ่มสัตว์ขึ้นมาแข่ง แต่ละคนในวงเลือกเชียร์สัตว์ตัวที่ถูกใจ พิมพ์ชื่อใต้การ์ดตัวนั้นได้เลย (ใครไม่เชียร์ก็ข้ามได้)</li>
+      <li>กด "เริ่มแข่ง!" แล้วลุ้นไปพร้อมกัน ผลจะสุ่มสด ๆ ไม่ตายตัว — โหมดว่ายน้ำ/วิ่งแข่งดูอันดับเข้าเส้นชัย โหมดตะลุมบอนกดปะทะทีละยกจนเหลือแชมป์คนเดียว</li>
+      <li>จบรอบดูว่าใครเชียร์ถูก แพ้-ชนะตัดสินกันตามธรรมเนียมวง แล้วกด "แข่งใหม่" สุ่มนักแข่งชุดใหม่เล่นได้เรื่อย ๆ</li>
+    </ol>
+  </div>
+
+  <div class="rc-stage reveal-up">
+    <div id="setupPanel">
+      <h3 class="rc-h3">โหมดแข่ง</h3>
+      <div class="tp-mode-switch" id="modeSwitch">
+        <button type="button" class="tp-mode-btn active" data-mode="swim">ว่ายน้ำ 🏊</button>
+        <button type="button" class="tp-mode-btn" data-mode="run">วิ่งแข่ง 🏃</button>
+        <button type="button" class="tp-mode-btn" data-mode="battle">ตะลุมบอน ⚔️</button>
+      </div>
+
+      <h3 class="rc-h3" style="margin-top:24px;">จำนวนนักแข่ง</h3>
+      <div class="tp-mode-switch" id="countSwitch">
+        <button type="button" class="tp-mode-btn" data-n="4">4 ตัว</button>
+        <button type="button" class="tp-mode-btn active" data-n="6">6 ตัว</button>
+        <button type="button" class="tp-mode-btn" data-n="8">8 ตัว</button>
+      </div>
+
+      <div class="controls" style="justify-content:center; display:flex; margin-top:26px;">
+        <button class="btn" id="drawBtn">สุ่มนักแข่ง 🎲</button>
+      </div>
+    </div>
+
+    <div id="lineupPanel" style="display:none;">
+      <h3 class="rc-h3" id="lineupTitle">เลือกเชียร์นักแข่ง</h3>
+      <p class="tp-hint">พิมพ์ชื่อใต้ตัวที่เชียร์ได้ (ไม่บังคับ) แล้วกดเริ่มแข่ง</p>
+      <div class="rc-lineup" id="lineupGrid"></div>
+      <div class="controls" style="justify-content:center; display:flex; gap:12px; flex-wrap:wrap; margin-top:20px;">
+        <button class="btn" id="startRaceBtn">เริ่มแข่ง! 🚩</button>
+        <button class="btn secondary" id="redrawBtn">สุ่มใหม่ 🎲</button>
+      </div>
+    </div>
+
+    <div id="racePanel" style="display:none;">
+      <div class="rc-race-head">
+        <span id="raceModeLabel"></span>
+        <span id="raceCountdown" class="rc-countdown"></span>
+      </div>
+      <div class="rc-track" id="raceTrack"></div>
+    </div>
+
+    <div id="battlePanel" style="display:none;">
+      <div class="rc-race-head">
+        <span>ตะลุมบอน ⚔️</span>
+        <span id="battleAliveLabel"></span>
+      </div>
+      <div class="rc-arena" id="battleArena"></div>
+      <div class="controls" style="justify-content:center; display:flex; margin-top:18px;">
+        <button class="btn" id="battleNextBtn">ปะทะยกต่อไป 👊</button>
+      </div>
+      <div class="rc-log" id="battleLog"></div>
+    </div>
+
+    <div id="resultPanel" style="display:none;">
+      <h3 class="rc-h3" id="resultTitle">🏆 ผลการแข่งขัน</h3>
+      <div id="resultBody"></div>
+      <div class="controls" style="justify-content:center; display:flex; gap:12px; flex-wrap:wrap; margin-top:20px;">
+        <button class="btn" id="raceAgainBtn">แข่งใหม่ สุ่มนักแข่งชุดใหม่ 🎲</button>
+        <button class="btn secondary" id="raceBackSetupBtn">ตั้งค่าใหม่ ⚙️</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>เล่นด้วยความรับผิดชอบ ดื่มพอดี ไม่ขับรถ</footer>
+</div>
+
+<script src="data/race-animals.js"></script>
+<script src="js/main.js"></script>
+<script src="js/animalrace.js"></script>
+</body>
+</html>

@@ -17,4 +17,5 @@ const GAME_COUNTS = {
   "wavelength.html": { count: 290, unit: "คู่คำ" },
   "who-is-most.html": { count: 340, unit: "โจทย์" },
   "taxi.html": { count: 208, unit: "สถานที่" },
+  "animalrace.html": { count: 20, unit: "ตัว" },
 };

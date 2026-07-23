@@ -24,6 +24,7 @@ const PAGES = [
   { page: "wavelength.html", unit: "คู่คำ", files: [["wavelength.js", "WAVELENGTH_PAIRS"]] },
   { page: "who-is-most.html", unit: "โจทย์", files: [["who-is-most.js", "WHO_IS_MOST"]] },
   { page: "taxi.html", unit: "สถานที่", files: [["taxi.js", "TAXI_PLACES"]] },
+  { page: "animalrace.html", unit: "ตัว", files: [["race-animals.js", "RACE_ANIMALS"]] },
 ];
 
 function arrayLength(fileName, varName) {
