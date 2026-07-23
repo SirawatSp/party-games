@@ -1344,6 +1344,29 @@ html.tp-no-scroll, html.tp-no-scroll body{overflow:hidden; height:100%; overscro
 }
 .rc-h3{font-size:19px; margin-bottom:14px; color:var(--race); text-align:center;}
 
+.rc-count-picker{max-width:420px; margin:0 auto;}
+.rc-count-slider{
+  width:100%; -webkit-appearance:none; appearance:none;
+  height:10px; border-radius:999px;
+  background:linear-gradient(90deg, var(--lime), var(--race));
+  outline:none; display:block; margin-bottom:10px;
+}
+.rc-count-slider::-webkit-slider-thumb{
+  -webkit-appearance:none; appearance:none;
+  width:30px; height:30px; border-radius:50%;
+  background:var(--race); border:4px solid #fff;
+  box-shadow:0 0 16px -2px var(--race); cursor:pointer;
+}
+.rc-count-slider::-moz-range-thumb{
+  width:26px; height:26px; border-radius:50%;
+  background:var(--race); border:4px solid #fff;
+  box-shadow:0 0 16px -2px var(--race); cursor:pointer;
+}
+.rc-count-readout{
+  text-align:center; font-family:'Kanit',sans-serif; font-weight:700; font-size:17px;
+  color:var(--race);
+}
+
 .rc-lineup{
   display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr));
   gap:14px;

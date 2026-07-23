@@ -40,15 +40,9 @@
       </div>
 
       <h3 class="rc-h3" style="margin-top:24px;">จำนวนนักแข่ง</h3>
-      <div class="tp-mode-switch" id="countSwitch">
-        <button type="button" class="tp-mode-btn" data-n="2">2 ตัว</button>
-        <button type="button" class="tp-mode-btn" data-n="4">4 ตัว</button>
-        <button type="button" class="tp-mode-btn active" data-n="6">6 ตัว</button>
-        <button type="button" class="tp-mode-btn" data-n="8">8 ตัว</button>
-        <button type="button" class="tp-mode-btn" data-n="10">10 ตัว</button>
-        <button type="button" class="tp-mode-btn" data-n="12">12 ตัว</button>
-        <button type="button" class="tp-mode-btn" data-n="16">16 ตัว</button>
-        <button type="button" class="tp-mode-btn" data-n="20">20 ตัว (หมดคลัง)</button>
+      <div class="rc-count-picker">
+        <input type="range" id="countSlider" class="rc-count-slider" min="1" max="20" step="1" value="6">
+        <div class="rc-count-readout" id="countReadout">6 ตัว</div>
       </div>
 
       <div class="controls" style="justify-content:center; display:flex; margin-top:26px;">

@@ -6,7 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const resultPanel = document.getElementById("resultPanel");
 
   const modeSwitch = document.getElementById("modeSwitch");
-  const countSwitch = document.getElementById("countSwitch");
+  const countSlider = document.getElementById("countSlider");
+  const countReadout = document.getElementById("countReadout");
   const drawBtn = document.getElementById("drawBtn");
 
   const lineupTitle = document.getElementById("lineupTitle");
@@ -60,11 +61,9 @@ document.addEventListener("DOMContentLoaded", () => {
       modeSwitch.querySelectorAll(".tp-mode-btn").forEach((b) => b.classList.toggle("active", b === btn));
     });
   });
-  countSwitch.querySelectorAll(".tp-mode-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      racerCount = Number(btn.dataset.n);
-      countSwitch.querySelectorAll(".tp-mode-btn").forEach((b) => b.classList.toggle("active", b === btn));
-    });
+  countSlider.addEventListener("input", () => {
+    racerCount = Number(countSlider.value);
+    countReadout.textContent = racerCount + " ตัว" + (racerCount === RACE_ANIMALS.length ? " (หมดคลัง)" : "");
   });
 
   function drawContestants() {
