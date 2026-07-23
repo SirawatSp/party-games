@@ -23,6 +23,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const battleNextBtn = document.getElementById("battleNextBtn");
   const battleLog = document.getElementById("battleLog");
 
+  const duelStage = document.getElementById("duelStage");
+  const duelLeft = document.getElementById("duelLeft");
+  const duelRight = document.getElementById("duelRight");
+  const duelTokenLeft = document.getElementById("duelTokenLeft");
+  const duelTokenRight = document.getElementById("duelTokenRight");
+  const duelNameLeft = document.getElementById("duelNameLeft");
+  const duelNameRight = document.getElementById("duelNameRight");
+  const duelHpLeft = document.getElementById("duelHpLeft");
+  const duelHpRight = document.getElementById("duelHpRight");
+  const duelImpact = document.getElementById("duelImpact");
+
   const resultTitle = document.getElementById("resultTitle");
   const resultBody = document.getElementById("resultBody");
   const raceAgainBtn = document.getElementById("raceAgainBtn");
@@ -230,6 +241,16 @@ document.addEventListener("DOMContentLoaded", () => {
     renderBattleArena();
     battleNextBtn.disabled = false;
     battleNextBtn.textContent = "ปะทะยกต่อไป 👊";
+
+    duelTokenLeft.textContent = "❓";
+    duelTokenRight.textContent = "❓";
+    duelNameLeft.textContent = "เตรียมพร้อม";
+    duelNameRight.textContent = "เตรียมพร้อม";
+    duelHpLeft.style.width = "100%";
+    duelHpRight.style.width = "100%";
+    duelLeft.classList.remove("rc-duel-ko", "rc-duel-victor", "rc-duel-hit");
+    duelRight.classList.remove("rc-duel-ko", "rc-duel-victor", "rc-duel-hit");
+
     showOnly(battlePanel);
   }
 
@@ -256,21 +277,77 @@ document.addEventListener("DOMContentLoaded", () => {
     battleLog.prepend(line);
   }
 
+  // จัดฉากดวลสไตล์ออโต้แบทเทิล (Digimon World Championship / TFT / Dota Auto Chess):
+  // ตัดสินผู้ชนะแบบสุ่มไว้ล่วงหน้า แล้วจัดฉาก HP โดนตีสลับกัน 2 ครั้งแบบสุ่มฝั่ง
+  // ก่อนจบด้วยหมัดน็อกที่ลงกับฝ่ายแพ้เสมอ ให้ดูมีจังหวะหักมุมได้ก่อนถึงผลจริง
+  function runDuel(a, b, onDone) {
+    const aWins = Math.random() < 0.5;
+    const winner = aWins ? a : b;
+    const loser = aWins ? b : a;
+    const winnerSide = winner === a ? "left" : "right";
+    const loserSide = winnerSide === "left" ? "right" : "left";
+
+    duelTokenLeft.innerHTML = animalToken(a.animal);
+    duelNameLeft.textContent = a.animal.name;
+    duelTokenRight.innerHTML = animalToken(b.animal);
+    duelNameRight.textContent = b.animal.name;
+    duelHpLeft.style.width = "100%";
+    duelHpRight.style.width = "100%";
+    duelLeft.classList.remove("rc-duel-ko", "rc-duel-victor", "rc-duel-hit");
+    duelRight.classList.remove("rc-duel-ko", "rc-duel-victor", "rc-duel-hit");
+
+    let hpLeft = 100;
+    let hpRight = 100;
+
+    function strike(side, isFinal) {
+      duelStage.classList.remove("rc-duel-shake");
+      void duelStage.offsetWidth; // รีสตาร์ท animation
+      duelStage.classList.add("rc-duel-shake");
+      duelImpact.classList.remove("rc-duel-impact-play");
+      void duelImpact.offsetWidth;
+      duelImpact.classList.add("rc-duel-impact-play");
+      vibrateTimeout();
+
+      const dmg = isFinal ? 999 : 20 + Math.random() * 20;
+      const fighterEl = side === "left" ? duelLeft : duelRight;
+      const fillEl = side === "left" ? duelHpLeft : duelHpRight;
+      if (side === "left") hpLeft = Math.max(0, hpLeft - dmg);
+      else hpRight = Math.max(0, hpRight - dmg);
+      fillEl.style.width = (side === "left" ? hpLeft : hpRight) + "%";
+      fighterEl.classList.add("rc-duel-hit");
+      setTimeout(() => fighterEl.classList.remove("rc-duel-hit"), 260);
+    }
+
+    const preHits = [Math.random() < 0.5 ? "left" : "right", Math.random() < 0.5 ? "left" : "right"];
+    const hitSequence = preHits.concat([loserSide]);
+
+    let t = 550;
+    hitSequence.forEach((side, idx) => {
+      const isFinal = idx === hitSequence.length - 1;
+      setTimeout(() => strike(side, isFinal), t);
+      t += 520;
+    });
+
+    setTimeout(() => {
+      duelLeft.classList.add(winnerSide === "left" ? "rc-duel-victor" : "rc-duel-ko");
+      duelRight.classList.add(winnerSide === "right" ? "rc-duel-victor" : "rc-duel-ko");
+      setTimeout(() => onDone(winner, loser), 850);
+    }, t + 150);
+  }
+
   battleNextBtn.addEventListener("click", () => {
     const alive = battleRacers.filter((r) => r.alive);
     if (alive.length <= 1) return;
     const [a, b] = shuffleSample(alive, 2);
-    a.el.classList.add("rc-clash");
-    b.el.classList.add("rc-clash");
     battleNextBtn.disabled = true;
+    a.el.classList.add("rc-arena-fighting");
+    b.el.classList.add("rc-arena-fighting");
     addBattleLog(drawBattleLine().replace("{A}", a.animal.name).replace("{B}", b.animal.name));
 
-    setTimeout(() => {
-      a.el.classList.remove("rc-clash");
-      b.el.classList.remove("rc-clash");
-      const winner = Math.random() < 0.5 ? a : b;
-      const loser = winner === a ? b : a;
+    runDuel(a, b, (winner, loser) => {
       loser.alive = false;
+      a.el.classList.remove("rc-arena-fighting");
+      b.el.classList.remove("rc-arena-fighting");
       addBattleLog(drawWinLine().replace("{W}", winner.animal.name));
       renderBattleArena();
 
@@ -281,7 +358,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         battleNextBtn.disabled = false;
       }
-    }, 650);
+    });
   });
 
   function showBattleResult(champion) {

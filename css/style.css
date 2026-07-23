@@ -1413,22 +1413,93 @@ html.tp-no-scroll, html.tp-no-scroll body{overflow:hidden; height:100%; overscro
 .rc-result-animal{flex:1; font-weight:700;}
 .rc-result-cheer{font-size:13px; color:var(--race);}
 
+/* ---- ฉากดวลสไตล์ออโต้แบทเทิล (Digimon World Championship / TFT / Dota Auto Chess) ---- */
+.rc-duel-stage{
+  position:relative; overflow:hidden;
+  display:flex; align-items:center; justify-content:space-between;
+  min-height:230px; padding:18px 14px;
+  border-radius:18px; border:2px solid var(--race);
+  background:radial-gradient(ellipse 90% 80% at 50% 15%, rgba(255,87,34,.16), transparent 65%), var(--bg-alt);
+  box-shadow:0 0 34px -10px var(--race), inset 0 0 0 1px rgba(0,0,0,.5);
+  margin-bottom:18px;
+}
+.rc-duel-ground{
+  position:absolute; inset:0; z-index:0;
+  background-image:
+    radial-gradient(ellipse 70% 55% at 50% 100%, rgba(255,87,34,.22), transparent 70%),
+    repeating-linear-gradient(60deg, rgba(255,255,255,.05) 0 1px, transparent 1px 24px),
+    repeating-linear-gradient(-60deg, rgba(255,255,255,.05) 0 1px, transparent 1px 24px),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 24px);
+  mask-image:radial-gradient(ellipse 90% 90% at 50% 60%, #000 55%, transparent 100%);
+}
+.rc-duel-fighter{
+  position:relative; z-index:1; width:38%; text-align:center;
+  transition:transform .25s ease, filter .3s ease;
+}
+.rc-duel-right .rc-duel-token{transform:scaleX(-1);}
+.rc-duel-hpbar{
+  height:9px; border-radius:99px; background:#2a1015; border:1px solid rgba(0,0,0,.5);
+  overflow:hidden; margin-bottom:10px;
+}
+.rc-duel-hpfill{
+  height:100%; width:100%; background:linear-gradient(90deg, #4ade80, #d6ff3d);
+  transition:width .35s ease-out;
+}
+.rc-duel-token{font-size:56px; line-height:1; filter:drop-shadow(0 6px 10px rgba(0,0,0,.5));}
+.rc-duel-name{font-family:'Kanit',sans-serif; font-weight:700; font-size:14px; margin-top:6px;}
+.rc-duel-vs{
+  position:relative; z-index:1;
+  font-family:'Bungee','Kanit',sans-serif; font-size:22px; color:var(--race);
+  text-shadow:0 0 12px var(--race); flex-shrink:0;
+}
+.rc-duel-hit{animation:rcDuelHit .26s ease-in-out;}
+@keyframes rcDuelHit{
+  0%,100%{transform:translateX(0) scale(1); filter:brightness(1);}
+  30%{transform:translateX(-8px) scale(.96); filter:brightness(2) saturate(0) sepia(1) hue-rotate(-50deg);}
+  60%{transform:translateX(6px) scale(1.02);}
+}
+.rc-duel-right.rc-duel-hit{animation-name:rcDuelHitR;}
+@keyframes rcDuelHitR{
+  0%,100%{transform:translateX(0) scale(1); filter:brightness(1);}
+  30%{transform:translateX(8px) scale(.96); filter:brightness(2) saturate(0) sepia(1) hue-rotate(-50deg);}
+  60%{transform:translateX(-6px) scale(1.02);}
+}
+.rc-duel-victor{transform:scale(1.12); filter:drop-shadow(0 0 22px var(--lime));}
+.rc-duel-ko{transform:rotate(-12deg) translateY(10px) scale(.85); filter:grayscale(1) brightness(.6); opacity:.6;}
+.rc-duel-stage.rc-duel-shake{animation:rcStageShake .3s ease-in-out;}
+@keyframes rcStageShake{
+  0%,100%{transform:translateX(0);}
+  25%{transform:translateX(-5px);}
+  50%{transform:translateX(5px);}
+  75%{transform:translateX(-3px);}
+}
+.rc-duel-impact{
+  position:absolute; top:50%; left:50%; z-index:2;
+  transform:translate(-50%,-50%) scale(0); opacity:0;
+  font-size:46px; pointer-events:none;
+}
+.rc-duel-impact.rc-duel-impact-play{animation:rcImpactPop .45s ease-out;}
+@keyframes rcImpactPop{
+  0%{transform:translate(-50%,-50%) scale(.3); opacity:0;}
+  35%{transform:translate(-50%,-50%) scale(1.5); opacity:1;}
+  100%{transform:translate(-50%,-50%) scale(2.1); opacity:0;}
+}
+
+.rc-bench-title{
+  font-family:'Kanit',sans-serif; font-weight:700; font-size:14px;
+  color:var(--text-dim); margin:0 0 10px;
+}
 .rc-arena{
-  display:grid; grid-template-columns:repeat(auto-fill, minmax(110px, 1fr));
-  gap:12px; margin-bottom:6px;
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(96px, 1fr));
+  gap:10px; margin-bottom:6px;
 }
 .rc-arena-card{
   background:var(--bg-alt); border:1px solid var(--line); border-radius:14px;
-  padding:14px 8px; text-align:center; transition:opacity .3s, filter .3s, transform .15s;
+  padding:12px 6px; text-align:center; transition:opacity .3s, filter .3s, transform .15s, border-color .2s, box-shadow .2s;
 }
 .rc-arena-out{opacity:.35; filter:grayscale(1);}
-.rc-arena-card.rc-clash{animation:rcClash .5s ease-in-out;}
-@keyframes rcClash{
-  0%,100%{transform:translateX(0);}
-  20%{transform:translateX(-6px) rotate(-2deg);}
-  40%{transform:translateX(6px) rotate(2deg);}
-  60%{transform:translateX(-5px);}
-  80%{transform:translateX(4px);}
+.rc-arena-card.rc-arena-fighting{
+  border-color:var(--race); box-shadow:0 0 18px -4px var(--race); transform:translateY(-3px);
 }
 .rc-cheer-tag{font-size:11px; color:var(--race); margin-top:4px;}
 
