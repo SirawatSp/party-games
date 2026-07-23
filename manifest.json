@@ -1,0 +1,14 @@
+{
+  "name": "Party Games — วงกำลังจะเหงา",
+  "short_name": "Party Games",
+  "description": "รวมเกมเล่นกับเพื่อน เล่นได้แม้ไม่มีเน็ต",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0c0710",
+  "theme_color": "#0c0710",
+  "icons": [
+    { "src": "assets/logo.png", "sizes": "720x416", "type": "image/png", "purpose": "any" }
+  ]
+}
