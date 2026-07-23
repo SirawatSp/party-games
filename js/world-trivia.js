@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function refreshPicker() {
-    drawNext = createPicker(pool());
+    drawNext = createPicker(pool(), "pg_worldtrivia_" + mode + "_" + activeTag);
   }
 
   function renderCard() {

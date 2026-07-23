@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let wheelAngle = 0;
   let spinning = false;
 
-  let drawQuestion = createPicker(MATCHUP_LIST);
+  let drawQuestion = createPicker(MATCHUP_LIST, "pg_matchup");
   let currentQ = null;
   let currentGroup = null;
   let chooserName = null;
@@ -228,7 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
     roundIdx = 0;
     score = { correct: 0, total: 0 };
     playerStats = {};
-    drawQuestion = createPicker(MATCHUP_LIST);
+    drawQuestion = createPicker(MATCHUP_LIST, "pg_matchup");
     renderPairList();
     showOnly(pairsPanel);
   }

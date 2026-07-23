@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const questionText = document.getElementById("questionText");
   const nextQuestionBtn = document.getElementById("nextQuestionBtn");
 
-  const pickQuestion = createPicker(PERSONAL_FACTS);
+  const pickQuestion = createPicker(PERSONAL_FACTS, "pg_personalfacts");
 
   function showQuestion() {
     const q = pickQuestion();

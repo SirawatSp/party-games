@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function refreshPicker() {
-    drawNext = createPicker(pool());
+    drawNext = createPicker(pool(), "pg_tenbut_" + activeTag);
   }
 
   function renderCard(item) {

@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let target = 90;
   let lastTarget = -999;
-  const drawPair = createPicker(WAVELENGTH_PAIRS);
+  const drawPair = createPicker(WAVELENGTH_PAIRS, "pg_wavelength");
   let peeking = false;
   let hasPeeked = false;
   let revealed = false;

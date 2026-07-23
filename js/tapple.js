@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let timeBank = 60;
   let currentLetters = TH_LETTERS;
   let currentCategories = TAPPLE_CATEGORIES;
-  let drawCategory = createPicker(currentCategories);
+  let drawCategory = createPicker(currentCategories, "pg_tapple_" + mode);
 
   let lockedLetters = new Set();
   let wins = [0, 0];
@@ -272,7 +272,7 @@ document.addEventListener("DOMContentLoaded", () => {
   startGameBtn.addEventListener("click", () => {
     currentLetters = mode === "en" ? EN_LETTERS : TH_LETTERS;
     currentCategories = mode === "en" ? TAPPLE_CATEGORIES_EN : TAPPLE_CATEGORIES;
-    drawCategory = createPicker(currentCategories);
+    drawCategory = createPicker(currentCategories, "pg_tapple_" + mode);
     wins = [0, 0];
     startingSide = 0;
     showCategoryPanel();

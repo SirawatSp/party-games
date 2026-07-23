@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function refreshPicker() {
-    drawNext = createPicker(pool());
+    drawNext = createPicker(pool(), "pg_flashquiz_" + activeTag);
   }
 
   function updateQuizScoreText() {
@@ -145,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const side1ClockEls = [document.getElementById("clockB"), document.getElementById("dualClockTop"), document.getElementById("dualHalfTop")];
 
   let sides = [{ timeLeft: TIME_BANK_SECONDS, correct: 0 }, { timeLeft: TIME_BANK_SECONDS, correct: 0 }];
-  let drawBattleQuestion = createPicker(FLASHQUIZ_LIST);
+  let drawBattleQuestion = createPicker(FLASHQUIZ_LIST, "pg_flashquiz_battle");
   let currentSideIdx = 0;
   let currentBattleQuestion = null;
   let battleTimerInterval = null;
@@ -268,7 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
   startBattleBtn.addEventListener("click", () => {
     sides = [{ timeLeft: TIME_BANK_SECONDS, correct: 0 }, { timeLeft: TIME_BANK_SECONDS, correct: 0 }];
     currentSideIdx = 0;
-    drawBattleQuestion = createPicker(FLASHQUIZ_LIST);
+    drawBattleQuestion = createPicker(FLASHQUIZ_LIST, "pg_flashquiz_battle");
     battleIntroPanel.style.display = "none";
     battleEndPanel.style.display = "none";
     battlePlayPanel.style.display = "";

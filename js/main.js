@@ -6,30 +6,67 @@ if ("serviceWorker" in navigator) {
   });
 }
 
+// แฮชเนื้อหาโจทย์แบบสั้น ๆ ใช้เป็น "ลายนิ้วมือ" ของแต่ละข้อ กันปัญหา index เลื่อนตอนมีการ
+// เพิ่ม/แทรกโจทย์ใหม่เข้าคลังทีหลัง (อ้างอิงตามเนื้อหาจริง ไม่ใช่ตำแหน่งในลิสต์)
+function pgHash(item) {
+  const s = JSON.stringify(item);
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) {
+    h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+  }
+  return h.toString(36);
+}
+
 // ตัวสุ่มแบบ "shuffle bag" ใช้ร่วมกันทุกเกม: การันตีว่าทุกข้อในลิสต์จะถูกสุ่มขึ้นมา
 // ครบทุกตัวก่อนที่จะเริ่มวนซ้ำ และตอนวนรอบใหม่ก็จะไม่ออกซ้ำกับตัวสุดท้ายของรอบก่อน
-// ทำให้สุ่มได้กระจายจริง ไม่ออกซ้ำในเวลาใกล้กันหรือเดาลำดับได้
-function createPicker(list) {
-  let bag = [];
-  let lastIdx = null;
+// ถ้าใส่ storageKey มาด้วย จะจำว่าข้อไหนออกไปแล้วลง localStorage ทำให้ต่อให้ปิดแอป/รีเฟรช
+// หน้าเว็บแล้วกลับเข้ามาเล่นใหม่ ก็จะยังไม่ออกซ้ำกับที่เพิ่งเล่นไปจนกว่าจะครบรอบคลังจริง ๆ
+function createPicker(list, storageKey) {
+  let used = new Set();
+  let lastKey = null;
+  const keys = list.map(pgHash);
 
-  function refill() {
-    bag = list.map((_, i) => i);
-    for (let i = bag.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [bag[i], bag[j]] = [bag[j], bag[i]];
-    }
-    // กันไม่ให้ตัวแรกของถุงใหม่ซ้ำกับตัวสุดท้ายที่เพิ่งออกไปตอนจบถุงก่อน
-    if (bag.length > 1 && bag[bag.length - 1] === lastIdx) {
-      [bag[bag.length - 1], bag[0]] = [bag[0], bag[bag.length - 1]];
+  function load() {
+    if (!storageKey) return;
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      if (Array.isArray(saved.used)) used = new Set(saved.used);
+      if (typeof saved.lastKey === "string") lastKey = saved.lastKey;
+    } catch (e) {
+      // localStorage ใช้ไม่ได้ (เช่น โหมดส่วนตัว) ก็แค่สุ่มแบบไม่มีความจำข้ามเซสชัน
     }
   }
 
+  function save() {
+    if (!storageKey) return;
+    try {
+      localStorage.setItem(storageKey, JSON.stringify({ used: Array.from(used), lastKey }));
+    } catch (e) {}
+  }
+
+  load();
+
   return function pick() {
     if (!list.length) return undefined;
-    if (bag.length === 0) refill();
-    const idx = bag.pop();
-    lastIdx = idx;
+    let remaining = [];
+    for (let i = 0; i < list.length; i++) {
+      if (!used.has(keys[i])) remaining.push(i);
+    }
+    if (remaining.length === 0) {
+      used = new Set();
+      remaining = list.map((_, i) => i);
+    }
+    // กันไม่ให้ออกซ้ำกับตัวล่าสุดที่เพิ่งออกไป (ทั้งในเซสชันนี้และเซสชันก่อนถ้าจำไว้)
+    if (remaining.length > 1 && lastKey !== null) {
+      const filtered = remaining.filter((i) => keys[i] !== lastKey);
+      if (filtered.length) remaining = filtered;
+    }
+    const idx = remaining[Math.floor(Math.random() * remaining.length)];
+    used.add(keys[idx]);
+    lastKey = keys[idx];
+    save();
     return list[idx];
   };
 }

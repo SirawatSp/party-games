@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let roundsPerPlayer = 2;
   let totalRounds = 4;
 
-  let drawWord = createPicker(CHARADES_WORDS);
+  let drawWord = createPicker(CHARADES_WORDS, "pg_charades_all");
   let currentWord = null;
   let roundIdx = 0;
   let roundWords = [];   // [{word, correct}] in play order this round
@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
   startMatchBtn.addEventListener("click", () => {
     totalRounds = roundsPerPlayer * 2;
     roundIdx = 0;
-    drawWord = createPicker(pool());
+    drawWord = createPicker(pool(), "pg_charades_" + activeCategory);
     score = [0, 0];
     goToPass();
   });

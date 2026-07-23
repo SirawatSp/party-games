@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const nextQuestionBtn = document.getElementById("nextQuestionBtn");
 
   let currentQuestion = null;
-  const pickQuestion = createPicker(GUESS_NUMBER_LIST);
+  const pickQuestion = createPicker(GUESS_NUMBER_LIST, "pg_guessnumber");
 
   function fmtNum(n) {
     return Number(n).toLocaleString("th-TH", { maximumFractionDigits: 3 });

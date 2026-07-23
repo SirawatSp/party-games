@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "ผ่าน! ใครต่อ กดเลยอย่าลังเล 😏",
     "เฉียดไปนิดเดียว ใจเย็น ๆ 🫣",
   ];
-  const drawQuip = createPicker(SAFE_QUIPS);
+  const drawQuip = createPicker(SAFE_QUIPS, "pg_crocodile");
 
   function switchHandler(switchEl, onPick) {
     switchEl.addEventListener("click", (e) => {

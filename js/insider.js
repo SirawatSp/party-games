@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const hideBtn = document.getElementById("hideBtn");
 
   let current = null;
-  const drawWord = createPicker(INSIDER_WORDS);
+  const drawWord = createPicker(INSIDER_WORDS, "pg_insider");
 
   function pickWord() {
     current = drawWord();

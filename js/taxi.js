@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let activeZone = "all";
   let timeBank = 90;
-  let drawPlace = createPicker(TAXI_PLACES);
+  let drawPlace = createPicker(TAXI_PLACES, "pg_taxi_all");
   let currentPlace = null;
   let rideLog = [];   // [{name, arrived}] ตามลำดับที่เจอในรอบนี้
   let timeLeft = 90;
@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   startBtn.addEventListener("click", () => {
-    drawPlace = createPicker(pool());
+    drawPlace = createPicker(pool(), "pg_taxi_" + activeZone);
     showOnly(passPanel);
   });
 

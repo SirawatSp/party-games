@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const catList = document.getElementById("catList");
   const catCount = document.getElementById("catCount");
 
-  const drawCategory = createPicker(CATEGORIES);
+  const drawCategory = createPicker(CATEGORIES, "pg_category");
 
   function pickCategory() {
     catText.textContent = drawCategory();

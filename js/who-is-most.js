@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const promptText = document.getElementById("promptText");
   const nextPromptBtn = document.getElementById("nextPromptBtn");
 
-  const pickPrompt = createPicker(WHO_IS_MOST);
+  const pickPrompt = createPicker(WHO_IS_MOST, "pg_whoismost");
 
   function showPrompt() {
     promptText.textContent = pickPrompt().prompt;
