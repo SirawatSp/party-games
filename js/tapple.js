@@ -161,6 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
       times[activeSide]--;
       renderClocks();
       if (times[activeSide] <= 0) {
+        vibrateTimeout();
         endRound(1 - activeSide, "เวลาฝั่ง " + (activeSide + 1) + " หมดก่อน");
       }
     }, 1000);

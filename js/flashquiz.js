@@ -200,6 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
       renderClocks();
       if (sides[currentSideIdx].timeLeft <= 0) {
         stopBattleTimer();
+        vibrateTimeout();
         endBattle(currentSideIdx);
       }
     }, 1000);

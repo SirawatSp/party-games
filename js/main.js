@@ -26,6 +26,11 @@ function createPicker(list) {
   };
 }
 
+// สั่นมือถือสั้น ๆ ตอนตัวจับเวลานับถอยหลังหมด (เบราว์เซอร์ที่ไม่รองรับ Vibration API จะข้ามเงียบ ๆ)
+function vibrateTimeout() {
+  if (navigator.vibrate) navigator.vibrate([120, 60, 120]);
+}
+
 // หน้าแรก: แปะ label จำนวนโจทย์ปัจจุบันบนการ์ดแต่ละเกม (ข้อมูลมาจาก data/game-counts.js
 // ซึ่งสร้างอัตโนมัติจากคลังโจทย์จริง จะได้เช็คได้ตลอดว่าเกมไหนคลังเยอะหรือน้อย)
 document.addEventListener("DOMContentLoaded", () => {

@@ -101,6 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (timeLeft <= 5) playTimer.classList.add("low");
       if (timeLeft <= 0) {
         stopTimer();
+        vibrateTimeout();
         endRound();
       }
     }, 1000);
