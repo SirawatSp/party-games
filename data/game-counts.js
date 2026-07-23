@@ -9,7 +9,7 @@ const GAME_COUNTS = {
   "insider.html": { count: 446, unit: "คำ" },
   "matchup.html": { count: 171, unit: "คำถาม" },
   "personal-facts.html": { count: 372, unit: "หัวข้อ" },
-  "psychology.html": { count: 680, unit: "คำถาม" },
+  "psychology.html": { count: 715, unit: "คำถาม" },
   "tapple.html": { count: 482, unit: "หมวด" },
   "tenbut.html": { count: 355, unit: "มุก" },
   "thisorthat.html": { count: 1247, unit: "คู่" },
