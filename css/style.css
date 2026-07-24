@@ -1641,3 +1641,174 @@ html.tp-no-scroll, html.tp-no-scroll body{overflow:hidden; height:100%; overscro
   font-family:'Kanit',sans-serif; font-weight:800; font-size:26px;
   color:var(--lime); margin-bottom:6px;
 }
+
+/* ================================================================
+   ▚▚▚  RETRO ARCADE SKIN  ▚▚▚
+   ชั้นสกินทับทั้งเว็บให้ได้ฟีลตู้เกมอาร์เคด/จอ CRT ยุค 80-90
+   (วางไว้ท้ายไฟล์เพื่อให้ override ของเดิมด้วยลำดับ source order)
+   หมายเหตุ: ฟอนต์ Press Start 2P ไม่มีสระ/พยัญชนะไทย จึงใช้เฉพาะกับ
+   ป้ายภาษาอังกฤษที่เราคุมเอง ส่วนข้อความไทยคงฟอนต์เดิม (Kanit/Sarabun)
+   แล้วสร้างฟีลพิกเซลด้วยขอบหนา เงาทึบแบบ 8-bit และแสงนีออน
+   ================================================================ */
+:root{
+  --pixel:'Press Start 2P','Kanit',sans-serif;
+  --edge:#05010a;
+  --hard-sm:3px 3px 0 var(--edge);
+  --hard:4px 4px 0 var(--edge);
+  --hard-lg:6px 6px 0 var(--edge);
+  --scan:rgba(0,0,0,.16);
+}
+
+/* ---------- จอ CRT: เส้นสแกนไลน์ + ขอบจอมืด (vignette) ทับทุกหน้า ---------- */
+body::after{
+  content:"";
+  position:fixed; inset:0; z-index:9998; pointer-events:none;
+  background:
+    repeating-linear-gradient(0deg, var(--scan) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse 132% 130% at 50% 50%, transparent 56%, rgba(0,0,0,.5) 100%);
+}
+/* แถบแสงกวาดจอช้า ๆ แบบจอหลอด (ปิดให้เมื่อผู้ใช้ลดการเคลื่อนไหว) */
+@media (prefers-reduced-motion:no-preference){
+  html::after{
+    content:"";
+    position:fixed; left:0; right:0; top:-40vh; height:40vh;
+    z-index:9997; pointer-events:none; opacity:.045;
+    background:linear-gradient(180deg, transparent, rgba(150,225,255,.85), transparent);
+    animation:crtSweep 7s linear infinite;
+  }
+}
+@keyframes crtSweep{ 0%{top:-42vh;} 100%{top:142vh;} }
+
+/* ---------- หัวข้อใหญ่: RGB split แบบจอ CRT ---------- */
+.hero h1, .page-head h1{
+  text-shadow:
+    2.5px 0 0 rgba(255,47,135,.55),
+   -2.5px 0 0 rgba(43,230,255,.55),
+    0 0 26px rgba(255,47,135,.30);
+}
+
+/* ---------- ป้าย kicker เป็นป้ายไฟตู้เกม (เลิกเอียงแบบสติกเกอร์) ---------- */
+.hero .kicker, .page-head .kicker{
+  transform:none;
+  border-radius:4px;
+  border:2px solid var(--edge);
+  box-shadow:var(--hard-sm);
+  text-shadow:none;
+}
+
+/* ---------- marquee: ป้ายไฟหัวตู้อาร์เคด ---------- */
+.marquee{
+  border-top:3px solid var(--pink);
+  border-bottom:3px solid var(--pink);
+  background:linear-gradient(180deg,#1b0a26,#0b0610);
+  box-shadow:0 0 26px -6px var(--pink), inset 0 -14px 26px -18px var(--pink);
+}
+.marquee span{ color:var(--lime); text-shadow:0 0 8px var(--lime); }
+
+/* ---------- ปุ่มกลับ = ปุ่มตู้เกม ---------- */
+.back-link{
+  border:2px solid var(--lime);
+  border-radius:4px;
+  color:var(--lime);
+  background:#0c0710;
+  box-shadow:var(--hard-sm);
+  text-transform:uppercase; letter-spacing:.05em;
+}
+.back-link:hover{
+  background:var(--lime); color:#04220f; border-color:var(--lime);
+  transform:translate(2px,2px); box-shadow:1px 1px 0 var(--edge);
+}
+
+/* ---------- การ์ดเลือกเกม = จอเลือกตัวละครในตู้อาร์เคด ---------- */
+.grid{ gap:20px; }
+.grid .card{ transform:none; }        /* จัดกริดตรง ไม่เอียง = ฟีลจอ SELECT */
+.card{
+  border:3px solid var(--line);
+  border-radius:8px;
+  background:linear-gradient(160deg,#1d1026,#0c0713);
+  box-shadow:var(--hard-lg);
+}
+.card:hover{
+  transform:translate(-3px,-3px);
+  border-color:var(--accent, var(--pink));
+  box-shadow:9px 9px 0 var(--edge), 0 0 30px -6px var(--accent, var(--pink));
+}
+.card .num{
+  color:var(--accent, var(--lime));
+  font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+  text-shadow:0 0 10px color-mix(in srgb, var(--accent, var(--lime)) 55%, transparent);
+}
+.card .go{ color:var(--accent, var(--lime)); text-transform:uppercase; letter-spacing:.05em; }
+.card-count{
+  border-radius:4px; border:2px solid var(--line);
+  background:rgba(5,1,10,.7); letter-spacing:.04em;
+}
+
+/* ---------- ปุ่มหลัก = ปุ่มกดตู้เกมกดแล้วยุบ ---------- */
+.btn{
+  border-radius:4px;
+  border:2px solid var(--edge);
+  box-shadow:var(--hard);
+  text-transform:uppercase; letter-spacing:.04em;
+}
+.btn:hover{ transform:translate(2px,2px); box-shadow:var(--hard-sm); }
+.btn:active{ transform:translate(4px,4px); box-shadow:0 0 0 var(--edge); }
+.btn.secondary{ border:2px solid var(--lime); box-shadow:var(--hard); }
+.btn.secondary:hover{ transform:translate(2px,2px); box-shadow:var(--hard-sm); }
+
+/* ---------- ชิป/แท็ก/สวิตช์โหมด = ปุ่มไฟบนหน้าปัดตู้ ---------- */
+.tag, .mode-btn, .tp-mode-btn{
+  border-radius:4px; border-width:2px;
+  text-transform:uppercase; letter-spacing:.03em;
+}
+.tag.active, .mode-btn.active, .tp-mode-btn.active{ box-shadow:var(--hard-sm); }
+
+/* ---------- แผง/จอเกมต่าง ๆ = จอ CRT มีขอบเบเซลหนา ---------- */
+.panel,
+.stage, .wl-stage, .gn-stage, .tp-stage, .fq-stage,
+.tot-stage, .cw-stage, .croc-stage, .tx-stage, .rc-stage,
+.tenbut-card, .trivia-card{
+  border:3px solid var(--line);
+  border-radius:8px;
+  box-shadow:var(--hard-lg);
+}
+.stage, .wl-stage, .gn-stage, .tp-stage, .fq-stage, .tot-stage, .cw-stage{
+  background-color:#0a0610;
+  box-shadow:var(--hard-lg), inset 0 0 70px -22px rgba(0,0,0,.9);
+}
+.panel h2, .stage .label{ text-transform:uppercase; letter-spacing:.06em; }
+
+/* ---------- footer = แถบเครดิตท้ายตู้ ---------- */
+footer{ border-top:3px solid var(--line); }
+footer::before{
+  content:"◄ ◆ ► CREDIT 99 · 1 COIN 1 PLAY ◄ ◆ ►";
+  display:block; margin-bottom:14px;
+  font-family:var(--pixel); font-size:9px; letter-spacing:1px;
+  color:var(--lime); text-shadow:0 0 6px var(--lime);
+}
+
+/* ---------- HUD เครดิตมุมจอ (ฉีดด้วย main.js ทุกหน้า) ---------- */
+.arcade-hud{
+  position:fixed; left:10px; bottom:10px; z-index:9990; pointer-events:none;
+  display:flex; flex-direction:column; gap:3px;
+  font-family:var(--pixel); font-size:8px; line-height:1.7; letter-spacing:1px;
+}
+.arcade-hud .ah-credit{ color:var(--cyan); text-shadow:0 0 6px var(--cyan); }
+.arcade-hud .ah-blink{ color:var(--pink); text-shadow:0 0 6px var(--pink); animation:arcadeBlink 1.05s steps(1) infinite; }
+@keyframes arcadeBlink{ 0%,50%{opacity:1;} 50.01%,100%{opacity:0;} }
+@media (prefers-reduced-motion:reduce){ .arcade-hud .ah-blink{ animation:none; } }
+@media (max-width:520px){ .arcade-hud{ font-size:7px; } }
+
+/* ---------- ป้ายอาร์เคดบนหน้าแรก (INSERT/PRESS START/SELECT) ---------- */
+.press-start{
+  font-family:var(--pixel); font-size:clamp(11px,2.4vw,14px);
+  color:var(--lime); text-shadow:0 0 10px var(--lime);
+  letter-spacing:1px; margin-top:24px;
+  animation:arcadeBlink 1.05s steps(1) infinite;
+}
+@media (prefers-reduced-motion:reduce){ .press-start{ animation:none; } }
+.select-banner{
+  font-family:var(--pixel); font-size:clamp(11px,2.6vw,16px);
+  text-align:center; color:var(--cyan); text-shadow:0 0 12px var(--cyan);
+  letter-spacing:2px; margin:6px 0 -6px;
+}

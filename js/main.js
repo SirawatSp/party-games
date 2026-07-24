@@ -90,6 +90,17 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+// พฤติกรรมร่วมของทุกหน้า: แปะ HUD เครดิตมุมจอสไตล์ตู้เกมอาร์เคด (ตกแต่งล้วน ๆ
+// pointer-events:none ไม่บังการกดอะไร และ aria-hidden กันไม่ให้ screen reader อ่าน)
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.querySelector(".arcade-hud")) return;
+  const hud = document.createElement("div");
+  hud.className = "arcade-hud";
+  hud.setAttribute("aria-hidden", "true");
+  hud.innerHTML = '<span class="ah-credit">CREDIT 00</span><span class="ah-blink">INSERT COIN</span>';
+  document.body.appendChild(hud);
+});
+
 // พฤติกรรมร่วมของทุกหน้า: scroll-reveal animation
 document.addEventListener("DOMContentLoaded", () => {
   const items = document.querySelectorAll(".reveal-up");
