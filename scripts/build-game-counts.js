@@ -26,6 +26,7 @@ const PAGES = [
   { page: "taxi.html", unit: "สถานที่", files: [["taxi.js", "TAXI_PLACES"]] },
   { page: "animalrace.html", unit: "ตัว", files: [["race-animals.js", "RACE_ANIMALS"]] },
   { page: "hues-and-cues.html", unit: "เฉดสี", files: [["hues-and-cues.js", "HUES_GRID"]] },
+  { page: "favorites.html", unit: "คำถาม", files: [["favorites.js", "FAVORITES_LIST"]] },
 ];
 
 function arrayLength(fileName, varName) {

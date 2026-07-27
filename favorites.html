@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ของโปรดของเธอ — คำถามเปิดบทสนทนาในวงเพื่อน</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0c0710">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <a class="brand-logo" href="index.html"><img class="brand-img" src="assets/logo.png" width="720" height="416" alt="Party Games — วงกำลังจะเหงา"></a>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--fav); color:#1a0b33;">21 · เปิดบทสนทนา</span>
+    <h1>ของโปรดของเธอ</h1>
+    <p>คำถามชวนคุยเรื่อง "ของโปรด" — หนังที่ชอบ หนังรักที่ดูกี่ทีก็ยิ้ม หนังเศร้าที่ร้องไห้หนักสุด การ์ตูนในดวงใจ เพลงประจำตัว ร้านเจ้าประจำ ตอบง่าย ไม่มีถูกผิด แต่คุยต่อได้ยาว</p>
+  </section>
+
+  <div class="fav-modes reveal-up" id="favModes">
+    <button class="fav-mode-btn active" data-mode="talk" type="button">💬 คุยกันเลย</button>
+    <button class="fav-mode-btn" data-mode="guess" type="button">🔮 ทายใจเพื่อน</button>
+  </div>
+  <p class="fav-mode-desc" id="favModeDesc">สุ่มคำถามขึ้นมา แล้วผลัดกันตอบไปทีละคนรอบวง</p>
+
+  <div class="tags fav-tags reveal-up" id="catTags">
+    <span class="tag active" data-cat="all">ทั้งหมด</span>
+    <span class="tag" data-cat="movie">🎬 หนัง &amp; ซีรีส์</span>
+    <span class="tag" data-cat="cartoon">📺 การ์ตูน &amp; อนิเมะ</span>
+    <span class="tag" data-cat="music">🎵 เพลง</span>
+    <span class="tag" data-cat="food">🍜 ของกิน</span>
+    <span class="tag" data-cat="travel">✈️ เที่ยว</span>
+    <span class="tag" data-cat="child">🧸 วัยเด็ก</span>
+    <span class="tag" data-cat="life">🌿 ไลฟ์สไตล์</span>
+    <span class="tag" data-cat="fun">🎲 สุ่มฮา</span>
+  </div>
+
+  <!-- ---------- โหมดคุยกันเลย ---------- -->
+  <div id="favTalk">
+    <div class="deck reveal-up">
+      <div id="favCardHolder"></div>
+    </div>
+    <div class="controls" style="justify-content:center; display:flex; gap:12px; flex-wrap:wrap; margin-bottom:40px;">
+      <button class="btn" id="favNextBtn" type="button">คำถามถัดไป →</button>
+      <button class="btn secondary" id="favTimerBtn" type="button">จับเวลา 45 วิ ⏱</button>
+    </div>
+  </div>
+
+  <!-- ---------- โหมดทายใจเพื่อน ---------- -->
+  <div id="favGuess" class="fav-hidden">
+
+    <div class="fav-stage" id="favSetup">
+      <h3 class="fav-h3">ใครเล่นบ้าง?</h3>
+      <p class="fav-hint">ใส่ชื่ออย่างน้อย 3 คน ระบบจะสุ่มว่ารอบนี้ใครเป็น "เจ้าของคำตอบ"</p>
+      <div class="fav-players" id="favPlayerList"></div>
+      <div class="fav-setup-actions">
+        <button class="btn secondary" id="favAddPlayer" type="button">+ เพิ่มผู้เล่น</button>
+      </div>
+      <div class="fav-laps">
+        <div class="fav-label">เล่นกี่รอบ (ทุกคนได้เป็นเจ้าของคำตอบ)</div>
+        <div class="fav-lap-switch" id="favLapSwitch">
+          <button class="fav-lap-btn active" data-laps="1" type="button">คนละ 1 รอบ</button>
+          <button class="fav-lap-btn" data-laps="2" type="button">คนละ 2 รอบ</button>
+        </div>
+      </div>
+      <div class="fav-warn" id="favSetupWarn"></div>
+      <button class="btn" id="favStartBtn" type="button">เริ่มทายใจ 🔮</button>
+    </div>
+
+    <div class="fav-stage fav-hidden" id="favRound">
+      <div class="fav-round-tag" id="favRoundTag"></div>
+      <div class="fav-target">🎯 คำถามนี้เป็นของ <span class="fav-name" id="favTargetName"></span></div>
+      <div id="favRoundCardHolder"></div>
+      <p class="fav-hint">ทุกคน (ยกเว้นเจ้าตัว) ทายออกเสียงว่า <span class="fav-name" id="favTargetName2"></span> จะตอบว่าอะไร<br>แล้วให้เจ้าตัวเฉลยคำตอบจริงของตัวเอง</p>
+      <button class="btn" id="favRevealBtn" type="button">เฉลยแล้ว → ให้คะแนน ✓</button>
+    </div>
+
+    <div class="fav-stage fav-hidden" id="favScore">
+      <h3 class="fav-h3">ใครทายใจถูกบ้าง?</h3>
+      <p class="fav-hint">แตะชื่อคนที่ทายใกล้เคียงคำตอบจริง (แตะซ้ำเพื่อยกเลิก)</p>
+      <div class="fav-guessers" id="favGuessers"></div>
+      <p class="fav-hint fav-bonus-note">ถ้ามีคนทายถูกอย่างน้อย 1 คน <span class="fav-name" id="favTargetName3"></span> ได้ไปด้วย +1 (แปลว่าเพื่อนอ่านใจเธอออก)</p>
+      <div class="fav-score-list" id="favScoreList"></div>
+      <button class="btn fav-next-round" id="favNextRoundBtn" type="button">รอบต่อไป →</button>
+    </div>
+
+    <div class="fav-stage fav-hidden" id="favFinal">
+      <div class="fav-big-icon">🏆</div>
+      <h3 class="fav-h3">จบเกม!</h3>
+      <div class="fav-score-list" id="favFinalList"></div>
+      <button class="btn" id="favRestartBtn" type="button">เล่นอีกรอบ 🔁</button>
+    </div>
+
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเล่น · โหมดคุยกันเลย</h2>
+    <ol>
+      <li>เลือกหมวดที่อยากคุย (หนัง การ์ตูน เพลง ของกิน เที่ยว วัยเด็ก ไลฟ์สไตล์ สุ่มฮา) หรือปล่อยไว้ที่ "ทั้งหมด"</li>
+      <li>กดสุ่มคำถาม อ่านออกเสียงให้ทั้งวงฟัง แล้วผลัดกันตอบทีละคนวนไปรอบวง</li>
+      <li>ห้ามตอบสั้น ๆ ว่า "ก็ชอบ" — ต้องบอกด้วยว่าทำไม อันนี้แหละที่ทำให้บทสนทนาไปต่อ</li>
+      <li>ถ้าวงเริ่มยืดยาว กดปุ่ม "จับเวลา 45 วิ" ให้แต่ละคนตอบภายในเวลาได้</li>
+      <li>ใครยังนึกไม่ออกสามารถ "ผ่าน" แล้ววนกลับมาตอบทีหลังได้</li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเล่น · โหมดทายใจเพื่อน</h2>
+    <ol>
+      <li>ใส่ชื่อผู้เล่น 3-10 คน เลือกว่าจะเล่นคนละ 1 หรือ 2 รอบ แล้วกดเริ่ม</li>
+      <li>แต่ละรอบระบบจะสุ่มคำถาม 1 ข้อ พร้อมสุ่มว่าคำถามนี้เป็น "ของ" ใคร</li>
+      <li>คนอื่น ๆ ผลัดกันทายออกเสียงว่าเจ้าของคำถามจะตอบว่าอะไร โดยเจ้าตัวยังไม่ต้องพูด</li>
+      <li>พอทายครบ เจ้าตัวเฉลยคำตอบจริง แล้วกดปุ่มให้คะแนน</li>
+      <li>แตะชื่อคนที่ทายใกล้เคียง = คนละ 1 แต้ม และถ้ามีคนทายถูก เจ้าของคำตอบได้ +1 ด้วย</li>
+      <li>เล่นวนจนครบรอบ ใครแต้มเยอะที่สุดคือคนที่ "อ่านใจเพื่อนเก่งที่สุด" ในวง</li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>เคล็ดลับให้วงคุยสนุกขึ้น</h2>
+    <ol>
+      <li>ถามต่อทุกครั้งว่า "ทำไม" หรือ "ครั้งแรกที่เจอคือตอนไหน" คำถามเดียวคุยได้เป็นสิบนาที</li>
+      <li>เจอคำตอบที่ตรงกันเมื่อไหร่ ให้หยุดคุยตรงนั้นก่อน มักจะเป็นจุดที่วงสนิทกันขึ้น</li>
+      <li>อย่าตัดสินของโปรดของคนอื่น ต่อให้เป็นหนังที่เราไม่ชอบก็ให้เขาเล่าจนจบ</li>
+      <li>เล่นตอนรออาหาร นั่งรถไปเที่ยว หรือคืนที่วงเริ่มเงียบ ได้ผลดีที่สุด</li>
+    </ol>
+  </div>
+
+  <footer>ไม่มีคำตอบผิด มีแต่ของโปรดที่เรายังไม่รู้ของกันและกัน 🎬🍜🎵</footer>
+</div>
+
+<script src="data/favorites.js"></script>
+<script src="js/main.js"></script>
+<script src="js/favorites.js"></script>
+</body>
+</html>
