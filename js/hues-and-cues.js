@@ -33,7 +33,14 @@
     turn: 0,
     marks: [],        // { player, cell, phase }
     pending: -1,
+    zoomC0: -99,      // มุมซ้ายบนของกรอบแว่นขยาย
+    zoomR0: -99,
   };
+
+  // แว่นขยาย: โชว์ช่องรอบ ๆ จุดที่เลือกแบบใหญ่ ๆ กดง่ายบนมือถือ
+  const ZOOM_COLS = 7;
+  const ZOOM_ROWS = 5;
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
   const $ = (id) => document.getElementById(id);
   const rowOf = (i) => Math.floor(i / COLS);
@@ -255,7 +262,10 @@
   // ---------- ช่วงทาย ----------
   function startGuess() {
     S.pending = -1;
+    S.zoomC0 = -99;
+    S.zoomR0 = -99;
     $("hcConfirm").classList.add("hc-hidden");
+    $("hcZoomWrap").classList.add("hc-hidden");
     $("hcTapHint").classList.remove("hc-hidden");
     $("hcPhaseTag").textContent =
       S.phase === 1 ? "รอบที่ " + S.round + " · คำใบ้ 1 คำ" : "รอบที่ " + S.round + " · คำใบ้ 2 คำ";
@@ -296,7 +306,47 @@
     $("hcConfirmCoord").textContent = coordOf(i);
     $("hcConfirm").classList.remove("hc-hidden");
     $("hcTapHint").classList.add("hc-hidden");
+    updateZoom(i);
   }
+
+  // แตะช่องกลาง ๆ ในแว่น กรอบจะอยู่นิ่ง (ไม่กระตุก) แต่ถ้าแตะโดนขอบแว่นหรือหลุดออกไป
+  // จะเลื่อนกรอบตามให้ เพื่อให้ไล่ดูสีถัดออกไปเรื่อย ๆ ได้โดยไม่ต้องกลับไปแตะกระดานใหญ่
+  function updateZoom(cell) {
+    const c = colOf(cell);
+    const r = rowOf(cell);
+    const onEdge =
+      c <= S.zoomC0 || c >= S.zoomC0 + ZOOM_COLS - 1 ||
+      r <= S.zoomR0 || r >= S.zoomR0 + ZOOM_ROWS - 1;
+    if (onEdge) {
+      S.zoomC0 = clamp(c - (ZOOM_COLS >> 1), 0, COLS - ZOOM_COLS);
+      S.zoomR0 = clamp(r - (ZOOM_ROWS >> 1), 0, ROWS - ZOOM_ROWS);
+    }
+    renderZoom();
+    $("hcZoomWrap").classList.remove("hc-hidden");
+  }
+
+  function renderZoom() {
+    const wrap = $("hcZoom");
+    wrap.innerHTML = "";
+    const frag = document.createDocumentFragment();
+    for (let dr = 0; dr < ZOOM_ROWS; dr++) {
+      for (let dc = 0; dc < ZOOM_COLS; dc++) {
+        const i = (S.zoomR0 + dr) * COLS + (S.zoomC0 + dc);
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "hc-zoom-cell" + (i === S.pending ? " hc-zoom-sel" : "");
+        b.dataset.i = i;
+        b.style.background = cssColor(i);
+        frag.appendChild(b);
+      }
+    }
+    wrap.appendChild(frag);
+  }
+
+  $("hcZoom").addEventListener("click", (e) => {
+    const b = e.target.closest(".hc-zoom-cell");
+    if (b) selectCell(Number(b.dataset.i));
+  });
 
   $("hcConfirm").addEventListener("click", (e) => {
     const nudge = e.target.closest("[data-d]");
@@ -317,7 +367,10 @@
     if (el) el.classList.remove("hc-sel");
     S.marks.push({ player: S.order[S.turn], cell: S.pending, phase: S.phase });
     S.pending = -1;
+    S.zoomC0 = -99;
+    S.zoomR0 = -99;
     $("hcConfirm").classList.add("hc-hidden");
+    $("hcZoomWrap").classList.add("hc-hidden");
     $("hcTapHint").classList.remove("hc-hidden");
     renderMarkers($("hcOverlay"));
 
