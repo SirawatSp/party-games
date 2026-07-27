@@ -18,4 +18,5 @@ const GAME_COUNTS = {
   "who-is-most.html": { count: 425, unit: "โจทย์" },
   "taxi.html": { count: 208, unit: "สถานที่" },
   "animalrace.html": { count: 20, unit: "ตัว" },
+  "hues-and-cues.html": { count: 480, unit: "เฉดสี" },
 };

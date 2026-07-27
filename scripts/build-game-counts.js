@@ -25,6 +25,7 @@ const PAGES = [
   { page: "who-is-most.html", unit: "โจทย์", files: [["who-is-most.js", "WHO_IS_MOST"]] },
   { page: "taxi.html", unit: "สถานที่", files: [["taxi.js", "TAXI_PLACES"]] },
   { page: "animalrace.html", unit: "ตัว", files: [["race-animals.js", "RACE_ANIMALS"]] },
+  { page: "hues-and-cues.html", unit: "เฉดสี", files: [["hues-and-cues.js", "HUES_GRID"]] },
 ];
 
 function arrayLength(fileName, varName) {
