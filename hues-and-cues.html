@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="th">
+<!-- hc-page = ปิดเอฟเฟกต์จอ CRT ทั้งหมดเฉพาะหน้านี้ (ดูเหตุผลใน css/style.css) -->
+<html lang="th" class="hc-page">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -69,7 +70,10 @@
   <div class="hc-stage hc-hidden" id="hcPlay">
     <div class="hc-topbar">
       <div class="hc-phase-tag" id="hcPhaseTag"></div>
-      <button class="hc-peek" id="hcPeek" type="button">🔒 กดค้างดูสีลับ (คนใบ้)</button>
+      <div class="hc-topbar-btns">
+        <button class="hc-peek" id="hcPeek" type="button">🔒 กดค้างดูสีลับ (คนใบ้)</button>
+        <button class="hc-peek" id="hcFsBtn" type="button">⛶ เต็มจอ</button>
+      </div>
     </div>
     <div class="hc-turn" id="hcTurn"></div>
 
@@ -169,6 +173,8 @@
 
   <footer>เล่นสนุก ๆ กับเพื่อน สีบนจอแต่ละเครื่องอาจเพี้ยนกันนิดหน่อย ถือว่าเป็นความท้าทายของเกม 🎨</footer>
 </div>
+
+<button class="hc-fs-exit hc-hidden" id="hcFsExit" type="button">✕ ออกจากเต็มจอ</button>
 
 <script src="data/hues-and-cues.js"></script>
 <script src="js/main.js"></script>

@@ -2078,6 +2078,90 @@ footer::before{
 }
 .hc-legend-box-out{border-style:dashed; border-color:rgba(255,255,255,.7);}
 
+/* ---- ปิดเอฟเฟกต์จอ CRT เฉพาะหน้าเกมทายสี ----
+   เส้นสแกนไลน์ ขอบจอมืด แสงกวาดจอ และฟิล์มเกรน ล้วนเปลี่ยนสีที่ตาเห็น
+   (ทั้งลดความสว่างและเคลือบสีทับ) ซึ่งทำให้เทียบเฉดสียากขึ้น —
+   ส่วนเกมนี้ตัดสินกันที่การอ่านสีล้วน ๆ จึงต้องเห็นสีจริงแบบไม่มีอะไรบัง */
+html.hc-page::after{display:none;}
+html.hc-page body::before,
+html.hc-page body::after{display:none;}
+
+/* ---- โหมดเต็มจอ: ซ่อนทุกอย่างที่ไม่ใช่ตัวเกม ให้กระดานใหญ่ที่สุด ---- */
+.hc-topbar-btns{display:flex; gap:8px; flex-wrap:wrap;}
+html.hc-fs .marquee,
+html.hc-fs .topnav,
+html.hc-fs .page-head,
+html.hc-fs .hc-rules-head,
+html.hc-fs .panel,
+html.hc-fs footer,
+html.hc-fs .arcade-hud{display:none !important;}
+html.hc-fs body{min-height:0;}
+html.hc-fs .wrap{max-width:100%; padding:0 6px;}
+html.hc-fs .hc-stage{margin:6px 0; padding:14px 10px;}
+/* จำกัดความสูงกระดานไว้ เผื่อที่ให้แว่นขยาย/แถบยืนยันอยู่ในจอเดียวกัน
+   (กระดานอัตราส่วน 30:16 → ความกว้างสูงสุด = ความสูงที่เหลือ x 1.875) */
+html.hc-fs .hc-board-wrap{max-width:min(100%, calc((100vh - 400px) * 1.875));}
+@supports (height:100dvh){
+  html.hc-fs .hc-board-wrap{max-width:min(100%, calc((100dvh - 400px) * 1.875));}
+}
+
+/* แนวนอน (ท่าที่เหมาะกับกระดาน 30:16 ที่สุด): วางกระดานซ้าย แว่นขยาย+ปุ่มยืนยันขวา
+   เรียงลงมาแนวตั้งแล้วมันยาวเกินจอ ต้องเลื่อนหาปุ่มยืนยัน ซึ่งเสียอรรถรสตอนเล่นเป็นวง */
+@media (orientation:landscape){
+  html.hc-fs #hcPlay{
+    display:grid;
+    grid-template-columns:1fr minmax(240px, 300px);
+    grid-template-rows:auto auto auto auto 1fr;
+    gap:10px 14px;
+    align-items:start;
+  }
+  html.hc-fs #hcPlay .hc-topbar{grid-column:1/-1; grid-row:1; margin-bottom:0;}
+  html.hc-fs #hcPlay .hc-turn{grid-column:1/-1; grid-row:2; margin-bottom:0;}
+  html.hc-fs #hcPlay .hc-board-wrap{
+    grid-column:1; grid-row:3/6;
+    max-width:min(100%, calc((100vh - 170px) * 1.875));
+  }
+  html.hc-fs #hcPlay .hc-zoom-wrap{grid-column:2; grid-row:3; margin:0; max-width:100%;}
+  html.hc-fs #hcPlay .hc-confirm{grid-column:2; grid-row:4; margin:0; max-width:100%;}
+  html.hc-fs #hcPlay .hc-tap-hint{grid-column:2; grid-row:5; margin-top:0;}
+  /* จอเฉลยก็ย่อกระดานลงหน่อย จะได้เห็นตารางคะแนนโดยไม่ต้องเลื่อน */
+  html.hc-fs #hcReveal .hc-board-wrap{max-width:min(100%, calc((100vh - 330px) * 1.875));}
+}
+@supports (height:100dvh){
+  @media (orientation:landscape){
+    html.hc-fs #hcPlay .hc-board-wrap{max-width:min(100%, calc((100dvh - 170px) * 1.875));}
+    html.hc-fs #hcReveal .hc-board-wrap{max-width:min(100%, calc((100dvh - 330px) * 1.875));}
+  }
+}
+/* มือถือแนวนอน: จอเตี้ยมาก ต้องบีบตัวควบคุมลงอีก ไม่งั้นปุ่มยืนยันตกจอ */
+@media (orientation:landscape) and (max-height:520px){
+  /* บีบคอลัมน์ขวาให้แคบลง ช่องแว่นจะเล็กตาม (aspect-ratio คุมความสูงอยู่)
+     แต่ก็ยังใหญ่กว่าช่องบนกระดานเกือบเท่าตัว */
+  html.hc-fs #hcPlay{grid-template-columns:1fr minmax(170px, 200px);}
+  html.hc-fs .hc-zoom-label{display:none;}
+  html.hc-fs .hc-zoom{gap:3px; padding:5px;}
+  html.hc-fs .hc-zoom-cell{min-height:0;}
+  html.hc-fs #hcPlay .hc-confirm{padding:8px 10px; gap:8px;}
+  html.hc-fs .hc-confirm-swatch{width:38px; height:38px;}
+  html.hc-fs .hc-confirm-coord{font-size:16px; min-width:0;}
+  /* ซ่อนปุ่มลูกศร: บนจอเตี้ยมันกินที่ ~60px และซ้ำซ้อนกับแว่นขยายอยู่แล้ว
+     (ในแว่นแตะช่องข้าง ๆ ได้ตรง ๆ ทุกช่อง) */
+  html.hc-fs .hc-nudge{display:none;}
+  html.hc-fs .hc-confirm-swatch{width:32px; height:32px;}
+  html.hc-fs .hc-confirm-btn{font-size:13px; padding:9px 16px;}
+  html.hc-fs #hcPlay .hc-tap-hint{display:none;}
+}
+/* ในโหมดเต็มจอใช้ปุ่ม ✕ ลอยมุมขวาบนปุ่มเดียว (กดออกได้จากทุกจอ รวมจอเฉลยที่ไม่มีแถบบน)
+   จึงซ่อนปุ่มสลับในแถบบน แล้วเว้นที่ไว้ไม่ให้ปุ่ม "ดูสีลับ" ไปมุดใต้ปุ่ม ✕ */
+html.hc-fs #hcFsBtn{display:none;}
+html.hc-fs .hc-topbar{padding-right:150px;}
+.hc-fs-exit{
+  position:fixed; top:8px; right:8px; z-index:3000;
+  font-family:'Kanit',sans-serif; font-weight:700; font-size:12.5px;
+  background:rgba(10,6,16,.9); border:2px solid var(--hues); color:var(--hues);
+  border-radius:4px; padding:8px 13px; cursor:pointer;
+}
+
 /* ---- จอเล็ก: ลดขอบในของเวทีเพื่อให้กระดานกว้างขึ้นอีกนิด ---- */
 @media (max-width:560px){
   .hc-stage{padding:20px 8px;}

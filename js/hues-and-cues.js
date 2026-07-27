@@ -412,6 +412,46 @@
     );
   })();
 
+  // ---------- โหมดเต็มจอ ----------
+  // ใช้ Fullscreen API ถ้าเบราว์เซอร์รองรับ (ซ่อนแถบเบราว์เซอร์ได้จริง)
+  // ถ้าไม่รองรับ (เช่น Safari บน iPhone) ก็ยังได้เลย์เอาต์เต็มจอจาก CSS อยู่ดี
+  function applyFsLayout(on) {
+    document.documentElement.classList.toggle("hc-fs", on);
+    $("hcFsExit").classList.toggle("hc-hidden", !on);
+    $("hcFsBtn").textContent = on ? "⛶ ออกเต็มจอ" : "⛶ เต็มจอ";
+  }
+
+  function nativeFsOn() {
+    const el = document.documentElement;
+    const req = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (req) { try { req.call(el); } catch (e) {} }
+  }
+
+  function nativeFsOff() {
+    const exit = document.exitFullscreen || document.webkitExitFullscreen;
+    if (exit && (document.fullscreenElement || document.webkitFullscreenElement)) {
+      try { exit.call(document); } catch (e) {}
+    }
+  }
+
+  function setFullscreen(on) {
+    if (on) nativeFsOn(); else nativeFsOff();
+    applyFsLayout(on);
+  }
+
+  $("hcFsBtn").addEventListener("click", () => {
+    setFullscreen(!document.documentElement.classList.contains("hc-fs"));
+  });
+  $("hcFsExit").addEventListener("click", () => setFullscreen(false));
+
+  // ผู้ใช้กด Esc หรือปัดออกจากเต็มจอเอง → ให้เลย์เอาต์กลับมาปกติตาม
+  ["fullscreenchange", "webkitfullscreenchange"].forEach((ev) =>
+    document.addEventListener(ev, () => {
+      const native = document.fullscreenElement || document.webkitFullscreenElement;
+      if (!native) applyFsLayout(false);
+    })
+  );
+
   // ---------- เฉลย + คิดคะแนน ----------
   function reveal() {
     $("hcRevealCoord").textContent = coordOf(S.target);
