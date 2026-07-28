@@ -1,7 +1,7 @@
 // Service Worker สำหรับเล่นออฟไลน์ได้ทั้งเว็บ (เก็บ cache ทุกหน้า/สคริปต์/คลังโจทย์ไว้ในเครื่อง)
 // เปิดเว็บครั้งแรกตอนมีเน็ต ระบบจะโหลดเก็บไว้ให้อัตโนมัติ ครั้งต่อไปเปิดได้แม้ไม่มีเน็ตเลย
 // อัปเดตเนื้อหาเว็บทีไร ให้เปลี่ยนเลข CACHE_VERSION เพื่อบังคับดาวน์โหลดของใหม่ทับของเก่า
-const CACHE_VERSION = "party-games-v3";
+const CACHE_VERSION = "party-games-v4";
 
 const PRECACHE_URLS = [
   "./",
@@ -20,6 +20,7 @@ const PRECACHE_URLS = [
   "matchup.html",
   "personal-facts.html",
   "psychology.html",
+  "rapidfire.html",
   "tapple.html",
   "taxi.html",
   "tenbut.html",
@@ -43,6 +44,7 @@ const PRECACHE_URLS = [
   "js/matchup.js",
   "js/personal-facts.js",
   "js/psychology.js",
+  "js/rapidfire.js",
   "js/tapple.js",
   "js/taxi.js",
   "js/tenbut.js",
@@ -64,6 +66,7 @@ const PRECACHE_URLS = [
   "data/matchup.js",
   "data/personal-facts.js",
   "data/psychology.js",
+  "data/rapidfire.js",
   "data/race-animals.js",
   "data/shes-a-10-but.js",
   "data/tapple-categories-en.js",

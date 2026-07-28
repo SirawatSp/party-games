@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ถามไวตอบไว — บอกมา 3 อย่าง ก่อนหมดเวลา</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0c0710">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <a class="brand-logo" href="index.html"><img class="brand-img" src="assets/logo.png" width="720" height="416" alt="Party Games — วงกำลังจะเหงา"></a>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--rapid); color:#2a1200;">22 · ตอบเร็ว</span>
+    <h1>ถามไวตอบไว</h1>
+    <p>โจทย์แบบ "บอกมา 3 อย่าง" — 3 ประเทศที่อยากไป 3 อาหารที่ยอมกินไปตลอดชีวิต 3 ของที่จะหยิบถ้าบ้านไฟไหม้ ตอบให้ครบก่อนหมดเวลา ห้ามคิดนาน ยิ่งตอบเร็วยิ่งได้คำตอบจริงใจ</p>
+  </section>
+
+  <div class="rf-modes reveal-up" id="rfModes">
+    <button class="rf-mode-btn active" data-mode="chill" type="button">💬 ชิล ๆ ไม่จับเวลา</button>
+    <button class="rf-mode-btn" data-mode="race" type="button">⚡ แข่งจับเวลา</button>
+  </div>
+  <p class="rf-mode-desc" id="rfModeDesc">สุ่มโจทย์ขึ้นมา แล้วผลัดกันตอบคนละ 3 อย่างรอบวง ไม่มีเวลาบีบ</p>
+
+  <div class="tags rf-tags reveal-up" id="rfCatTags">
+    <span class="tag active" data-cat="all">ทั้งหมด</span>
+    <span class="tag" data-cat="travel">✈️ เที่ยว</span>
+    <span class="tag" data-cat="food">🍜 ของกิน</span>
+    <span class="tag" data-cat="ent">🎬 บันเทิง</span>
+    <span class="tag" data-cat="self">🪞 เรื่องตัวเอง</span>
+    <span class="tag" data-cat="stuff">🎒 ของ &amp; ไอเทม</span>
+    <span class="tag" data-cat="people">🫂 คนรอบตัว</span>
+    <span class="tag" data-cat="daily">☀️ ชีวิตประจำวัน</span>
+    <span class="tag" data-cat="fun">🎲 สมมติ &amp; ฮา</span>
+  </div>
+
+  <!-- ---------- โหมดชิล ๆ ---------- -->
+  <div id="rfChill">
+    <div class="deck reveal-up">
+      <div id="rfCardHolder"></div>
+    </div>
+    <div class="controls" style="justify-content:center; display:flex; gap:12px; flex-wrap:wrap; margin-bottom:40px;">
+      <button class="btn" id="rfChillNext" type="button">โจทย์ถัดไป →</button>
+    </div>
+  </div>
+
+  <!-- ---------- โหมดแข่งจับเวลา ---------- -->
+  <div id="rfRace" class="rf-hidden">
+
+    <div class="rf-stage" id="rfSetup">
+      <h3 class="rf-h3">ใครลงแข่งบ้าง?</h3>
+      <p class="rf-hint">วางเครื่องไว้กลางวง คนที่ถึงตาตอบออกเสียง ให้เพื่อนคนข้าง ๆ เป็นคนกดนับให้</p>
+      <div class="rf-players" id="rfPlayerList"></div>
+      <div class="rf-setup-actions">
+        <button class="btn secondary" id="rfAddPlayer" type="button">+ เพิ่มผู้เล่น</button>
+      </div>
+
+      <div class="rf-opt">
+        <div class="rf-label">ให้เวลากี่วินาทีต่อคน</div>
+        <div class="rf-switch" id="rfTimeSwitch">
+          <button class="rf-opt-btn" data-sec="5" type="button">5 วิ 🔥</button>
+          <button class="rf-opt-btn active" data-sec="10" type="button">10 วิ</button>
+          <button class="rf-opt-btn" data-sec="15" type="button">15 วิ</button>
+        </div>
+      </div>
+
+      <div class="rf-opt">
+        <div class="rf-label">เล่นกี่รอบ</div>
+        <div class="rf-switch" id="rfLapSwitch">
+          <button class="rf-opt-btn active" data-laps="1" type="button">คนละ 1 รอบ</button>
+          <button class="rf-opt-btn" data-laps="2" type="button">คนละ 2 รอบ</button>
+          <button class="rf-opt-btn" data-laps="3" type="button">คนละ 3 รอบ</button>
+        </div>
+      </div>
+
+      <div class="rf-warn" id="rfSetupWarn"></div>
+      <button class="btn" id="rfStartGameBtn" type="button">เริ่มแข่ง ⚡</button>
+    </div>
+
+    <div class="rf-stage rf-hidden" id="rfPlay">
+      <div class="rf-round-tag" id="rfRoundTag"></div>
+      <div class="rf-turn">ตาของ <span class="rf-name" id="rfTurnName"></span></div>
+      <div id="rfPlayCardHolder"></div>
+
+      <div class="rf-clock" id="rfClock">—</div>
+
+      <div class="rf-slots" id="rfSlots">
+        <button class="rf-slot" data-slot="0" type="button" disabled>1</button>
+        <button class="rf-slot" data-slot="1" type="button" disabled>2</button>
+        <button class="rf-slot" data-slot="2" type="button" disabled>3</button>
+      </div>
+      <p class="rf-hint" id="rfSlotHint">กด "เริ่ม" แล้วแตะช่อง 1-2-3 ทุกครั้งที่เจ้าตัวตอบได้ 1 ข้อ</p>
+
+      <button class="btn rf-go" id="rfGoBtn" type="button">เริ่มจับเวลา ▶</button>
+      <div class="rf-result rf-hidden" id="rfResult"></div>
+      <button class="btn rf-hidden" id="rfNextRoundBtn" type="button">รอบต่อไป →</button>
+
+      <div class="rf-score-list" id="rfScoreList"></div>
+    </div>
+
+    <div class="rf-stage rf-hidden" id="rfFinal">
+      <div class="rf-big-icon">🏆</div>
+      <h3 class="rf-h3">จบเกม!</h3>
+      <div class="rf-score-list" id="rfFinalList"></div>
+      <button class="btn" id="rfRestartBtn" type="button">เล่นอีกรอบ 🔁</button>
+    </div>
+
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเล่น · โหมดแข่งจับเวลา</h2>
+    <ol>
+      <li>ใส่ชื่อผู้เล่น 2-10 คน เลือกเวลาต่อคน (5 / 10 / 15 วินาที) และจำนวนรอบ แล้วกดเริ่ม</li>
+      <li>ระบบสุ่มโจทย์ขึ้นมา 1 ข้อ พร้อมบอกว่าถึงตาใคร — ยังไม่ต้องรีบตอบจนกว่าจะกด "เริ่มจับเวลา"</li>
+      <li>พอกดเริ่ม เจ้าตัวต้องพูดคำตอบให้ครบ 3 อย่าง คนถือเครื่องแตะช่อง 1-2-3 ตามที่เขาตอบได้</li>
+      <li>ครบ 3 ก่อนหมดเวลา = ได้ 1 แต้ม ถ้าหมดเวลาก่อน = ไม่ได้แต้ม (แต้มพิเศษ +1 ถ้าตอบครบภายในครึ่งเวลาแรก)</li>
+      <li>ห้ามตอบซ้ำกับที่คนอื่นเพิ่งตอบในโจทย์เดียวกัน และห้ามตอบแบบกำกวมจนวงไม่ยอมรับ</li>
+      <li>เล่นวนจนครบรอบ ใครแต้มเยอะสุดคือคนที่ปากไวที่สุดในวง</li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเล่น · โหมดชิล ๆ</h2>
+    <ol>
+      <li>เลือกหมวดที่อยากคุย หรือปล่อยไว้ที่ "ทั้งหมด" แล้วกดสุ่มโจทย์</li>
+      <li>อ่านออกเสียง แล้วผลัดกันตอบคนละ 3 อย่างวนไปรอบวง ไม่มีเวลาบีบ</li>
+      <li>ตอบเสร็จแล้วชวนคุยต่อได้เลยว่าทำไมถึงเลือกอันนั้น — โจทย์เดียวคุยได้ยาว</li>
+      <li>เหมาะกับตอนนั่งรถ รออาหาร หรือวงที่เพิ่งเจอกันครั้งแรก</li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>กติกาเสริมสำหรับสายโหด</h2>
+    <ol>
+      <li><b>ห้ามซ้ำทั้งเกม</b> — คำตอบที่มีคนพูดไปแล้วในเกมนี้ ห้ามใครหยิบมาใช้อีก</li>
+      <li><b>ลูกโซ่</b> — ตอบไม่ทัน ให้ส่งโจทย์เดิมต่อให้คนถัดไปทันที ใครตอบได้คนแรกเก็บแต้มไป</li>
+      <li><b>ตัดสินด้วยวง</b> — คำตอบไหนที่วงเห็นว่ามั่ว ให้โหวตตัดออก แล้วต้องหาใหม่ในเวลาที่เหลือ</li>
+      <li><b>โหมด 5 วิ</b> — เปิดใช้ตอนวงเริ่มคุ้นเกม จะได้คำตอบที่จริงใจกว่าเดิมมาก</li>
+    </ol>
+  </div>
+
+  <footer>ตอบไว ๆ ไม่ต้องคิดเยอะ คำตอบแรกที่โผล่ในหัวมักเป็นคำตอบที่จริงที่สุด ⚡</footer>
+</div>
+
+<script src="data/rapidfire.js"></script>
+<script src="js/main.js"></script>
+<script src="js/rapidfire.js"></script>
+</body>
+</html>
