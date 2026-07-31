@@ -7,7 +7,7 @@ const GAME_COUNTS = {
   "flashquiz.html": { count: 251, unit: "คำถาม" },
   "guess-number.html": { count: 89, unit: "โจทย์" },
   "insider.html": { count: 446, unit: "คำ" },
-  "matchup.html": { count: 171, unit: "คำถาม" },
+  "matchup.html": { count: 291, unit: "คำถาม" },
   "personal-facts.html": { count: 372, unit: "หัวข้อ" },
   "psychology.html": { count: 750, unit: "คำถาม" },
   "tapple.html": { count: 482, unit: "หมวด" },

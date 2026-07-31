@@ -2485,3 +2485,22 @@ html.hc-fs .hc-topbar{padding-right:150px;}
   .rf-stage{padding:20px 12px;}
   .rf-slots{gap:9px;}
 }
+
+/* ---- จับคู่ รู้จายยยย: สลับโหมด + หน้าเริ่มแบบไม่ต้องใส่ชื่อ ---- */
+.mu-modes{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:24px 0 8px;}
+.mu-mode-btn{
+  font-family:'Kanit',sans-serif; font-weight:700; font-size:14.5px;
+  background:rgba(255,255,255,.03); border:2px solid var(--line); color:var(--text-dim);
+  padding:11px 20px; border-radius:6px; cursor:pointer; letter-spacing:.02em;
+}
+.mu-mode-btn.active{
+  border-color:var(--grape); color:var(--grape);
+  background:rgba(168,85,247,.14); box-shadow:var(--hard-sm);
+}
+.mu-mode-desc{text-align:center; color:var(--text-dim); font-size:14px; margin:0 0 4px;}
+.mu-quick-icon{font-size:52px; line-height:1; text-align:center; margin-bottom:6px;}
+.mu-quick-text{
+  text-align:center; color:var(--text-dim);
+  font-size:15px; line-height:1.8; margin:10px auto 0; max-width:460px;
+}
+.mu-quick-text b{color:var(--grape);}

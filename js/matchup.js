@@ -4,7 +4,12 @@ document.addEventListener("DOMContentLoaded", () => {
     "#ff8a3d", "#1de9b6", "#5b6eff", "#ff3d54", "#38bdf8", "#34d399", "#fb7185"
   ];
 
+  // ป้ายเรียกแทนชื่อ ใช้ตอนเล่นโหมดเร็วที่ไม่ได้ใส่ชื่อใครไว้
+  const CHOOSER_LABEL = "คนเลือก";
+  const GUESSER_LABEL = "คนทาย";
+
   // panels
+  const quickStartPanel = document.getElementById("muQuickStart");
   const setupPanel = document.getElementById("muSetup");
   const pairsPanel = document.getElementById("muPairs");
   const choosePanel = document.getElementById("muChoose");
@@ -47,6 +52,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const endLeaderboard = document.getElementById("muEndLeaderboard");
   const endRepairBtn = document.getElementById("muEndRepairBtn");
 
+  const modesBox = document.getElementById("muModes");
+  const modeDesc = document.getElementById("muModeDesc");
+  const quickBtn = document.getElementById("muQuickBtn");
+
+  const MODE_DESC = {
+    quick: "กดเริ่มได้ทันที ใครนั่งข้างกันก็จับคู่กันเอง เหมาะกับตอนอยากเล่นเร็ว ๆ",
+    wheel: "ใส่ชื่อคนในวง ให้วงล้อสุ่มจับคู่ให้ แล้วเก็บสถิติว่าใครรู้ใจคู่ตัวเองที่สุด",
+  };
+
+  let quickMode = true;   // โหมดเริ่มต้น = เล่นเลยไม่ต้องใส่ชื่อ
   let names = [];
   let groups = [];        // array of arrays of names (pairs, plus maybe one trio)
   let roundIdx = 0;
@@ -65,8 +80,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ---------- name management + wheel ----------
   function showOnly(panel) {
-    [setupPanel, pairsPanel, choosePanel, passPanel, guessPanel, revealPanel, gameEndPanel]
+    [quickStartPanel, setupPanel, pairsPanel, choosePanel, passPanel, guessPanel, revealPanel, gameEndPanel]
       .forEach((p) => { p.style.display = p === panel ? "" : "none"; });
+  }
+
+  // ในโหมดเร็วไม่มีชื่อผู้เล่น (chooserName / g.name เป็น null) ให้ใช้ป้าย "คนเลือก" / "คนทาย" แทน
+  function chooserLabel() {
+    return chooserName || CHOOSER_LABEL;
+  }
+  function guesserLabel(g) {
+    return g.name || GUESSER_LABEL;
   }
 
   function polarToXY(cx, cy, r, angleDeg) {
@@ -229,14 +252,35 @@ document.addEventListener("DOMContentLoaded", () => {
     score = { correct: 0, total: 0 };
     playerStats = {};
     drawQuestion = createPicker(MATCHUP_LIST, "pg_matchup");
+    scoreBox.textContent = "";
     renderPairList();
     showOnly(pairsPanel);
+  }
+
+  // เริ่มโหมดเร็วใหม่ทั้งหมด (ล้างคะแนน + สับคลังโจทย์ใหม่)
+  function resetQuick() {
+    groups = [];
+    roundIdx = 0;
+    score = { correct: 0, total: 0 };
+    playerStats = {};
+    drawQuestion = createPicker(MATCHUP_LIST, "pg_matchup");
+    scoreBox.textContent = "";
   }
 
   // show a final score summary before letting the group reshuffle and start over
   function showGameEnd() {
     const pct = score.total ? Math.round((score.correct / score.total) * 100) : 0;
     endScore.textContent = "รวมทั้งวง: ทายถูก " + score.correct + " จาก " + score.total + " ครั้ง (" + pct + "%)";
+
+    if (quickMode) {
+      // โหมดเร็วไม่มีชื่อ เลยไม่มีตารางรายคน แสดงแค่สถิติรวมของวง
+      endTitle.textContent = "🏁 จบเกม! สรุปผลรอบนี้";
+      endLeaderboard.innerHTML = "";
+      endRepairBtn.textContent = "เล่นใหม่ ⚡";
+      showOnly(gameEndPanel);
+      return;
+    }
+    endRepairBtn.textContent = "จับคู่ใหม่ 🎡";
 
     const rows = Object.keys(playerStats)
       .map((name) => ({ name, ...playerStats[name], pct: playerStats[name].total ? playerStats[name].correct / playerStats[name].total : 0 }))
@@ -257,7 +301,46 @@ document.addEventListener("DOMContentLoaded", () => {
   shuffleBtn.addEventListener("click", doShuffle);
   repairBtn.addEventListener("click", regroup);
   repair2Btn.addEventListener("click", showGameEnd);
-  endRepairBtn.addEventListener("click", regroup);
+  endRepairBtn.addEventListener("click", () => {
+    if (quickMode) {
+      resetQuick();
+      startRound();
+    } else {
+      regroup();
+    }
+  });
+
+  // ---------- สลับโหมด ----------
+  function applyMode() {
+    modeDesc.textContent = MODE_DESC[quickMode ? "quick" : "wheel"];
+    repair2Btn.textContent = quickMode ? "จบเกม 🏁" : "จบเกม / จับคู่ใหม่ ↻";
+    nextBtn.textContent = quickMode ? "ข้อต่อไป →" : "คู่ต่อไป →";
+    if (quickMode) {
+      resetQuick();
+      showOnly(quickStartPanel);
+    } else {
+      score = { correct: 0, total: 0 };
+      playerStats = {};
+      refreshSetup();
+      showOnly(setupPanel);
+    }
+  }
+
+  modesBox.querySelectorAll(".mu-mode-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const wantQuick = btn.dataset.mode === "quick";
+      if (wantQuick === quickMode) return;
+      modesBox.querySelectorAll(".mu-mode-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      quickMode = wantQuick;
+      applyMode();
+    });
+  });
+
+  quickBtn.addEventListener("click", () => {
+    resetQuick();
+    startRound();
+  });
 
   // ---------- rounds ----------
   function pickQuestion() {
@@ -265,12 +348,19 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function startRound() {
-    currentGroup = groups[roundIdx % groups.length];
     currentQ = pickQuestion();
-    // random chooser within the group; everyone else guesses
-    const order = shuffle(currentGroup);
-    chooserName = order[0];
-    guessers = order.slice(1).map((n) => ({ name: n, pick: null }));
+    if (quickMode) {
+      // ไม่มีชื่อ ไม่มีวงล้อ — คนเลือก 1 คน คนทาย 1 คน วงตกลงกันเองว่าใครเป็นใคร
+      currentGroup = null;
+      chooserName = null;
+      guessers = [{ name: null, pick: null }];
+    } else {
+      currentGroup = groups[roundIdx % groups.length];
+      // random chooser within the group; everyone else guesses
+      const order = shuffle(currentGroup);
+      chooserName = order[0];
+      guessers = order.slice(1).map((n) => ({ name: n, pick: null }));
+    }
     guessPos = 0;
     chooserPick = null;
     renderChooseStep();
@@ -288,7 +378,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderChooseStep() {
-    chooseTurn.innerHTML = 'ส่งมือถือให้ <b>' + chooserName + '</b> — เลือกคำตอบลับ ๆ ห้ามให้คู่เห็น 🤫';
+    chooseTurn.innerHTML = 'ส่งมือถือให้ <b>' + chooserLabel() + '</b> — เลือกคำตอบลับ ๆ ห้ามให้อีกฝ่ายเห็น 🤫';
     chooseQ.textContent = currentQ.q;
     renderChoices(chooseChoices, (c) => {
       chooserPick = c;
@@ -299,14 +389,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function goToGuess() {
     const g = guessers[guessPos];
-    passText.innerHTML = 'ส่งมือถือให้ <b>' + g.name + '</b><br>ให้ทายว่า <b>' + chooserName + '</b> เลือกอะไรไป';
+    passText.innerHTML = 'ส่งมือถือให้ <b>' + guesserLabel(g) + '</b><br>ให้ทายว่า <b>' + chooserLabel() + '</b> เลือกอะไรไป';
     passBtn.onclick = () => renderGuessStep();
     showOnly(passPanel);
   }
 
   function renderGuessStep() {
     const g = guessers[guessPos];
-    guessTurn.innerHTML = '<b>' + g.name + '</b> ทายว่า <b>' + chooserName + '</b> เลือกช้อยไหน?';
+    guessTurn.innerHTML = '<b>' + guesserLabel(g) + '</b> ทายว่า <b>' + chooserLabel() + '</b> เลือกช้อยไหน?';
     guessQ.textContent = currentQ.q;
     renderChoices(guessChoices, (c) => {
       g.pick = c;
@@ -329,6 +419,7 @@ document.addEventListener("DOMContentLoaded", () => {
     score.total += guessers.length;
     score.correct += correctCount;
     guessers.forEach((g) => {
+      if (!g.name) return;   // โหมดเร็วไม่มีชื่อ เลยเก็บได้แค่สถิติรวมของวง
       const stats = playerStats[g.name] || (playerStats[g.name] = { correct: 0, total: 0 });
       stats.total++;
       if (g.pick === chooserPick) stats.correct++;
@@ -338,10 +429,10 @@ document.addEventListener("DOMContentLoaded", () => {
     revealVerdict.textContent = allCorrect ? "ทายถูกหมด!" : (anyCorrect ? "ทายถูกบางส่วน" : "ทายผิด!");
     revealVerdict.className = "mu-reveal-verdict " + (allCorrect ? "ok" : (anyCorrect ? "half" : "no"));
 
-    let detail = '<div class="mu-reveal-line"><b>' + chooserName + '</b> เลือก: <span class="mu-pick-real">' + chooserPick + '</span></div>';
+    let detail = '<div class="mu-reveal-line"><b>' + chooserLabel() + '</b> เลือก: <span class="mu-pick-real">' + chooserPick + '</span></div>';
     guessers.forEach((g) => {
       const ok = g.pick === chooserPick;
-      detail += '<div class="mu-reveal-line">' + g.name + ' ทาย: <span class="' + (ok ? "mu-pick-ok" : "mu-pick-no") + '">' + g.pick + (ok ? " ✓" : " ✗") + '</span></div>';
+      detail += '<div class="mu-reveal-line">' + guesserLabel(g) + ' ทาย: <span class="' + (ok ? "mu-pick-ok" : "mu-pick-no") + '">' + g.pick + (ok ? " ✓" : " ✗") + '</span></div>';
     });
     revealDetail.innerHTML = detail;
 
@@ -354,4 +445,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // init
   refreshSetup();
+  applyMode();
 });
