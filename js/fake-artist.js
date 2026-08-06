@@ -219,16 +219,22 @@ document.addEventListener("DOMContentLoaded", () => {
     all.forEach((st) => {
       if (!st.pts.length) return;
       context.strokeStyle = S.players[st.p] ? S.players[st.p].color : "#111";
+      const px = st.pts.map((pt) => ({ x: pt.x * canvas.width, y: pt.y * canvas.height }));
       context.beginPath();
-      st.pts.forEach((pt, i) => {
-        const x = pt.x * canvas.width;
-        const y = pt.y * canvas.height;
-        if (i === 0) context.moveTo(x, y);
-        else context.lineTo(x, y);
-      });
-      if (st.pts.length === 1) {
+      context.moveTo(px[0].x, px[0].y);
+      if (px.length === 1) {
         // แตะจุดเดียวก็ให้เห็นเป็นจุดกลม ๆ
-        context.lineTo(st.pts[0].x * canvas.width + 0.01, st.pts[0].y * canvas.height);
+        context.lineTo(px[0].x + 0.01, px[0].y);
+      } else if (px.length === 2) {
+        context.lineTo(px[1].x, px[1].y);
+      } else {
+        // ลากเส้นผ่านจุดกึ่งกลางของทุกคู่จุดด้วยเส้นโค้ง ทำให้ลายเส้นลื่นไม่เป็นเหลี่ยม
+        for (let i = 1; i < px.length - 1; i++) {
+          const mx = (px[i].x + px[i + 1].x) / 2;
+          const my = (px[i].y + px[i + 1].y) / 2;
+          context.quadraticCurveTo(px[i].x, px[i].y, mx, my);
+        }
+        context.lineTo(px[px.length - 1].x, px[px.length - 1].y);
       }
       context.stroke();
     });

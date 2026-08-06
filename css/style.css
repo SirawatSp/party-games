@@ -2734,3 +2734,31 @@ html.hc-fs .hc-topbar{padding-right:150px;}
 .fa-gallery-item figcaption b{color:var(--fake);}
 .fa-gallery-sub{display:block; font-size:11.5px; color:var(--text-dim); font-weight:600;}
 .fa-gallery-sub i{font-style:normal; font-weight:800;}
+
+/* ---- ศิลปินตัวปลอม: คุมขนาดผืนผ้าใบตามความสูงจอ ให้ปุ่มส่งต่ออยู่ในจอเสมอ ---- */
+@media (orientation:landscape){
+  .fa-canvas-wrap{max-width:min(820px, calc((100vh - 290px) * 1.3333));}
+}
+@supports (height:100dvh){
+  @media (orientation:landscape){
+    .fa-canvas-wrap{max-width:min(820px, calc((100dvh - 290px) * 1.3333));}
+  }
+}
+/* จอเตี้ยมาก (มือถือแนวนอน) — ย่อทุกอย่างรอบผืนผ้าใบให้เหลือที่วาดมากที่สุด */
+@media (orientation:landscape) and (max-height:560px){
+  .fa-stage{padding:10px 8px;}
+  .fa-draw-top{gap:6px;}
+  .fa-round-tag, .fa-cat-tag{font-size:10.5px; padding:2px 8px;}
+  .fa-turn{font-size:15px; margin:5px 0 3px;}
+  .fa-clock{font-size:16px; margin:0 0 3px;}
+  #faDrawHint{display:none;}
+  .fa-legend{margin-top:6px; font-size:11px; gap:5px 10px;}
+  .fa-draw-actions{margin-top:7px;}
+  .fa-draw-actions .btn{padding:8px 16px; font-size:14px;}
+  .fa-canvas-wrap{max-width:min(820px, calc((100vh - 172px) * 1.3333));}
+}
+@supports (height:100dvh){
+  @media (orientation:landscape) and (max-height:560px){
+    .fa-canvas-wrap{max-width:min(820px, calc((100dvh - 172px) * 1.3333));}
+  }
+}
