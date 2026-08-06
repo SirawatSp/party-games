@@ -2762,3 +2762,45 @@ html.hc-fs .hc-topbar{padding-right:150px;}
     .fa-canvas-wrap{max-width:min(820px, calc((100dvh - 172px) * 1.3333));}
   }
 }
+
+/* ---- การ์ดเกมเด่นบนหน้าแรก ---- */
+.feature-card{
+  display:grid; grid-template-columns:1.35fr 1fr; gap:22px; align-items:center;
+  margin:18px 0 26px; padding:24px 22px;
+  text-decoration:none; color:var(--text);
+  background:
+    radial-gradient(ellipse 70% 120% at 12% 0%, rgba(255,230,0,.16), transparent 62%),
+    var(--bg-card);
+  border:3px solid var(--fake);
+  border-radius:10px;
+  box-shadow:var(--hard-lg), 0 0 46px -14px var(--fake);
+  transition:transform .18s, box-shadow .18s;
+}
+.feature-card:hover{transform:translateY(-3px); box-shadow:var(--hard-lg), 0 0 60px -10px var(--fake);}
+.feature-badge{
+  display:inline-block; margin-bottom:10px;
+  font-family:'Press Start 2P','Kanit',sans-serif; font-size:9px; letter-spacing:.08em;
+  color:#2a2200; background:var(--fake);
+  padding:6px 11px; border-radius:3px; border:2px solid var(--edge);
+}
+.feature-card h2{
+  font-family:'Bungee','Kanit',sans-serif; font-weight:400;
+  font-size:clamp(26px,5.4vw,38px); line-height:1.2; margin:0 0 10px;
+  color:var(--fake); text-shadow:var(--hard-sm);
+}
+.feature-card p{
+  color:var(--text-dim); font-size:15px; line-height:1.75; margin:0 0 14px;
+}
+.feature-card p b{color:var(--text);}
+.feature-go{
+  display:inline-flex; align-items:center; gap:9px;
+  font-family:'Kanit',sans-serif; font-weight:800; font-size:16px; color:var(--fake);
+}
+.feature-art svg{
+  display:block; width:100%; height:auto;
+  border:3px solid var(--line); border-radius:8px; box-shadow:var(--hard);
+}
+@media (max-width:720px){
+  .feature-card{grid-template-columns:1fr; gap:16px; padding:20px 16px;}
+  .feature-art{order:-1;}
+}
