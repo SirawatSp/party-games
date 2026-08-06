@@ -21,5 +21,5 @@ const GAME_COUNTS = {
   "hues-and-cues.html": { count: 480, unit: "เฉดสี" },
   "favorites.html": { count: 480, unit: "คำถาม" },
   "rapidfire.html": { count: 360, unit: "โจทย์" },
-  "fake-artist.html": { count: 718, unit: "คำลับ" },
+  "fake-artist.html": { count: 910, unit: "คำลับ" },
 };
