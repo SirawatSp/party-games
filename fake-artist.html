@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ศิลปินตัวปลอม — วาดรูปด้วยกัน แล้วจับให้ได้ว่าใครไม่รู้คำ</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0c0710">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <a class="brand-logo" href="index.html"><img class="brand-img" src="assets/logo.png" width="720" height="416" alt="Party Games — วงกำลังจะเหงา"></a>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--fake); color:#2a2200;">23 · วาดจับโกหก</span>
+    <h1>ศิลปินตัวปลอม</h1>
+    <p>ทุกคนได้คำลับเหมือนกันหมด ยกเว้น <b>ตัวปลอม 1 คน</b> ที่รู้แค่หมวด แล้วทุกคนผลัดกันวาดคนละ 1 เส้นลงบนรูปเดียวกัน — วาดเก่งไปตัวปลอมลอกได้ วาดกั๊กไปเพื่อนหาว่าเราคือตัวปลอม สุดท้ายชี้พร้อมกันว่าใครคือคนที่ไม่รู้คำ</p>
+  </section>
+
+  <div class="fa-stage-wrap">
+
+    <!-- ---------- 1. ตั้งค่าผู้เล่น ---------- -->
+    <div class="fa-stage" id="faSetup">
+      <div class="fa-big-icon">🎨</div>
+      <h3 class="fa-h3">ใครเล่นบ้าง?</h3>
+      <p class="fa-hint">ใส่ชื่อ 4-10 คน วางเครื่องไว้กลางวง แล้วส่งต่อกันตามที่หน้าจอบอก</p>
+      <div class="fa-players" id="faPlayerList"></div>
+      <div class="fa-setup-actions">
+        <button class="btn secondary" id="faAddPlayer" type="button">+ เพิ่มผู้เล่น</button>
+      </div>
+
+      <div class="fa-opt">
+        <div class="fa-label">เล่นถึงกี่แต้มถึงจบ</div>
+        <div class="fa-switch" id="faGoalSwitch">
+          <button class="fa-opt-btn" data-goal="3" type="button">3 แต้ม</button>
+          <button class="fa-opt-btn active" data-goal="5" type="button">5 แต้ม</button>
+          <button class="fa-opt-btn" data-goal="7" type="button">7 แต้ม</button>
+        </div>
+      </div>
+
+      <div class="fa-warn" id="faSetupWarn"></div>
+      <button class="btn" id="faStartBtn" type="button">เริ่มเกม 🖌</button>
+    </div>
+
+    <!-- ---------- 2. ส่งเครื่องดูบทบาท ---------- -->
+    <div class="fa-stage fa-hidden" id="faPass">
+      <div class="fa-round-tag" id="faPassRound"></div>
+      <div class="fa-big-icon">🤫</div>
+      <h3 class="fa-h3">ส่งเครื่องให้ <span class="fa-name" id="faPassName"></span></h3>
+      <p class="fa-hint">คนอื่นห้ามแอบดู! กดปุ่มแล้วดูบทบาทของตัวเองคนเดียว</p>
+      <button class="btn" id="faPassBtn" type="button">ฉันพร้อมแล้ว เปิดดู 👀</button>
+    </div>
+
+    <!-- ---------- 3. เปิดบทบาท ---------- -->
+    <div class="fa-stage fa-hidden" id="faRole">
+      <div class="fa-role-cat">หมวด: <b id="faRoleCat"></b></div>
+      <div class="fa-role-card" id="faRoleCard">
+        <div class="fa-role-label" id="faRoleLabel"></div>
+        <div class="fa-role-word" id="faRoleWord"></div>
+        <div class="fa-role-sub" id="faRoleSub"></div>
+      </div>
+      <button class="btn" id="faRoleBtn" type="button">จำแล้ว ส่งต่อ →</button>
+    </div>
+
+    <!-- ---------- 4. วาดรูป ---------- -->
+    <div class="fa-stage fa-hidden" id="faDraw">
+      <div class="fa-draw-top">
+        <div class="fa-round-tag" id="faDrawRound"></div>
+        <div class="fa-cat-tag">หมวด: <b id="faDrawCat"></b></div>
+      </div>
+      <div class="fa-turn" id="faDrawTurn"></div>
+
+      <div class="fa-canvas-wrap">
+        <canvas id="faCanvas" width="1200" height="900"></canvas>
+      </div>
+
+      <p class="fa-hint" id="faDrawHint">ลากนิ้ว <b>1 เส้นเดียว</b> ห้ามยกนิ้วกลางคัน ห้ามเขียนตัวอักษรหรือตัวเลข</p>
+      <div class="fa-draw-actions">
+        <button class="btn secondary fa-hidden" id="faRedrawBtn" type="button">↺ วาดเส้นนี้ใหม่</button>
+        <button class="btn fa-hidden" id="faDoneBtn" type="button">ส่งต่อ →</button>
+      </div>
+      <div class="fa-legend" id="faDrawLegend"></div>
+    </div>
+
+    <!-- ---------- 5. ชี้ตัวปลอม ---------- -->
+    <div class="fa-stage fa-hidden" id="faVote">
+      <div class="fa-big-icon">👉</div>
+      <h3 class="fa-h3">ชี้พร้อมกัน!</h3>
+      <p class="fa-hint">ดูรูปให้ดี ถกกันได้เต็มที่ แล้วนับ <b>1 – 2 – 3</b> ชี้นิ้วไปที่คนที่คิดว่าเป็นตัวปลอมพร้อมกัน<br>จากนั้นแตะชื่อคนที่โดนชี้เยอะที่สุด</p>
+
+      <div class="fa-canvas-wrap fa-canvas-small">
+        <canvas id="faVoteCanvas" width="1200" height="900"></canvas>
+      </div>
+      <div class="fa-legend" id="faVoteLegend"></div>
+
+      <div class="fa-vote-list" id="faVoteList"></div>
+      <button class="btn secondary" id="faTieBtn" type="button">เสียงเท่ากัน / ไม่มีข้อสรุป</button>
+    </div>
+
+    <!-- ---------- 6. ตัวปลอมทายคำ ---------- -->
+    <div class="fa-stage fa-hidden" id="faGuess">
+      <div class="fa-big-icon">🎭</div>
+      <h3 class="fa-h3">โดนจับได้! <span class="fa-name" id="faGuessName"></span> คือตัวปลอม</h3>
+      <p class="fa-hint">แต่ยังไม่จบ — ถ้าตัวปลอมเดาคำลับถูก จะพลิกกลับมาชนะทันที<br>ส่งเครื่องให้ตัวปลอมเลือก 1 คำ</p>
+      <div class="fa-guess-options" id="faGuessOptions"></div>
+    </div>
+
+    <!-- ---------- 7. เฉลย ---------- -->
+    <div class="fa-stage fa-hidden" id="faResult">
+      <div class="fa-big-icon" id="faResultIcon">🏁</div>
+      <h3 class="fa-h3" id="faResultTitle"></h3>
+      <div class="fa-result-detail" id="faResultDetail"></div>
+
+      <div class="fa-canvas-wrap fa-canvas-small">
+        <canvas id="faResultCanvas" width="1200" height="900"></canvas>
+      </div>
+      <div class="fa-legend" id="faResultLegend"></div>
+      <div class="fa-result-actions">
+        <button class="btn secondary" id="faReplayBtn" type="button">▶ ดูรีเพลย์การวาด</button>
+        <button class="btn secondary" id="faSaveBtn" type="button">⤓ บันทึกรูป</button>
+      </div>
+
+      <div class="fa-score-list" id="faScoreList"></div>
+      <button class="btn" id="faNextBtn" type="button">รอบต่อไป →</button>
+    </div>
+
+    <!-- ---------- 8. จบเกม ---------- -->
+    <div class="fa-stage fa-hidden" id="faFinal">
+      <div class="fa-big-icon">🏆</div>
+      <h3 class="fa-h3" id="faFinalTitle">จบเกม!</h3>
+      <div class="fa-score-list" id="faFinalList"></div>
+      <button class="btn" id="faRestartBtn" type="button">เล่นอีกรอบ 🔁</button>
+    </div>
+
+  </div>
+
+  <h2 class="fa-rules-head">📖 กติกาแบบละเอียด</h2>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเล่น · ศิลปินตัวปลอม</h2>
+    <ol>
+      <li>ใส่ชื่อผู้เล่น 4-10 คน แล้วกดเริ่มเกม</li>
+      <li>เครื่องสุ่ม <b>หมวด</b> กับ <b>คำลับ</b> ขึ้นมา 1 คำ แล้วส่งให้ทุกคนดูทีละคน — ทุกคนเห็นคำลับ ยกเว้น <b>ตัวปลอม 1 คน</b> ที่เห็นแค่หมวด</li>
+      <li>วางเครื่องกลางวง แล้วผลัดกันวาด <b>คนละ 1 เส้น</b> ลงบนรูปเดียวกัน วนครบ 2 รอบ (ได้วาดคนละ 2 เส้น)</li>
+      <li>เส้นของแต่ละคนจะเป็นคนละสี เพื่อให้ตอนเฉลยดูออกว่าใครวาดอะไร</li>
+      <li>วาดครบแล้ว ถกกันให้เต็มที่ นับ 1-2-3 แล้ว <b>ชี้พร้อมกัน</b> ว่าใครคือตัวปลอม แล้วแตะชื่อคนที่โดนชี้เยอะสุด</li>
+      <li>ถ้าชี้ผิดคน → <b>ตัวปลอมชนะ</b> ทันที ได้ 2 แต้ม</li>
+      <li>ถ้าชี้ถูกคน → ตัวปลอมยังมีสิทธิ์แก้ตัว 1 ครั้ง ด้วยการทายคำลับจาก 4 ตัวเลือก ทายถูกก็ชนะไปเลย</li>
+      <li>ถ้าตัวปลอมทายผิด → <b>ศิลปินตัวจริงชนะ</b> ได้คนละ 1 แต้ม</li>
+      <li>เล่นวนไปเรื่อย ๆ ใครถึงแต้มเป้าหมายก่อนเป็นผู้ชนะ</li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>กติกาการวาด (สำคัญมาก)</h2>
+    <ol>
+      <li><b>1 ตา = 1 เส้นเท่านั้น</b> ลากยาวแค่ไหนก็ได้ แต่ยกนิ้วเมื่อไหร่คือจบตา</li>
+      <li><b>ห้ามเขียนตัวอักษร ตัวเลข หรือสัญลักษณ์</b> ที่สะกดคำลับออกมาตรง ๆ</li>
+      <li><b>ห้ามพูดหรือใบ้ระหว่างวาด</b> ให้เส้นพูดแทน</li>
+      <li>วาดเก่งเกินไปก็อันตราย เพราะตัวปลอมจะรู้คำทันทีแล้วลอกตามได้</li>
+      <li>วาดกั๊กเกินไปก็อันตราย เพราะเพื่อนจะเริ่มสงสัยว่าเราคือตัวปลอม</li>
+      <li>ถ้าอยากแก้เส้นที่เพิ่งลาก กด "วาดเส้นนี้ใหม่" ได้ก่อนกดส่งต่อ (แต่ต้องแฟร์กับเพื่อนด้วยนะ)</li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>เคล็ดลับ</h2>
+    <ol>
+      <li><b>สำหรับตัวปลอม:</b> ดูเส้นของคนก่อนหน้าให้ดี แล้ววาดต่อแบบกลาง ๆ ที่เข้าได้กับหลายคำในหมวดนั้น</li>
+      <li><b>สำหรับตัวปลอม:</b> อย่ารีบวาดรายละเอียด รอให้คนอื่นวางโครงก่อนแล้วค่อยเติม</li>
+      <li><b>สำหรับศิลปินตัวจริง:</b> วาดส่วนที่ "คนรู้คำเท่านั้นถึงจะวาดได้" เช่นรายละเอียดเล็ก ๆ ที่เดาไม่ได้จากหมวด</li>
+      <li><b>ตอนถกกัน:</b> ถามว่า "ทำไมถึงวาดตรงนั้น" คนที่ไม่รู้คำมักตอบไม่ตรงจุด</li>
+      <li>เล่นบนแท็บเล็ตจะสนุกที่สุด เพราะพื้นที่วาดใหญ่กว่า</li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>ที่มา</h2>
+    <ol>
+      <li>ดัดแปลงจากบอร์ดเกม <b>A Fake Artist Goes to New York</b> ของ Oink Games (เกมวาดรูปหาไส้ศึกสำหรับ 5-10 คน)</li>
+      <li>ในเกมต้นฉบับจะมีผู้เล่น 1 คนเป็น "Question Master" คอยคิดคำและเขียนการ์ดให้ทุกคน เวอร์ชันนี้ให้เครื่องทำหน้าที่นั้นแทน ทุกคนเลยได้ลงมือวาดครบทุกคน</li>
+      <li>คลังคำในเกมนี้เขียนขึ้นใหม่เป็นภาษาไทยทั้งหมด และคัดเฉพาะคำที่ "วาดออกมาเป็นภาพได้จริง"</li>
+    </ol>
+  </div>
+
+  <footer>ไม่ต้องวาดสวย ขอแค่วาดให้เพื่อนเชื่อว่าเรารู้คำก็พอ 🖌</footer>
+</div>
+
+<script src="data/fake-artist.js"></script>
+<script src="js/main.js"></script>
+<script src="js/fake-artist.js"></script>
+</body>
+</html>

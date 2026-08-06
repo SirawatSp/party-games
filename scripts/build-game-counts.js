@@ -28,6 +28,7 @@ const PAGES = [
   { page: "hues-and-cues.html", unit: "เฉดสี", files: [["hues-and-cues.js", "HUES_GRID"]] },
   { page: "favorites.html", unit: "คำถาม", files: [["favorites.js", "FAVORITES_LIST"]] },
   { page: "rapidfire.html", unit: "โจทย์", files: [["rapidfire.js", "RAPIDFIRE_LIST"]] },
+  { page: "fake-artist.html", unit: "คำลับ", files: [["fake-artist.js", "FAKE_ARTIST_WORDS"]] },
 ];
 
 function arrayLength(fileName, varName) {
