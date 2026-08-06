@@ -43,6 +43,15 @@
         </div>
       </div>
 
+      <div class="fa-opt">
+        <div class="fa-label">จับเวลาต่อ 1 เส้น</div>
+        <div class="fa-switch" id="faLimitSwitch">
+          <button class="fa-opt-btn active" data-limit="0" type="button">ไม่จับเวลา</button>
+          <button class="fa-opt-btn" data-limit="30" type="button">30 วิ</button>
+          <button class="fa-opt-btn" data-limit="15" type="button">15 วิ 🔥</button>
+        </div>
+      </div>
+
       <div class="fa-warn" id="faSetupWarn"></div>
       <button class="btn" id="faStartBtn" type="button">เริ่มเกม 🖌</button>
     </div>
@@ -74,6 +83,7 @@
         <div class="fa-cat-tag">หมวด: <b id="faDrawCat"></b></div>
       </div>
       <div class="fa-turn" id="faDrawTurn"></div>
+      <div class="fa-clock fa-hidden" id="faClock"></div>
 
       <div class="fa-canvas-wrap">
         <canvas id="faCanvas" width="1200" height="900"></canvas>
@@ -134,6 +144,10 @@
       <div class="fa-big-icon">🏆</div>
       <h3 class="fa-h3" id="faFinalTitle">จบเกม!</h3>
       <div class="fa-score-list" id="faFinalList"></div>
+
+      <h4 class="fa-gallery-head" id="faGalleryHead">🖼 แกลเลอรีผลงานของวงนี้</h4>
+      <div class="fa-gallery" id="faGallery"></div>
+
       <button class="btn" id="faRestartBtn" type="button">เล่นอีกรอบ 🔁</button>
     </div>
 
@@ -165,6 +179,7 @@
       <li>วาดเก่งเกินไปก็อันตราย เพราะตัวปลอมจะรู้คำทันทีแล้วลอกตามได้</li>
       <li>วาดกั๊กเกินไปก็อันตราย เพราะเพื่อนจะเริ่มสงสัยว่าเราคือตัวปลอม</li>
       <li>ถ้าอยากแก้เส้นที่เพิ่งลาก กด "วาดเส้นนี้ใหม่" ได้ก่อนกดส่งต่อ (แต่ต้องแฟร์กับเพื่อนด้วยนะ)</li>
+      <li>เปิด <b>โหมดจับเวลา</b> ตอนตั้งค่าได้ (30 วิ หรือ 15 วิต่อเส้น) หมดเวลาแล้วเส้นที่ลากค้างไว้จะถูกส่งอัตโนมัติ ถ้ายังไม่ได้ลากเลยก็เสียตานั้นไป — โหมดนี้ตัวปลอมจะเนียนยากขึ้นมาก</li>
     </ol>
   </div>
 

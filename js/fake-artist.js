@@ -19,6 +19,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const S = {
     players: [],
     goal: 5,
+    limit: 0,          // วินาทีต่อ 1 เส้น (0 = ไม่จับเวลา)
+    gallery: [],       // เก็บภาพของทุกรอบไว้โชว์รวมกันตอนจบเกม
     round: 0,
     topic: null,       // { cat, word }
     fakeIdx: -1,
@@ -33,6 +35,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let drawing = false;
   let replayTimer = null;
+  let turnTimer = null;
+  let turnLeft = 0;
 
   function esc(s) {
     return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -52,6 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let firstShow = true;
   function showStage(id) {
     stopReplay();
+    if (id !== "faDraw") stopTurnTimer();
     STAGES.forEach((s) => $(s).classList.toggle("fa-hidden", s !== id));
     if (firstShow) {
       firstShow = false;
@@ -108,6 +113,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  $("faLimitSwitch").querySelectorAll(".fa-opt-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      $("faLimitSwitch").querySelectorAll(".fa-opt-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      S.limit = parseInt(btn.dataset.limit, 10);
+    });
+  });
+
   $("faStartBtn").addEventListener("click", () => {
     const names = readNames();
     if (names.some((n) => !n)) {
@@ -125,6 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
     $("faSetupWarn").textContent = "";
     S.players = names.map((name, i) => ({ name: name, color: PLAYER_COLORS[i % PLAYER_COLORS.length], score: 0 }));
     S.round = 0;
+    S.gallery = [];
     startRound();
   });
 
@@ -266,6 +280,34 @@ document.addEventListener("DOMContentLoaded", () => {
     renderDrawTurn();
   }
 
+  function stopTurnTimer() {
+    if (turnTimer) {
+      clearInterval(turnTimer);
+      turnTimer = null;
+    }
+    $("faClock").classList.add("fa-hidden");
+    $("faClock").classList.remove("fa-clock-danger");
+  }
+
+  function startTurnTimer() {
+    stopTurnTimer();
+    if (!S.limit) return;
+    turnLeft = S.limit;
+    const clock = $("faClock");
+    clock.classList.remove("fa-hidden");
+    clock.textContent = turnLeft + " วิ";
+    turnTimer = setInterval(() => {
+      turnLeft--;
+      clock.textContent = Math.max(0, turnLeft) + " วิ";
+      clock.classList.toggle("fa-clock-danger", turnLeft <= 5);
+      if (turnLeft <= 0) {
+        stopTurnTimer();
+        vibrateTimeout();
+        commitTurn(true);
+      }
+    }, 1000);
+  }
+
   function renderDrawTurn() {
     const total = S.players.length * PASSES;
     const pass = Math.floor(S.turnPos / S.players.length) + 1;
@@ -283,6 +325,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderLegend($("faDrawLegend"));
     renderDrawCanvas();
     showStage("faDraw");
+    startTurnTimer();
   }
 
   $("faRedrawBtn").addEventListener("click", () => {
@@ -294,9 +337,12 @@ document.addEventListener("DOMContentLoaded", () => {
     renderDrawCanvas();
   });
 
-  $("faDoneBtn").addEventListener("click", () => {
-    if (!S.pending || !S.pending.length) return;
-    S.strokes.push({ p: playerAt(S.turnPos % S.players.length), pts: S.pending });
+  // timedOut = true เมื่อถูกเรียกเพราะหมดเวลา (เส้นที่ยังไม่ได้ลากจะกลายเป็นตาที่เสียไปเลย)
+  function commitTurn(timedOut) {
+    if (!timedOut && (!S.pending || !S.pending.length)) return;
+    stopTurnTimer();
+    drawing = false;
+    S.strokes.push({ p: playerAt(S.turnPos % S.players.length), pts: S.pending || [] });
     S.pending = null;
     S.turnPos++;
     if (S.turnPos >= S.players.length * PASSES) {
@@ -304,7 +350,9 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       renderDrawTurn();
     }
-  });
+  }
+
+  $("faDoneBtn").addEventListener("click", () => commitTurn(false));
 
   function renderLegend(box) {
     box.innerHTML = S.players
@@ -406,6 +454,16 @@ document.addEventListener("DOMContentLoaded", () => {
       (winner === "fake" ? "ตัวปลอมได้ <b>+2 แต้ม</b>" : "ศิลปินตัวจริงได้กันคนละ <b>+1 แต้ม</b>") + "</div>";
     $("faResultDetail").innerHTML = detail;
 
+    S.gallery.push({
+      round: S.round,
+      word: S.topic.word,
+      cat: S.topic.cat,
+      strokes: S.strokes.slice(),
+      fake: fake.name,
+      fakeColor: fake.color,
+      winner: winner,
+    });
+
     renderScores($("faScoreList"), false);
 
     const done = S.players.some((p) => p.score >= S.goal);
@@ -442,15 +500,41 @@ document.addEventListener("DOMContentLoaded", () => {
         ? "🏆 " + champs[0].name + " คือศิลปินตัวจริงแห่งวง!"
         : "🏆 เสมอกัน " + champs.length + " คน!";
       renderScores($("faFinalList"), true);
+      renderGallery();
       showStage("faFinal");
       return;
     }
     startRound();
   });
 
+  // แกลเลอรีรวมภาพที่วงนี้วาดไว้ทุกรอบ — โชว์ตอนจบเกม
+  function renderGallery() {
+    const box = $("faGallery");
+    box.innerHTML = "";
+    $("faGalleryHead").classList.toggle("fa-hidden", S.gallery.length === 0);
+    S.gallery.forEach((g) => {
+      const item = document.createElement("figure");
+      item.className = "fa-gallery-item";
+      const c = document.createElement("canvas");
+      c.width = 600;
+      c.height = 450;
+      paint(c, c.getContext("2d"), g.strokes, null);
+      const cap = document.createElement("figcaption");
+      cap.innerHTML =
+        '<b>' + esc(g.word) + "</b>" +
+        '<span class="fa-gallery-sub">รอบ ' + g.round + " · ตัวปลอม: " +
+        '<i style="color:' + g.fakeColor + '">' + esc(g.fake) + "</i> " +
+        (g.winner === "fake" ? "🎭 ชนะ" : "🖌 แพ้") + "</span>";
+      item.appendChild(c);
+      item.appendChild(cap);
+      box.appendChild(item);
+    });
+  }
+
   $("faRestartBtn").addEventListener("click", () => {
     S.players.forEach((p) => { p.score = 0; });
     S.round = 0;
+    S.gallery = [];
     startRound();
   });
 
