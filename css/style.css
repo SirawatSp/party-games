@@ -2804,3 +2804,56 @@ html.hc-fs .hc-topbar{padding-right:150px;}
   .feature-card{grid-template-columns:1fr; gap:16px; padding:20px 16px;}
   .feature-art{order:-1;}
 }
+
+/* ---- ศิลปินตัวปลอม ออนไลน์: หน้าสร้าง/เข้าห้อง ---- */
+.on-field{max-width:340px; margin:0 auto 18px;}
+.on-input{width:100%; text-align:center; font-size:16px;}
+.on-split{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr));
+  gap:14px; max-width:620px; margin:0 auto;
+}
+.on-card{
+  border:2px solid var(--line); border-radius:8px; padding:16px 14px;
+  background:rgba(255,255,255,.02); display:flex; flex-direction:column; gap:10px;
+}
+.on-card-head{
+  font-family:'Kanit',sans-serif; font-weight:800; font-size:15px; color:var(--fake);
+}
+.on-card .fa-hint{margin:0; font-size:13.5px; flex:1;}
+.on-card .btn{width:100%;}
+.on-code-input{
+  font-family:'Press Start 2P','Kanit',sans-serif; font-size:18px;
+  letter-spacing:.18em; text-transform:uppercase;
+}
+.on-note{font-size:13px; margin-top:18px;}
+.on-note a{color:var(--fake);}
+.on-code{
+  font-family:'Press Start 2P','Kanit',sans-serif;
+  font-size:clamp(28px,9vw,46px); color:var(--fake);
+  letter-spacing:.12em; margin:6px 0 4px; text-shadow:var(--hard-sm);
+  user-select:all;
+}
+.fa-vote-btn.on-voted{
+  border-color:var(--lime); color:var(--lime); background:rgba(214,255,61,.12);
+}
+.fa-vote-btn:disabled{opacity:.45; cursor:not-allowed;}
+
+/* ---- ป้ายชวนไปโหมดออนไลน์ บนหน้าเกมเครื่องเดียว ---- */
+.fa-online-banner{
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  text-decoration:none; color:var(--text);
+  border:2px dashed var(--fake); border-radius:8px;
+  background:rgba(255,230,0,.06);
+  padding:14px 16px; margin:16px 0 0;
+}
+.fa-online-banner:hover{background:rgba(255,230,0,.11);}
+.fa-online-badge{
+  font-family:'Press Start 2P','Kanit',sans-serif; font-size:9px;
+  background:var(--fake); color:#2a2200; padding:6px 9px; border-radius:3px;
+  border:2px solid var(--edge); flex-shrink:0;
+}
+.fa-online-text{flex:1 1 240px; font-size:14px; line-height:1.65; color:var(--text-dim);}
+.fa-online-text b{color:var(--text);}
+.fa-online-go{
+  font-family:'Kanit',sans-serif; font-weight:800; font-size:14.5px; color:var(--fake); flex-shrink:0;
+}

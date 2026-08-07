@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ศิลปินตัวปลอม ออนไลน์ — เล่นพร้อมกันหลายเครื่อง</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0c0710">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <a class="brand-logo" href="index.html"><img class="brand-img" src="assets/logo.png" width="720" height="416" alt="Party Games — วงกำลังจะเหงา"></a>
+    <a class="back-link" href="fake-artist.html">← โหมดเครื่องเดียว</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--fake); color:#2a2200;">23 · วาดจับโกหก · ออนไลน์</span>
+    <h1>ศิลปินตัวปลอม<br>ออนไลน์</h1>
+    <p>เล่นพร้อมกันคนละเครื่อง ไม่ต้องส่งมือถือวนอีกต่อไป — <b>บทบาทลับส่งเข้าเครื่องของแต่ละคนโดยตรง</b> ทุกคนเห็นรูปที่กำลังวาดพร้อมกัน และตอนชี้ตัวปลอมก็โหวตจากเครื่องตัวเอง เครื่องนับคะแนนโหวตจริงให้</p>
+  </section>
+
+  <div class="fa-stage-wrap">
+
+    <!-- 1. เริ่มต้น: สร้างห้อง หรือ เข้าห้อง -->
+    <div class="fa-stage" id="onStart">
+      <div class="fa-big-icon">📡</div>
+      <h3 class="fa-h3">เล่นพร้อมกันหลายเครื่อง</h3>
+
+      <div class="on-field">
+        <div class="fa-label">ชื่อของคุณ</div>
+        <input class="fa-player-input on-input" id="onName" type="text" maxlength="12" placeholder="พิมพ์ชื่อ" autocomplete="off">
+      </div>
+
+      <div class="on-split">
+        <div class="on-card">
+          <div class="on-card-head">เป็นเจ้าของห้อง</div>
+          <p class="fa-hint">คนหนึ่งกดสร้างห้อง แล้วบอกรหัสให้เพื่อนพิมพ์ตาม</p>
+          <button class="btn" id="onHostBtn" type="button">สร้างห้อง 🎨</button>
+        </div>
+        <div class="on-card">
+          <div class="on-card-head">เข้าห้องเพื่อน</div>
+          <input class="fa-player-input on-input on-code-input" id="onCode" type="text" maxlength="5" placeholder="รหัสห้อง" autocomplete="off" spellcheck="false">
+          <button class="btn secondary" id="onJoinBtn" type="button">เข้าห้อง →</button>
+        </div>
+      </div>
+
+      <div class="fa-warn" id="onWarn"></div>
+      <p class="fa-hint on-note">ต้องมีเน็ตทุกเครื่อง และเปิดเว็บนี้ค้างไว้ระหว่างเล่น · ถ้าเน็ตที่ร้านบล็อกการเชื่อมต่อ ให้กลับไปใช้ <a href="fake-artist.html">โหมดเครื่องเดียว</a> ที่เล่นได้ทุกที่</p>
+    </div>
+
+    <!-- 2. ล็อบบี้ -->
+    <div class="fa-stage fa-hidden" id="onLobby">
+      <div class="fa-label">รหัสห้อง</div>
+      <div class="on-code" id="onCodeShow">—</div>
+      <p class="fa-hint" id="onLobbyHint">บอกรหัสนี้ให้เพื่อนพิมพ์เข้ามา</p>
+      <div class="fa-score-list" id="onLobbyList"></div>
+      <div class="fa-opt" id="onGoalWrap">
+        <div class="fa-label">เล่นถึงกี่แต้มถึงจบ</div>
+        <div class="fa-switch" id="onGoalSwitch">
+          <button class="fa-opt-btn" data-goal="3" type="button">3 แต้ม</button>
+          <button class="fa-opt-btn active" data-goal="5" type="button">5 แต้ม</button>
+          <button class="fa-opt-btn" data-goal="7" type="button">7 แต้ม</button>
+        </div>
+      </div>
+      <button class="btn fa-hidden" id="onStartGameBtn" type="button">เริ่มเกม 🖌</button>
+      <p class="fa-hint fa-hidden" id="onWaitHost">รอเจ้าของห้องกดเริ่ม…</p>
+    </div>
+
+    <!-- 3. บทบาทลับของเครื่องนี้ -->
+    <div class="fa-stage fa-hidden" id="onRole">
+      <div class="fa-role-cat">หมวด: <b id="onRoleCat"></b></div>
+      <div class="fa-role-card" id="onRoleCard">
+        <div class="fa-role-label" id="onRoleLabel"></div>
+        <div class="fa-role-word" id="onRoleWord"></div>
+        <div class="fa-role-sub" id="onRoleSub"></div>
+      </div>
+      <button class="btn" id="onRoleBtn" type="button">จำแล้ว ไปวาดกัน →</button>
+    </div>
+
+    <!-- 4. วาด -->
+    <div class="fa-stage fa-hidden" id="onDraw">
+      <div class="fa-draw-top">
+        <div class="fa-round-tag" id="onDrawRound"></div>
+        <div class="fa-cat-tag">หมวด: <b id="onDrawCat"></b></div>
+      </div>
+      <div class="fa-turn" id="onDrawTurn"></div>
+      <div class="fa-canvas-wrap">
+        <canvas id="onCanvas" width="1200" height="900"></canvas>
+      </div>
+      <p class="fa-hint" id="onDrawHint"></p>
+      <div class="fa-draw-actions">
+        <button class="btn secondary fa-hidden" id="onRedrawBtn" type="button">↺ วาดเส้นนี้ใหม่</button>
+        <button class="btn fa-hidden" id="onDoneBtn" type="button">ส่งเส้นนี้ →</button>
+      </div>
+      <div class="fa-legend" id="onDrawLegend"></div>
+    </div>
+
+    <!-- 5. โหวตชี้ตัวปลอม -->
+    <div class="fa-stage fa-hidden" id="onVote">
+      <div class="fa-big-icon">👉</div>
+      <h3 class="fa-h3">ใครคือตัวปลอม?</h3>
+      <p class="fa-hint">คุยกันให้เต็มที่ แล้วต่างคนต่างกดโหวตจากเครื่องตัวเอง — ไม่มีใครเห็นว่าคุณโหวตใครจนกว่าจะครบทุกคน</p>
+      <div class="fa-canvas-wrap fa-canvas-small">
+        <canvas id="onVoteCanvas" width="1200" height="900"></canvas>
+      </div>
+      <div class="fa-legend" id="onVoteLegend"></div>
+      <div class="fa-vote-list" id="onVoteList"></div>
+      <p class="fa-hint" id="onVoteProgress"></p>
+    </div>
+
+    <!-- 6. ตัวปลอมทายคำ -->
+    <div class="fa-stage fa-hidden" id="onGuess">
+      <div class="fa-big-icon">🎭</div>
+      <h3 class="fa-h3" id="onGuessTitle"></h3>
+      <p class="fa-hint" id="onGuessHint"></p>
+      <div class="fa-guess-options" id="onGuessOptions"></div>
+    </div>
+
+    <!-- 7. เฉลย -->
+    <div class="fa-stage fa-hidden" id="onResult">
+      <div class="fa-big-icon" id="onResultIcon">🏁</div>
+      <h3 class="fa-h3" id="onResultTitle"></h3>
+      <div class="fa-result-detail" id="onResultDetail"></div>
+      <div class="fa-canvas-wrap fa-canvas-small">
+        <canvas id="onResultCanvas" width="1200" height="900"></canvas>
+      </div>
+      <div class="fa-legend" id="onResultLegend"></div>
+      <div class="fa-score-list" id="onScoreList"></div>
+      <button class="btn fa-hidden" id="onNextBtn" type="button">รอบต่อไป →</button>
+      <p class="fa-hint fa-hidden" id="onWaitNext">รอเจ้าของห้องกดรอบต่อไป…</p>
+    </div>
+
+    <!-- 8. จบเกม -->
+    <div class="fa-stage fa-hidden" id="onFinal">
+      <div class="fa-big-icon">🏆</div>
+      <h3 class="fa-h3" id="onFinalTitle">จบเกม!</h3>
+      <div class="fa-score-list" id="onFinalList"></div>
+      <h4 class="fa-gallery-head" id="onGalleryHead">🖼 แกลเลอรีผลงานของวงนี้</h4>
+      <div class="fa-gallery" id="onGallery"></div>
+      <button class="btn fa-hidden" id="onRestartBtn" type="button">เล่นอีกรอบ 🔁</button>
+    </div>
+
+  </div>
+
+  <h2 class="fa-rules-head">📖 โหมดออนไลน์ต่างจากโหมดเครื่องเดียวยังไง</h2>
+
+  <div class="panel reveal-up">
+    <h2>ข้อดีของโหมดออนไลน์</h2>
+    <ol>
+      <li><b>ไม่ต้องส่งมือถือวน</b> — บทบาทลับวิ่งเข้าเครื่องของแต่ละคนโดยตรง ไม่มีใครเห็นของใคร</li>
+      <li><b>ทุกคนเห็นรูปพร้อมกัน</b> — พอมีคนวาดเสร็จ ทุกเครื่องอัปเดตทันที</li>
+      <li><b>โหวตจริงจากทุกเครื่อง</b> — เครื่องนับคะแนนให้ ไม่ต้องเถียงกันว่าใครโดนชี้เยอะกว่า และไม่มีใครเห็นว่าคุณโหวตใครจนกว่าจะครบ</li>
+      <li>เล่นข้ามที่กันได้ ไม่จำเป็นต้องอยู่โต๊ะเดียวกัน (แต่สนุกกว่าถ้าเห็นหน้ากัน)</li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเริ่ม</h2>
+    <ol>
+      <li>คนหนึ่งพิมพ์ชื่อแล้วกด <b>สร้างห้อง</b> จะได้รหัส 5 ตัว</li>
+      <li>คนอื่นเปิดหน้านี้ พิมพ์ชื่อ ใส่รหัส แล้วกด <b>เข้าห้อง</b></li>
+      <li>ครบ 4 คนขึ้นไป เจ้าของห้องกด <b>เริ่มเกม</b> ได้เลย (สูงสุด 10 คน)</li>
+      <li>ที่เหลือเหมือนโหมดเครื่องเดียวทุกอย่าง — วาดคนละ 1 เส้น 2 รอบ แล้วชี้ตัวปลอม</li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>ข้อจำกัดที่ควรรู้</h2>
+    <ol>
+      <li>ต้องมีเน็ตทุกเครื่อง และ <b>ห้ามปิดแท็บนี้</b> ระหว่างเล่น (ปิดแล้วหลุดห้อง)</li>
+      <li>ถ้า <b>เจ้าของห้องหลุด</b> ห้องจะปิดทั้งห้อง ต้องสร้างใหม่ — เลือกคนที่เน็ตนิ่งที่สุดเป็นเจ้าของห้อง</li>
+      <li>ถ้า <b>ตัวปลอมหลุดกลางรอบ</b> ระบบจะล้มรอบนั้นแล้วกลับไปล็อบบี้ให้เริ่มใหม่</li>
+      <li>การเชื่อมต่อวิ่งตรงระหว่างเครื่องผ่านบริการสาธารณะฟรี บางเครือข่าย (เน็ตออฟฟิศ/โรงเรียนที่บล็อกแน่น) อาจต่อไม่ได้ — กรณีนั้นใช้ <a href="fake-artist.html">โหมดเครื่องเดียว</a> แทนได้เลย</li>
+    </ol>
+  </div>
+
+  <footer>เล่นคนละเครื่องก็ยังจับโป๊ะกันได้เหมือนเดิม 🖌</footer>
+</div>
+
+<script src="data/fake-artist.js"></script>
+<script src="js/main.js"></script>
+<script src="js/net-room.js"></script>
+<script src="js/fake-artist-net.js"></script>
+<script src="js/fake-artist-online.js"></script>
+</body>
+</html>
