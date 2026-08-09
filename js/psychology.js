@@ -4,8 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const nextBtn = document.getElementById("psyNextBtn");
   const timerBtn = document.getElementById("psyTimerBtn");
 
-  const LEVEL_LABEL = { light: "เบา ๆ", medium: "กลาง ๆ", deep: "ลึกซึ้ง" };
-  const LEVEL_COLOR = { light: "var(--mint)", medium: "var(--amber)", deep: "var(--rose)" };
+  const LEVEL_LABEL = { light: "เบา ๆ", medium: "กลาง ๆ", deep: "ลึกซึ้ง", moral: "วัดใจศีลธรรม" };
+  const LEVEL_COLOR = { light: "var(--mint)", medium: "var(--amber)", deep: "var(--rose)", moral: "var(--cyan)" };
   const TIMER_SECONDS = 60;
 
   let activeLevel = "all";
