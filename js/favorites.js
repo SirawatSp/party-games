@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
       timerLeft--;
       if (timerLeft <= 0) {
         $("favTimerBtn").textContent = "หมดเวลา! ⏱";
-        vibrateTimeout();
+        pgTimeUp();
         clearInterval(timerInterval);
         timerInterval = null;
         setTimeout(stopTimer, 1200);

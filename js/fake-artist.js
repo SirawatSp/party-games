@@ -308,7 +308,7 @@ document.addEventListener("DOMContentLoaded", () => {
       clock.classList.toggle("fa-clock-danger", turnLeft <= 5);
       if (turnLeft <= 0) {
         stopTurnTimer();
-        vibrateTimeout();
+        pgTimeUp();
         commitTurn(true);
       }
     }, 1000);

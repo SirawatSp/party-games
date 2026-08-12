@@ -76,6 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
       timerLeft--;
       if (timerLeft <= 0) {
         timerBtn.textContent = "หมดเวลา! ⏱";
+        pgTimeUp();
         setTimeout(stopTimer, 1200);
         clearInterval(timerInterval);
         timerInterval = null;

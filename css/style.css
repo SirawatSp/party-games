@@ -2859,3 +2859,21 @@ html.hc-fs .hc-topbar{padding-right:150px;}
 .fa-online-go{
   font-family:'Kanit',sans-serif; font-weight:800; font-size:14.5px; color:var(--fake); flex-shrink:0;
 }
+
+/* ---------- ปุ่มเปิด/ปิดเสียงเตือนหมดเวลา (js/main.js แปะเพิ่มให้เองทุกหน้า) ---------- */
+/* ดัน back-link ไปชิดขวาเอง เพื่อให้ปุ่มเสียงไปเกาะข้าง ๆ แทนที่จะถูก space-between ดันแยก */
+.topnav .back-link{margin-left:auto;}
+.sound-toggle{
+  flex-shrink:0;
+  width:38px; height:38px;
+  display:inline-flex; align-items:center; justify-content:center;
+  font-size:17px; line-height:1;
+  background:transparent;
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:999px;
+  cursor:pointer;
+  transition:.2s;
+}
+.sound-toggle:hover{border-color:var(--lime); background:rgba(255,255,255,.05);}
+.sound-toggle.is-off{opacity:.5;}

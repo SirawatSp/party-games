@@ -68,6 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderTime();
         clearInterval(tickHandle);
         timerNum.textContent = "หมดเวลา!";
+        pgTimeUp();
       } else {
         renderTime();
       }

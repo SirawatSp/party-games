@@ -224,7 +224,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .forEach((r) => { placeCounter++; r.finished = true; r.place = placeCounter; });
         }
         clearInterval(raceTimer);
-        vibrateTimeout();
+        pgTimeUp();
         setTimeout(showLaneResult, 500);
       }
     }, RACE_TICK_MS);
@@ -401,7 +401,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const stillAlive = meleeFighters.filter((f) => f.alive);
     if (stillAlive.length <= 1 || meleeTickCount >= MELEE_MAX_TICKS) {
       clearInterval(meleeTimer);
-      vibrateTimeout();
+      pgTimeUp();
       const champion = stillAlive[0] || meleeFighters[meleeFighters.length - 1];
       setTimeout(() => showBattleResult(champion), 600);
     }

@@ -311,7 +311,7 @@ document.addEventListener("DOMContentLoaded", () => {
       box.classList.add("rf-result-fail");
       box.innerHTML = "⏰ หมดเวลา! ตอบได้ " + S.filled.filter(Boolean).length + "/3 &nbsp;<b>ไม่ได้แต้ม</b>";
       $("rfClock").classList.add("rf-clock-fail");
-      vibrateTimeout();
+      pgTimeUp();
     }
     $("rfSlotHint").textContent = "";
     $("rfGoBtn").classList.add("rf-hidden");

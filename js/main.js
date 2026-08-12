@@ -76,6 +76,115 @@ function vibrateTimeout() {
   if (navigator.vibrate) navigator.vibrate([120, 60, 120]);
 }
 
+// ---------------------------------------------------------------------------
+// เสียงเตือนหมดเวลา
+// สังเคราะห์เสียงเองด้วย Web Audio API ไม่ได้โหลดไฟล์เสียงจากที่ไหน เพราะ
+// (1) เล่นออฟไลน์ได้ทันทีไม่ต้องเพิ่มไฟล์ลง cache ของ service worker
+// (2) เว็บโหลดเร็วเท่าเดิม ไม่มีไฟล์เสียงมาถ่วง
+// เบราว์เซอร์เก่าที่ไม่มี AudioContext จะข้ามไปเงียบ ๆ ไม่พังทั้งหน้า
+// ---------------------------------------------------------------------------
+const PG_SOUND_KEY = "pg_sound";
+let pgAudioCtx = null;
+
+function pgSoundOn() {
+  try {
+    return localStorage.getItem(PG_SOUND_KEY) !== "off";
+  } catch (e) {
+    return true; // โหมดส่วนตัวบางเบราว์เซอร์อ่าน localStorage ไม่ได้ ให้ถือว่าเปิดเสียงไว้
+  }
+}
+
+function pgSetSound(on) {
+  try {
+    localStorage.setItem(PG_SOUND_KEY, on ? "on" : "off");
+  } catch (e) {
+    /* เขียนไม่ได้ก็ปล่อยผ่าน อย่างน้อยรอบนี้ยังใช้ค่าที่กดได้ */
+  }
+}
+
+// มือถือ (โดยเฉพาะ iOS) ห้ามเล่นเสียงจนกว่าผู้ใช้จะแตะหน้าจอก่อน
+// เลยต้อง "ปลุก" AudioContext ตอนแตะครั้งแรก แล้วเก็บไว้ใช้ยาว ๆ
+function pgPrimeAudio() {
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  if (!Ctx) return null;
+  if (!pgAudioCtx) {
+    try {
+      pgAudioCtx = new Ctx();
+    } catch (e) {
+      return null;
+    }
+  }
+  if (pgAudioCtx.state === "suspended") pgAudioCtx.resume();
+  return pgAudioCtx;
+}
+
+document.addEventListener("pointerdown", pgPrimeAudio, { once: true });
+document.addEventListener("keydown", pgPrimeAudio, { once: true });
+
+// บี๊บ 1 ครั้ง — ใส่ envelope ขึ้น/ลงกันเสียง "แปะ" ตอนตัดคลื่นกลางลูก
+function pgBeep(freq, startAt, durSec, volume) {
+  const ctx = pgAudioCtx;
+  if (!ctx) return;
+  const t0 = ctx.currentTime + startAt;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = "triangle"; // นุ่มกว่า square แต่ยังดังพอให้ได้ยินในวงที่คุยกันเสียงดัง
+  osc.frequency.setValueAtTime(freq, t0);
+  gain.gain.setValueAtTime(0.0001, t0);
+  gain.gain.exponentialRampToValueAtTime(volume, t0 + 0.012);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t0 + durSec);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(t0);
+  osc.stop(t0 + durSec + 0.02);
+}
+
+// เสียงหมดเวลา: 3 ตัวโน้ตไล่ลง ฟังแล้วรู้ทันทีว่า "จบแล้ว" ไม่ใช่แค่เตือน
+function pgTimeUpSound() {
+  if (!pgSoundOn()) return;
+  if (!pgPrimeAudio()) return;
+  pgBeep(880, 0, 0.16, 0.28);
+  pgBeep(660, 0.18, 0.16, 0.28);
+  pgBeep(440, 0.36, 0.34, 0.3);
+}
+
+// เสียงติ๊กช่วงใกล้หมดเวลา (สั้นและเบากว่ามาก จะได้ไม่กลบเสียงคุยกัน)
+function pgTickSound() {
+  if (!pgSoundOn()) return;
+  if (!pgPrimeAudio()) return;
+  pgBeep(1200, 0, 0.05, 0.12);
+}
+
+// เรียกตอนหมดเวลาจริง ๆ: สั่น + มีเสียง ใช้แทน vibrateTimeout() ในทุกเกมที่จับเวลา
+function pgTimeUp() {
+  vibrateTimeout();
+  pgTimeUpSound();
+}
+
+// ปุ่มเปิด/ปิดเสียง แปะเพิ่มให้อัตโนมัติทุกหน้าที่มีแถบเมนูบน จะได้ไม่ต้องแก้ HTML ทีละไฟล์
+document.addEventListener("DOMContentLoaded", () => {
+  const nav = document.querySelector(".topnav");
+  if (!nav || !(window.AudioContext || window.webkitAudioContext)) return;
+
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "sound-toggle";
+  const paint = () => {
+    const on = pgSoundOn();
+    btn.textContent = on ? "🔊" : "🔇";
+    btn.classList.toggle("is-off", !on);
+    btn.setAttribute("aria-label", on ? "ปิดเสียงเตือนหมดเวลา" : "เปิดเสียงเตือนหมดเวลา");
+    btn.title = on ? "เสียงเตือนหมดเวลา: เปิด" : "เสียงเตือนหมดเวลา: ปิด";
+  };
+  btn.addEventListener("click", () => {
+    const next = !pgSoundOn();
+    pgSetSound(next);
+    paint();
+    if (next) pgTimeUpSound(); // เปิดแล้วให้ลองฟังเลยว่าเสียงประมาณไหน
+  });
+  paint();
+  nav.appendChild(btn);
+});
+
 // หน้าแรก: แปะ label จำนวนโจทย์ปัจจุบันบนการ์ดแต่ละเกม (ข้อมูลมาจาก data/game-counts.js
 // ซึ่งสร้างอัตโนมัติจากคลังโจทย์จริง จะได้เช็คได้ตลอดว่าเกมไหนคลังเยอะหรือน้อย)
 document.addEventListener("DOMContentLoaded", () => {
