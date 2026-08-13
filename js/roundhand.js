@@ -18,6 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
     strict: false,
     setId: ROUNDHAND_SETS[0].id,
     randomSet: false,
+    mixMode: false,
+    mixMap: null, // โหมดผสม: เก็บว่าเลขไหนใช้ความหมายจากชุดไหน
     deck: [],
     drawn: null,
     kings: 0,
@@ -30,8 +32,18 @@ document.addEventListener("DOMContentLoaded", () => {
     return ROUNDHAND_SETS.find((s) => s.id === S.setId) || ROUNDHAND_SETS[0];
   }
 
+  function setById(id) {
+    return ROUNDHAND_SETS.find((s) => s.id === id) || ROUNDHAND_SETS[0];
+  }
+
+  // โหมดผสมจะสุ่มไว้ตั้งแต่ต้นเกมว่าเลขไหนใช้ความหมายจากชุดไหน จะได้คงที่ทั้งเกม
+  function sourceSetFor(rank) {
+    if (S.mixMode && S.mixMap && S.mixMap[rank]) return setById(S.mixMap[rank]);
+    return activeSet();
+  }
+
   function cardByRank(rank) {
-    return activeSet().cards.find((c) => c.rank === rank);
+    return sourceSetFor(rank).cards.find((c) => c.rank === rank);
   }
 
   function esc(str) {
@@ -49,14 +61,21 @@ document.addEventListener("DOMContentLoaded", () => {
           "</button>"
       ).join("") +
       '<button class="rh-set-btn' + (S.randomSet ? " active" : "") + '" data-set="__random" type="button">' +
-      '<span class="rh-set-icon">🎲</span><span class="rh-set-name">สุ่มชุด</span></button>';
+      '<span class="rh-set-icon">🎲</span><span class="rh-set-name">สุ่มชุด</span></button>' +
+      '<button class="rh-set-btn' + (S.mixMode ? " active" : "") + '" data-set="__mix" type="button">' +
+      '<span class="rh-set-icon">🎇</span><span class="rh-set-name">ผสมทุกชุด</span></button>';
 
     $("rhSetPicker").querySelectorAll("[data-set]").forEach((btn) => {
       btn.addEventListener("click", () => {
         if (btn.dataset.set === "__random") {
           S.randomSet = true;
+          S.mixMode = false;
+        } else if (btn.dataset.set === "__mix") {
+          S.mixMode = true;
+          S.randomSet = false;
         } else {
           S.randomSet = false;
+          S.mixMode = false;
           S.setId = btn.dataset.set;
         }
         renderSetPicker();
@@ -67,6 +86,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderSetDesc() {
+    if (S.mixMode) {
+      $("rhSetDesc").textContent =
+        "ทุกครั้งที่เริ่มเกมใหม่ ระบบจะสุ่มว่าเลขแต่ละใบใช้ความหมายจากชุดไหน คละกันทั้ง " +
+        ROUNDHAND_SETS.length + " ชุด — กองไพ่ไม่ซ้ำเดิมเลยสักเกม";
+      return;
+    }
     if (S.randomSet) {
       $("rhSetDesc").textContent = "ทุกครั้งที่เริ่มเกมใหม่ ระบบจะสุ่มชุดกติกาให้เอง จากทั้งหมด " + ROUNDHAND_SETS.length + " ชุด";
       return;
@@ -90,28 +115,39 @@ document.addEventListener("DOMContentLoaded", () => {
   // ---------- ตารางกติกาไพ่ 13 ใบของชุดที่เลือก ----------
   function renderCardTable() {
     const set = activeSet();
-    $("rhTableHead").textContent = S.randomSet
-      ? "📖 กติกาไพ่ (ตัวอย่างชุด " + set.name + ")"
-      : "📖 กติกาไพ่ชุด " + set.icon + " " + set.name;
-    $("rhCardTable").innerHTML = set.cards
-      .map(
-        (c) =>
-          '<div class="rh-table-row">' +
-          '<span class="rh-table-rank">' + c.rank + "</span>" +
-          '<div class="rh-table-body">' +
-          "<b>" + c.icon + " " + c.title + "</b>" +
-          "<span>" + c[S.mode] + "</span>" +
-          "</div>" +
-          "</div>"
-      )
-      .join("");
+    if (S.mixMode && S.mixMap) {
+      $("rhTableHead").textContent = "📖 กติกาไพ่ของเกมนี้ (ผสมทุกชุด)";
+    } else if (S.mixMode) {
+      $("rhTableHead").textContent = "📖 กติกาไพ่ (จะคละชุดตอนเริ่มเกม — นี่คือชุด " + set.name + ")";
+    } else if (S.randomSet) {
+      $("rhTableHead").textContent = "📖 กติกาไพ่ (ตัวอย่างชุด " + set.name + ")";
+    } else {
+      $("rhTableHead").textContent = "📖 กติกาไพ่ชุด " + set.icon + " " + set.name;
+    }
+
+    const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+    $("rhCardTable").innerHTML = RANKS.map((rank) => {
+      const src = S.mixMode && S.mixMap ? setById(S.mixMap[rank]) : set;
+      const c = src.cards.find((x) => x.rank === rank);
+      const from = S.mixMode && S.mixMap ? '<i class="rh-table-from">' + src.icon + " " + src.name + "</i>" : "";
+      return (
+        '<div class="rh-table-row">' +
+        '<span class="rh-table-rank">' + c.rank + "</span>" +
+        '<div class="rh-table-body">' +
+        "<b>" + c.icon + " " + c.title + "</b>" + from +
+        "<span>" + c[S.mode] + "</span>" +
+        "</div>" +
+        "</div>"
+      );
+    }).join("");
   }
 
   // ---------- กองไพ่ ----------
   function buildDeck() {
     const deck = [];
-    activeSet().cards.forEach((c) => {
-      SUITS.forEach((su) => deck.push({ rank: c.rank, suit: su.s, cls: su.cls }));
+    const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+    RANKS.forEach((rank) => {
+      SUITS.forEach((su) => deck.push({ rank: rank, suit: su.s, cls: su.cls }));
     });
     // สับไพ่แบบ Fisher-Yates
     for (let i = deck.length - 1; i > 0; i--) {
@@ -127,8 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
     $("rhLeft").textContent = S.deck.length;
     $("rhKings").textContent = S.kings + "/4";
     $("rhKings").classList.toggle("rh-danger", S.kings === 3);
-    const set = activeSet();
-    $("rhSetTag").textContent = set.icon + " " + set.name;
+    $("rhSetTag").textContent = S.mixMode ? "🎇 ผสมทุกชุด" : activeSet().icon + " " + activeSet().name;
   }
 
   function renderHouseRules(target) {
@@ -148,6 +183,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     $("rhCorner").textContent = card.rank + " " + card.suit;
     $("rhCorner").className = "rh-card-corner " + card.cls;
+    const srcTag = $("rhCardFrom");
+    if (S.mixMode) {
+      const src = sourceSetFor(card.rank);
+      srcTag.textContent = "จากชุด " + src.icon + " " + src.name;
+      srcTag.classList.remove("rh-hidden");
+    } else {
+      srcTag.classList.add("rh-hidden");
+    }
     $("rhCardIcon").textContent = info.icon;
     $("rhCardTitle").textContent = info.title;
     $("rhCardText").textContent = info[S.mode];
@@ -210,6 +253,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (S.randomSet) {
       S.setId = ROUNDHAND_SETS[Math.floor(Math.random() * ROUNDHAND_SETS.length)].id;
       renderCardTable();
+    }
+    if (S.mixMode) {
+      // สุ่มทีละเลขว่าจะเอาความหมายจากชุดไหน แล้วล็อกไว้ทั้งเกม
+      S.mixMap = {};
+      ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"].forEach((rank) => {
+        S.mixMap[rank] = ROUNDHAND_SETS[Math.floor(Math.random() * ROUNDHAND_SETS.length)].id;
+      });
+      renderCardTable();
+    } else {
+      S.mixMap = null;
     }
     // สุ่มบทลงโทษ K ตั้งแต่ต้นเกม แต่ยังไม่เปิดเผยจนกว่า K ใบที่ 4 จะออก
     S.kingPenalty = ROUNDHAND_KING_PENALTIES[Math.floor(Math.random() * ROUNDHAND_KING_PENALTIES.length)];

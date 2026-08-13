@@ -3089,3 +3089,15 @@ html.hc-fs .hc-topbar{padding-right:150px;}
   .rh-set-picker{grid-template-columns:repeat(3, 1fr);}
   .rh-set-name{font-size:11.5px;}
 }
+
+/* ---- ไพ่มือกลม: โหมดผสมชุด ---- */
+.rh-card-from{
+  font-family:'Kanit',sans-serif; font-weight:600; font-size:11.5px;
+  color:#8a8090; letter-spacing:.02em;
+  margin-top:2px;
+}
+.rh-table-from{
+  display:block; font-style:normal;
+  font-family:'Kanit',sans-serif; font-weight:600; font-size:11.5px;
+  color:var(--pink); margin-bottom:3px;
+}
