@@ -2877,3 +2877,164 @@ html.hc-fs .hc-topbar{padding-right:150px;}
 }
 .sound-toggle:hover{border-color:var(--lime); background:rgba(255,255,255,.05);}
 .sound-toggle.is-off{opacity:.5;}
+
+/* =========================================================
+   ไพ่มือกลม (roundhand.html) — เกมไพ่วงเหล้า
+   ========================================================= */
+.rh-hidden{display:none !important;}
+
+.rh-standing{
+  display:grid; gap:10px;
+  margin:20px 0 6px;
+}
+.rh-standing-item{
+  display:flex; gap:12px; align-items:flex-start;
+  background:rgba(255,255,255,.035);
+  border:1px solid var(--line);
+  border-left:3px solid var(--pink);
+  border-radius:14px;
+  padding:12px 14px;
+}
+.rh-standing-icon{font-size:20px; line-height:1.2; flex-shrink:0;}
+.rh-standing-item b{
+  font-family:'Kanit',sans-serif; font-weight:700; font-size:15px;
+  display:block; margin-bottom:2px;
+}
+.rh-standing-item span{font-size:13.5px; color:var(--text-dim); line-height:1.55;}
+
+.rh-stage-wrap{margin:22px 0 30px;}
+.rh-stage{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:26px 20px;
+  text-align:center;
+}
+.rh-big-icon{font-size:42px; line-height:1; margin-bottom:10px;}
+.rh-h3{font-family:'Kanit',sans-serif; font-weight:800; font-size:21px; margin-bottom:14px;}
+.rh-hint{font-size:13px; color:var(--text-dim); margin-top:8px; line-height:1.6;}
+.rh-label{
+  font-family:'Kanit',sans-serif; font-weight:700; font-size:14px;
+  color:var(--text-dim); margin-bottom:8px;
+}
+.rh-opt{margin-bottom:20px;}
+.rh-switch{display:flex; gap:8px; justify-content:center; flex-wrap:wrap;}
+.rh-opt-btn{
+  font-family:'Kanit',sans-serif; font-weight:600; font-size:14px;
+  padding:9px 18px; border-radius:999px;
+  background:transparent; color:var(--text-dim);
+  border:1px solid var(--line); cursor:pointer; transition:.2s;
+}
+.rh-opt-btn:hover{border-color:var(--pink); color:var(--text);}
+.rh-opt-btn.active{background:var(--pink); border-color:var(--pink); color:#240010;}
+
+.rh-meta{display:flex; justify-content:center; gap:26px; margin-bottom:18px;}
+.rh-meta-item{display:flex; flex-direction:column; gap:2px;}
+.rh-meta-num{
+  font-family:'Bungee',cursive; font-size:24px; line-height:1; color:var(--pink);
+}
+.rh-meta-num.rh-danger{color:var(--amber); animation:rhPulse .9s ease-in-out infinite;}
+@keyframes rhPulse{50%{opacity:.45;}}
+.rh-meta-cap{font-size:11.5px; color:var(--text-dim); letter-spacing:.04em;}
+
+.rh-card-area{
+  min-height:290px;
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:16px;
+}
+.rh-deck{
+  width:190px; height:270px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+  background:linear-gradient(150deg, #2a1030, #14060f);
+  border:2px dashed var(--line);
+  border-radius:18px;
+  color:var(--text-dim);
+  cursor:pointer; transition:.2s;
+}
+.rh-deck:hover{border-color:var(--pink); color:var(--text); transform:translateY(-3px);}
+.rh-deck-face{font-size:64px; line-height:1;}
+.rh-deck-text{font-family:'Kanit',sans-serif; font-weight:600; font-size:14px;}
+
+.rh-card{
+  width:min(300px, 88vw);
+  background:#fdfbf7;
+  color:#1a1118;
+  border-radius:18px;
+  padding:20px 18px 22px;
+  text-align:center;
+  position:relative;
+  box-shadow:0 14px 34px rgba(0,0,0,.45);
+}
+.rh-card.rh-flip{animation:rhFlip .38s ease-out;}
+@keyframes rhFlip{
+  from{transform:rotateY(88deg) scale(.9); opacity:0;}
+  to{transform:rotateY(0) scale(1); opacity:1;}
+}
+.rh-card-corner{
+  position:absolute; top:12px; left:14px;
+  font-family:'Bungee',cursive; font-size:19px; line-height:1;
+}
+.rh-black{color:#1a1118;}
+.rh-red{color:#d61f4a;}
+.rh-card-icon{font-size:40px; line-height:1; margin:14px 0 8px;}
+.rh-card-title{font-family:'Kanit',sans-serif; font-weight:800; font-size:22px; margin-bottom:10px;}
+.rh-card-text{font-size:15px; line-height:1.62; margin-bottom:12px;}
+.rh-card-note{
+  font-size:12.5px; line-height:1.55; color:#6d6470;
+  border-top:1px dashed #d9d2dc; padding-top:10px;
+}
+
+.rh-rule-form{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:14px;}
+.rh-rule-input{
+  font-family:'Sarabun',sans-serif; font-size:15px;
+  padding:11px 15px; border-radius:12px;
+  background:rgba(255,255,255,.05); color:var(--text);
+  border:1px solid var(--line);
+  width:min(280px, 76vw);
+}
+.rh-rule-input:focus{outline:none; border-color:var(--pink);}
+
+.rh-actions{display:flex; gap:10px; justify-content:center; flex-wrap:wrap;}
+
+.rh-rules-live{margin-top:18px; display:flex; flex-direction:column; gap:7px; align-items:center;}
+.rh-rules-head-sm{
+  font-family:'Kanit',sans-serif; font-weight:700; font-size:13.5px;
+  color:var(--text-dim); margin-bottom:2px;
+}
+.rh-rule-chip{
+  font-size:13.5px; line-height:1.5;
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:7px 15px;
+  max-width:100%;
+}
+.rh-end-text{font-size:15px; line-height:1.65; color:var(--text-dim); margin-bottom:6px;}
+
+.rh-rules-head{
+  font-family:'Kanit',sans-serif; font-weight:800; font-size:20px;
+  margin:34px 0 14px;
+}
+.rh-table{display:grid; gap:9px; margin-bottom:28px;}
+.rh-table-row{
+  display:flex; gap:13px; align-items:flex-start;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px 14px;
+}
+.rh-table-rank{
+  font-family:'Bungee',cursive; font-size:19px; line-height:1.15;
+  color:var(--pink); min-width:30px; text-align:center; flex-shrink:0;
+}
+.rh-table-body b{
+  font-family:'Kanit',sans-serif; font-weight:700; font-size:14.5px;
+  display:block; margin-bottom:3px;
+}
+.rh-table-body span{font-size:13.5px; color:var(--text-dim); line-height:1.55;}
+
+@media (max-width:420px){
+  .rh-deck{width:165px; height:236px;}
+  .rh-card-area{min-height:262px;}
+  .rh-meta{gap:18px;}
+}

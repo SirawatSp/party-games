@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ไพ่มือกลม — เกมไพ่วงเหล้า (ไพ่โดเรม่อน)</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0c0710">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <a class="brand-logo" href="index.html"><img class="brand-img" src="assets/logo.png" width="720" height="416" alt="Party Games — วงกำลังจะเหงา"></a>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--pink); color:#240010;">24 · ปาร์ตี้ · ไพ่</span>
+    <h1>ไพ่มือกลม</h1>
+    <p>เกมไพ่วงเหล้าที่หลายวงเรียกกันว่า <b>"ไพ่โดเรม่อน"</b> — จั่วไพ่ทีละใบ แต่ละใบมีบทลงโทษหรือมินิเกมของมัน และมีกฎประจำวงว่า <b>ห้ามชี้นิ้วเด็ดขาด ต้องกำมือกลม ๆ</b> ใครเผลอชี้โดนทันที ไม่ต้องหาไพ่จริง กดจั่วบนจอนี้ได้เลย</p>
+  </section>
+
+  <!-- กฎประจำเกม เห็นค้างไว้ตลอด -->
+  <div class="rh-standing reveal-up" id="rhStanding"></div>
+
+  <div class="rh-stage-wrap">
+
+    <!-- ตั้งค่าก่อนเริ่ม -->
+    <div class="rh-stage" id="rhSetup">
+      <div class="rh-big-icon">🐾</div>
+      <h3 class="rh-h3">ตั้งวงก่อนเริ่ม</h3>
+
+      <div class="rh-opt">
+        <div class="rh-label">เล่นแบบไหน</div>
+        <div class="rh-switch" id="rhModeSwitch">
+          <button class="rh-opt-btn active" data-mode="drink" type="button">สายดื่ม 🍻</button>
+          <button class="rh-opt-btn" data-mode="soft" type="button">ไม่ดื่ม 🧃</button>
+        </div>
+        <p class="rh-hint" id="rhModeHint"></p>
+      </div>
+
+      <div class="rh-opt">
+        <div class="rh-label">กฎเสริม "ห้ามพูดคำว่านิ้ว"</div>
+        <div class="rh-switch" id="rhStrictSwitch">
+          <button class="rh-opt-btn" data-strict="on" type="button">เปิด 😈</button>
+          <button class="rh-opt-btn active" data-strict="off" type="button">ปิด</button>
+        </div>
+      </div>
+
+      <button class="btn" id="rhStartBtn" type="button">แจกไพ่ เริ่มเลย 🃏</button>
+    </div>
+
+    <!-- โต๊ะเล่น -->
+    <div class="rh-stage rh-hidden" id="rhTable">
+      <div class="rh-meta">
+        <div class="rh-meta-item"><span class="rh-meta-num" id="rhLeft">52</span><span class="rh-meta-cap">ไพ่ที่เหลือ</span></div>
+        <div class="rh-meta-item"><span class="rh-meta-num" id="rhKings">0/4</span><span class="rh-meta-cap">K ที่จั่วแล้ว</span></div>
+      </div>
+
+      <div class="rh-card-area">
+        <button class="rh-deck" id="rhDeck" type="button" aria-label="จั่วไพ่">
+          <span class="rh-deck-face">🂠</span>
+          <span class="rh-deck-text">แตะเพื่อจั่ว</span>
+        </button>
+        <div class="rh-card rh-hidden" id="rhCard">
+          <div class="rh-card-corner" id="rhCorner"></div>
+          <div class="rh-card-icon" id="rhCardIcon"></div>
+          <div class="rh-card-title" id="rhCardTitle"></div>
+          <div class="rh-card-text" id="rhCardText"></div>
+          <div class="rh-card-note" id="rhCardNote"></div>
+        </div>
+      </div>
+
+      <!-- ช่องกรอกกฎใหม่ ขึ้นเฉพาะตอนจั่วได้ J -->
+      <div class="rh-rule-form rh-hidden" id="rhRuleForm">
+        <input class="rh-rule-input" id="rhRuleInput" type="text" maxlength="60" placeholder="พิมพ์กฎใหม่ที่จะใช้ทั้งเกม" autocomplete="off">
+        <button class="btn secondary" id="rhRuleAdd" type="button">เพิ่มกฎ ✓</button>
+      </div>
+
+      <div class="rh-actions">
+        <button class="btn" id="rhNextBtn" type="button">จั่วใบต่อไป →</button>
+        <button class="btn secondary" id="rhResetBtn" type="button">สับไพ่ใหม่ ↻</button>
+      </div>
+
+      <div class="rh-rules-live" id="rhRulesLive"></div>
+    </div>
+
+    <!-- จบเกม (K ใบที่ 4 หรือไพ่หมดกอง) -->
+    <div class="rh-stage rh-hidden" id="rhEnd">
+      <div class="rh-big-icon" id="rhEndIcon">👑</div>
+      <h3 class="rh-h3" id="rhEndTitle"></h3>
+      <p class="rh-end-text" id="rhEndText"></p>
+      <div class="rh-rules-live" id="rhEndRules"></div>
+      <button class="btn" id="rhAgainBtn" type="button">เล่นอีกรอบ 🔁</button>
+    </div>
+
+  </div>
+
+  <h2 class="rh-rules-head">📖 กติกาไพ่ทั้ง 13 ใบ</h2>
+  <div class="rh-table" id="rhCardTable"></div>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเล่น</h2>
+    <ol>
+      <li>นั่งล้อมวง ตกลงกันก่อนว่าเล่นสายดื่มหรือแบบไม่ดื่ม แล้วกดเริ่ม</li>
+      <li>วนกันจั่วทีละคนตามเข็มนาฬิกา แตะกองไพ่บนจอเพื่อเปิดใบบนสุด</li>
+      <li>ทำตามที่ไพ่ใบนั้นสั่งทันที แล้วส่งต่อให้คนถัดไปจั่ว</li>
+      <li><b>ตลอดเกมห้ามชี้นิ้ว</b> จะชี้ใครต้องกำมือกลม ๆ ใครเผลอชี้โดนทันที — ข้อนี้แหละที่ทำให้เกมนี้ได้ชื่อเล่นว่าไพ่โดเรม่อน</li>
+      <li>เกมจบเมื่อมีคนจั่ว K ใบที่ 4 หรือไพ่ในกองหมด</li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>เล่นให้สนุกและปลอดภัย</h2>
+    <ol>
+      <li>ใครไม่ดื่มก็เล่นได้ — กดโหมด <b>ไม่ดื่ม 🧃</b> ไพ่ทุกใบจะเปลี่ยนเป็นบทลงโทษสนุก ๆ แทนการดื่มทั้งหมด</li>
+      <li>วงผสมกันได้ ให้คนที่ไม่ดื่มใช้บทลงโทษ ส่วนคนที่ดื่มก็ดื่มตามปกติ</li>
+      <li>ทุกคนมีสิทธิ์ "ผ่าน" ได้เสมอ ไม่มีใครควรถูกบังคับให้ดื่ม</li>
+      <li>คนขับรถห้ามดื่ม เรื่องนี้ไม่มีข้อยกเว้น</li>
+    </ol>
+  </div>
+
+  <footer>เล่นด้วยความรับผิดชอบ ดื่มพอดี ไม่ขับรถ 🐾</footer>
+</div>
+
+<script src="data/roundhand.js"></script>
+<script src="js/main.js"></script>
+<script src="js/roundhand.js"></script>
+</body>
+</html>
