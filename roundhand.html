@@ -19,7 +19,7 @@
   <section class="page-head reveal-up">
     <span class="kicker" style="background:var(--pink); color:#240010;">24 · ปาร์ตี้ · ไพ่</span>
     <h1>ไพ่มือกลม</h1>
-    <p>เกมไพ่วงเหล้าที่หลายวงเรียกกันว่า <b>"ไพ่โดเรม่อน"</b> — จั่วไพ่ทีละใบ แต่ละใบมีบทลงโทษหรือมินิเกมของมัน และมีกฎประจำวงว่า <b>ห้ามชี้นิ้วเด็ดขาด ต้องกำมือกลม ๆ</b> ใครเผลอชี้โดนทันที ไม่ต้องหาไพ่จริง กดจั่วบนจอนี้ได้เลย</p>
+    <p>เกมไพ่วงเหล้าที่หลายวงเรียกกันว่า <b>"ไพ่โดเรม่อน"</b> — จั่วไพ่ทีละใบ แต่ละใบมีบทลงโทษหรือมินิเกมของมัน และมีกฎประจำวงว่า <b>ห้ามชี้นิ้วเด็ดขาด ต้องกำมือกลม ๆ</b> ใครเผลอชี้โดนทันที มีให้เลือก <b>6 ชุดกติกา</b> (คลาสสิก / ซ้าย-ขวา / สายเร่ง / สายท้า / สายคุย / สายมินิเกม) และบทลงโทษตอน K ใบสุดท้าย <b>24 แบบ</b> สุ่มใหม่ทุกเกม ไม่ต้องหาไพ่จริง กดจั่วบนจอนี้ได้เลย</p>
   </section>
 
   <!-- กฎประจำเกม เห็นค้างไว้ตลอด -->
@@ -31,6 +31,12 @@
     <div class="rh-stage" id="rhSetup">
       <div class="rh-big-icon">🐾</div>
       <h3 class="rh-h3">ตั้งวงก่อนเริ่ม</h3>
+
+      <div class="rh-opt">
+        <div class="rh-label">เลือกชุดกติกา</div>
+        <div class="rh-set-picker" id="rhSetPicker"></div>
+        <p class="rh-hint" id="rhSetDesc"></p>
+      </div>
 
       <div class="rh-opt">
         <div class="rh-label">เล่นแบบไหน</div>
@@ -58,6 +64,7 @@
         <div class="rh-meta-item"><span class="rh-meta-num" id="rhLeft">52</span><span class="rh-meta-cap">ไพ่ที่เหลือ</span></div>
         <div class="rh-meta-item"><span class="rh-meta-num" id="rhKings">0/4</span><span class="rh-meta-cap">K ที่จั่วแล้ว</span></div>
       </div>
+      <div class="rh-set-tag" id="rhSetTag"></div>
 
       <div class="rh-card-area">
         <button class="rh-deck" id="rhDeck" type="button" aria-label="จั่วไพ่">
@@ -82,6 +89,7 @@
       <div class="rh-actions">
         <button class="btn" id="rhNextBtn" type="button">จั่วใบต่อไป →</button>
         <button class="btn secondary" id="rhResetBtn" type="button">สับไพ่ใหม่ ↻</button>
+        <button class="btn secondary" id="rhChangeSetBtn" type="button">เปลี่ยนชุดกติกา 🔀</button>
       </div>
 
       <div class="rh-rules-live" id="rhRulesLive"></div>
@@ -92,23 +100,39 @@
       <div class="rh-big-icon" id="rhEndIcon">👑</div>
       <h3 class="rh-h3" id="rhEndTitle"></h3>
       <p class="rh-end-text" id="rhEndText"></p>
+      <div class="rh-penalty rh-hidden" id="rhEndPenalty">
+        <div class="rh-penalty-name" id="rhPenaltyName"></div>
+        <div class="rh-penalty-text" id="rhPenaltyText"></div>
+      </div>
       <div class="rh-rules-live" id="rhEndRules"></div>
       <button class="btn" id="rhAgainBtn" type="button">เล่นอีกรอบ 🔁</button>
     </div>
 
   </div>
 
-  <h2 class="rh-rules-head">📖 กติกาไพ่ทั้ง 13 ใบ</h2>
+  <h2 class="rh-rules-head" id="rhTableHead">📖 กติกาไพ่</h2>
   <div class="rh-table" id="rhCardTable"></div>
 
   <div class="panel reveal-up">
     <h2>วิธีเล่น</h2>
     <ol>
-      <li>นั่งล้อมวง ตกลงกันก่อนว่าเล่นสายดื่มหรือแบบไม่ดื่ม แล้วกดเริ่ม</li>
+      <li>นั่งล้อมวง เลือกชุดกติกาที่อยากเล่น (หรือกด "สุ่มชุด" ให้ระบบเลือกให้) ตกลงกันว่าเล่นสายดื่มหรือแบบไม่ดื่ม แล้วกดเริ่ม</li>
       <li>วนกันจั่วทีละคนตามเข็มนาฬิกา แตะกองไพ่บนจอเพื่อเปิดใบบนสุด</li>
       <li>ทำตามที่ไพ่ใบนั้นสั่งทันที แล้วส่งต่อให้คนถัดไปจั่ว</li>
       <li><b>ตลอดเกมห้ามชี้นิ้ว</b> จะชี้ใครต้องกำมือกลม ๆ ใครเผลอชี้โดนทันที — ข้อนี้แหละที่ทำให้เกมนี้ได้ชื่อเล่นว่าไพ่โดเรม่อน</li>
-      <li>เกมจบเมื่อมีคนจั่ว K ใบที่ 4 หรือไพ่ในกองหมด</li>
+      <li>เกมจบเมื่อมีคนจั่ว K ใบที่ 4 หรือไพ่ในกองหมด — คนที่จั่ว K ใบสุดท้ายจะเจอบทลงโทษใหญ่ที่สุ่มมาจาก 24 แบบ รู้ผลตอนจบเท่านั้น</li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>6 ชุดกติกา ต่างกันยังไง</h2>
+    <ol>
+      <li><b>🃏 คลาสสิก</b> — เวอร์ชันมาตรฐานที่วงส่วนใหญ่เล่นกัน มีครบทั้งสั่งดื่ม มินิเกม และตั้งกฎ</li>
+      <li><b>↔️ ซ้าย-ขวา</b> — ทุกใบสั่งตามตำแหน่งที่นั่ง คนซ้ายกิน คนขวากิน คนตรงข้ามกิน สลับที่นั่ง นั่งตรงไหนก็ไม่ปลอดภัย</li>
+      <li><b>🔥 สายเร่ง</b> — ปริมาณจัดเต็ม กินกันทั้งวงบ่อย เหมาะกับวงที่มีเวลาน้อย</li>
+      <li><b>😈 สายท้า</b> — แต่ละใบคือคำท้า ดื่มน้อยลงแต่ได้คลิปตลกเยอะขึ้น</li>
+      <li><b>💬 สายคุย</b> — ชวนคุยชวนเปิดใจ เหมาะกับวงที่เพิ่งรู้จักกัน ดื่มเป็นแค่ทางเลือกถ้าไม่อยากตอบ</li>
+      <li><b>🎮 สายมินิเกม</b> — ทุกใบคือเกมสั้นที่เล่นจบใน 1 นาที เบื่อการนั่งสั่งกันไปมาให้เลือกชุดนี้</li>
     </ol>
   </div>
 
