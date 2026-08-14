@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>หลอกให้เชื่อ — เกมทายว่าใครพูดความจริง</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0c0710">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <a class="brand-logo" href="index.html"><img class="brand-img" src="assets/logo.png" width="720" height="416" alt="Party Games — วงกำลังจะเหงา"></a>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--gold, var(--amber)); color:#2a2200;">25 · โกหก · ความรู้</span>
+    <h1>หลอกให้เชื่อ</h1>
+    <p>เครื่องสุ่มคำถามความรู้รอบโลกมาให้ — <b>มีคนเดียวที่ได้คำตอบจริง</b> ที่เหลือต้องแต่งคำตอบปลอมให้เนียน แล้วทุกคนพูดคำตอบของตัวเองให้ <b>คนทาย</b> ฟัง คนทายต้องหาให้เจอว่าใครพูดความจริง ส่วนคนโกหกก็ต้องหลอกให้คนทายเลือกคำตอบของตัวเองให้ได้</p>
+  </section>
+
+  <div class="bf-stage-wrap">
+
+    <!-- 1. ตั้งวง -->
+    <div class="bf-stage" id="bfSetup">
+      <div class="bf-big-icon">🎭</div>
+      <h3 class="bf-h3">ใครเล่นบ้าง</h3>
+      <p class="bf-hint">ใส่ชื่อผู้เล่น 3 คนขึ้นไป (สูงสุด 10 คน)</p>
+
+      <div class="bf-player-add">
+        <input class="bf-input" id="bfNameInput" type="text" maxlength="12" placeholder="พิมพ์ชื่อแล้วกดเพิ่ม" autocomplete="off">
+        <button class="btn secondary" id="bfAddBtn" type="button">เพิ่ม +</button>
+      </div>
+      <div class="bf-player-list" id="bfPlayerList"></div>
+
+      <div class="bf-opt">
+        <div class="bf-label">คนโกหกเห็นคำตอบจริงไหม</div>
+        <div class="bf-switch" id="bfPeekSwitch">
+          <button class="bf-opt-btn active" data-peek="on" type="button">เห็น (ดัดจากความจริง)</button>
+          <button class="bf-opt-btn" data-peek="off" type="button">ไม่เห็น (มั่วเอง)</button>
+        </div>
+        <p class="bf-hint" id="bfPeekHint"></p>
+      </div>
+
+      <div class="bf-opt">
+        <div class="bf-label">เล่นกี่รอบ</div>
+        <div class="bf-switch" id="bfRoundSwitch">
+          <button class="bf-opt-btn" data-rounds="5" type="button">5 รอบ</button>
+          <button class="bf-opt-btn active" data-rounds="10" type="button">10 รอบ</button>
+          <button class="bf-opt-btn" data-rounds="0" type="button">ไม่จำกัด</button>
+        </div>
+      </div>
+
+      <div class="bf-warn" id="bfWarn"></div>
+      <button class="btn" id="bfStartBtn" type="button">เริ่มเกม 🎬</button>
+    </div>
+
+    <!-- 2. ประกาศคนทายของรอบนี้ -->
+    <div class="bf-stage bf-hidden" id="bfRoundIntro">
+      <div class="bf-round-tag" id="bfRoundTag"></div>
+      <div class="bf-big-icon">🕵️</div>
+      <h3 class="bf-h3">รอบนี้ <b id="bfGuesserName"></b> เป็นคนทาย</h3>
+      <p class="bf-hint" id="bfIntroHint"></p>
+      <button class="btn" id="bfIntroBtn" type="button">เริ่มส่งมือถือ →</button>
+    </div>
+
+    <!-- 3. ส่งมือถือให้ทีละคน -->
+    <div class="bf-stage bf-hidden" id="bfPass">
+      <div class="bf-big-icon">📱</div>
+      <h3 class="bf-h3">ส่งมือถือให้</h3>
+      <div class="bf-pass-name" id="bfPassName"></div>
+      <p class="bf-hint">คนอื่นห้ามแอบดูนะ</p>
+      <button class="btn" id="bfPassBtn" type="button">ฉันคือ<span id="bfPassWho"></span> — เปิดดู 👀</button>
+    </div>
+
+    <!-- 4. บทบาทลับ -->
+    <div class="bf-stage bf-hidden" id="bfRole">
+      <div class="bf-q-box">
+        <div class="bf-q-label">คำถามรอบนี้</div>
+        <div class="bf-q-text" id="bfRoleQuestion"></div>
+      </div>
+      <div class="bf-role-card" id="bfRoleCard">
+        <div class="bf-role-label" id="bfRoleLabel"></div>
+        <div class="bf-role-answer" id="bfRoleAnswer"></div>
+        <div class="bf-role-sub" id="bfRoleSub"></div>
+      </div>
+      <button class="btn" id="bfRoleBtn" type="button">จำแล้ว ส่งต่อ →</button>
+    </div>
+
+    <!-- 5. พูดคำตอบ แล้วให้คนทายเลือก -->
+    <div class="bf-stage bf-hidden" id="bfGuess">
+      <div class="bf-q-box">
+        <div class="bf-q-label">คำถามรอบนี้</div>
+        <div class="bf-q-text" id="bfGuessQuestion"></div>
+      </div>
+      <h3 class="bf-h3">ถึงตา <b id="bfGuessName"></b> แล้ว</h3>
+      <p class="bf-hint">ให้ทุกคนพูดคำตอบของตัวเองทีละคน ซักถามได้เต็มที่ แล้วเลือกว่าใครพูดความจริง</p>
+      <div class="bf-vote-list" id="bfVoteList"></div>
+    </div>
+
+    <!-- 6. เฉลย -->
+    <div class="bf-stage bf-hidden" id="bfReveal">
+      <div class="bf-big-icon" id="bfRevealIcon"></div>
+      <h3 class="bf-h3" id="bfRevealTitle"></h3>
+      <div class="bf-answer-box">
+        <div class="bf-q-label">คำตอบจริงคือ</div>
+        <div class="bf-answer-text" id="bfRealAnswer"></div>
+        <div class="bf-answer-who" id="bfRealWho"></div>
+      </div>
+      <div class="bf-score-delta" id="bfScoreDelta"></div>
+      <div class="bf-score-list" id="bfScoreList"></div>
+      <button class="btn" id="bfNextBtn" type="button">รอบต่อไป →</button>
+    </div>
+
+    <!-- 7. จบเกม -->
+    <div class="bf-stage bf-hidden" id="bfFinal">
+      <div class="bf-big-icon">🏆</div>
+      <h3 class="bf-h3">จบเกม!</h3>
+      <div class="bf-score-list" id="bfFinalList"></div>
+      <div class="bf-stats" id="bfStats"></div>
+      <button class="btn" id="bfAgainBtn" type="button">เล่นอีกรอบ 🔁</button>
+      <button class="btn secondary" id="bfNewBtn" type="button">เปลี่ยนผู้เล่น 👥</button>
+    </div>
+
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเล่น</h2>
+    <ol>
+      <li>ใส่ชื่อผู้เล่น <b>3 คนขึ้นไป</b> แล้วกดเริ่ม</li>
+      <li>แต่ละรอบจะมี <b>คนทาย 1 คน</b> (วนไปเรื่อย ๆ ทุกคนได้เป็น) — คนทายวางมือถือไว้ ห้ามดู</li>
+      <li>ส่งมือถือให้คนที่เหลือทีละคน ทุกคนจะเห็นคำถาม แต่มี <b>คนเดียวที่ได้คำตอบจริง</b> ที่เหลือเป็นคนโกหก</li>
+      <li>พอครบทุกคนแล้ว ทุกคน <b>พูดคำตอบของตัวเองออกเสียง</b> ทีละคน คนทายซักถามได้เต็มที่</li>
+      <li>คนทายเลือกว่าใครพูดความจริง — เลือกถูกได้แต้ม เลือกผิดคนที่หลอกสำเร็จได้แต้มไปเต็ม ๆ</li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>คิดแต้มยังไง</h2>
+    <ol>
+      <li><b>คนทายเลือกถูก</b> — คนทายได้ <b>2 แต้ม</b> และคนที่พูดความจริงได้ <b>1 แต้ม</b> (พูดจนคนเชื่อก็เก่งแล้ว)</li>
+      <li><b>คนทายเลือกผิด</b> — คนโกหกที่ถูกเลือกได้ <b>3 แต้ม</b> เพราะหลอกสำเร็จ ส่วนคนทายไม่ได้แต้ม</li>
+      <li>คนโกหกที่ไม่มีใครเลือกไม่ได้แต้ม — โกหกอย่างเดียวไม่พอ ต้องโกหกให้น่าเชื่อด้วย</li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>เคล็ดลับให้สนุกขึ้น</h2>
+    <ol>
+      <li><b>โหมด "ดัดจากความจริง"</b> (ค่าเริ่มต้น) คนโกหกจะเห็นคำตอบจริงด้วย แล้วต้องแต่งคำตอบที่ใกล้เคียงจนคนทายแยกไม่ออก — สนุกกว่าและยากกว่าสำหรับคนทายมาก</li>
+      <li>ถ้าอยากให้ง่ายขึ้นหรือวงเพิ่งเริ่มเล่น ให้สลับเป็นโหมด <b>"ไม่เห็น"</b> คนโกหกจะต้องมั่วเอง คำตอบจะหลุดง่ายกว่า</li>
+      <li>คนพูดความจริงควรทำท่าลังเลบ้าง ไม่งั้นจะถูกจับได้ทันทีว่าตอบเร็วเกินไป</li>
+      <li>คนทายมีสิทธิ์ถามย้ำได้ เช่น "รู้ได้ยังไง" — คนโกหกที่เตรียมเหตุผลมาด้วยจะรอดกว่า</li>
+      <li>เล่น 3 คนก็ได้ (คนทาย 1 + จริง 1 + โกหก 1) แต่ยิ่งคนเยอะยิ่งหลอกกันสนุก</li>
+    </ol>
+  </div>
+
+  <footer>ความจริงมีหนึ่งเดียว แต่คำโกหกมีได้ไม่จำกัด 🎭</footer>
+</div>
+
+<script src="data/bluff.js"></script>
+<script src="data/world-trivia-qa.js"></script>
+<script src="js/main.js"></script>
+<script src="js/bluff.js"></script>
+</body>
+</html>

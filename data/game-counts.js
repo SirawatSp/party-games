@@ -22,4 +22,5 @@ const GAME_COUNTS = {
   "favorites.html": { count: 480, unit: "คำถาม" },
   "rapidfire.html": { count: 800, unit: "โจทย์" },
   "fake-artist.html": { count: 910, unit: "คำลับ" },
+  "bluff.html": { count: 433, unit: "คำถาม" },
 };

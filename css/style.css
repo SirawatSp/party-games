@@ -3101,3 +3101,172 @@ html.hc-fs .hc-topbar{padding-right:150px;}
   font-family:'Kanit',sans-serif; font-weight:600; font-size:11.5px;
   color:var(--pink); margin-bottom:3px;
 }
+
+/* =========================================================
+   หลอกให้เชื่อ (bluff.html)
+   ========================================================= */
+.bf-hidden{display:none !important;}
+.bf-stage-wrap{margin:22px 0 30px;}
+.bf-stage{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:26px 20px;
+  text-align:center;
+}
+.bf-big-icon{font-size:42px; line-height:1; margin-bottom:10px;}
+.bf-h3{font-family:'Kanit',sans-serif; font-weight:800; font-size:21px; margin-bottom:12px;}
+.bf-h3 b{color:var(--amber);}
+.bf-hint{font-size:13.5px; color:var(--text-dim); line-height:1.6; margin-bottom:14px;}
+.bf-label{
+  font-family:'Kanit',sans-serif; font-weight:700; font-size:14px;
+  color:var(--text-dim); margin-bottom:8px;
+}
+.bf-opt{margin:18px 0;}
+.bf-switch{display:flex; gap:8px; justify-content:center; flex-wrap:wrap;}
+.bf-opt-btn{
+  font-family:'Kanit',sans-serif; font-weight:600; font-size:13.5px;
+  padding:9px 16px; border-radius:999px;
+  background:transparent; color:var(--text-dim);
+  border:1px solid var(--line); cursor:pointer; transition:.2s;
+}
+.bf-opt-btn:hover{border-color:var(--amber); color:var(--text);}
+.bf-opt-btn.active{background:var(--amber); border-color:var(--amber); color:#2a2200;}
+
+.bf-player-add{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:12px;}
+.bf-input{
+  font-family:'Sarabun',sans-serif; font-size:15px;
+  padding:11px 15px; border-radius:12px;
+  background:rgba(255,255,255,.05); color:var(--text);
+  border:1px solid var(--line);
+  width:min(240px, 66vw);
+}
+.bf-input:focus{outline:none; border-color:var(--amber);}
+.bf-player-list{display:flex; gap:7px; justify-content:center; flex-wrap:wrap; margin-bottom:6px; min-height:20px;}
+.bf-chip{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:14px;
+  background:rgba(255,255,255,.06);
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:6px 8px 6px 14px;
+}
+.bf-chip-x{
+  background:transparent; border:none; color:var(--text-dim);
+  font-size:17px; line-height:1; cursor:pointer; padding:0 4px;
+}
+.bf-chip-x:hover{color:var(--rose);}
+.bf-warn{font-size:13.5px; color:var(--rose); min-height:20px; margin:8px 0; line-height:1.5;}
+
+.bf-round-tag{
+  display:inline-block;
+  font-family:'Kanit',sans-serif; font-weight:700; font-size:12.5px;
+  color:var(--text-dim);
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:5px 14px; margin-bottom:12px;
+}
+.bf-pass-name{
+  font-family:'Bungee',cursive; font-size:30px; line-height:1.15;
+  color:var(--amber); margin:6px 0 10px; word-break:break-word;
+}
+
+.bf-q-box{
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:15px 16px;
+  margin-bottom:16px;
+  text-align:left;
+}
+.bf-q-label{
+  font-family:'Kanit',sans-serif; font-weight:700; font-size:11.5px;
+  letter-spacing:.08em; text-transform:uppercase;
+  color:var(--text-dim); margin-bottom:6px;
+}
+.bf-q-text{font-size:16px; line-height:1.6;}
+
+.bf-role-card{
+  border-radius:18px;
+  padding:20px 16px 22px;
+  margin-bottom:16px;
+  border:2px solid var(--line);
+}
+.bf-role-card.bf-role-truth{
+  background:linear-gradient(150deg, rgba(52,211,153,.15), rgba(52,211,153,.04));
+  border-color:var(--mint);
+}
+.bf-role-card.bf-role-liar{
+  background:linear-gradient(150deg, rgba(251,113,133,.15), rgba(251,113,133,.04));
+  border-color:var(--rose);
+}
+.bf-role-label{font-family:'Kanit',sans-serif; font-weight:800; font-size:16px; margin-bottom:10px;}
+.bf-role-answer{
+  font-family:'Kanit',sans-serif; font-weight:800; font-size:23px; line-height:1.35;
+  margin-bottom:10px; word-break:break-word;
+}
+.bf-role-sub{font-size:13.5px; color:var(--text-dim); line-height:1.6;}
+
+.bf-vote-list{display:grid; gap:9px; margin-top:6px;}
+.bf-vote-btn{
+  font-family:'Kanit',sans-serif; font-weight:700; font-size:16px;
+  padding:14px 16px; border-radius:14px;
+  background:rgba(255,255,255,.05); color:var(--text);
+  border:1px solid var(--line); cursor:pointer; transition:.2s;
+}
+.bf-vote-btn:hover{border-color:var(--amber); background:rgba(255,183,3,.12); transform:translateY(-2px);}
+
+.bf-answer-box{
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:14px;
+}
+.bf-answer-text{
+  font-family:'Kanit',sans-serif; font-weight:800; font-size:21px; line-height:1.4;
+  color:var(--mint); margin-bottom:8px; word-break:break-word;
+}
+.bf-answer-who{font-size:13.5px; color:var(--text-dim);}
+
+.bf-score-delta{display:flex; flex-direction:column; gap:7px; margin-bottom:16px;}
+.bf-delta{
+  font-size:14.5px;
+  background:rgba(255,183,3,.1);
+  border:1px solid rgba(255,183,3,.35);
+  border-radius:999px;
+  padding:8px 15px;
+}
+.bf-delta span{color:var(--text-dim); font-size:13px;}
+
+.bf-score-list{display:flex; flex-direction:column; gap:6px; margin-bottom:16px;}
+.bf-score-row{
+  display:flex; align-items:center; gap:11px;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:9px 14px;
+}
+.bf-score-row.bf-lead{border-color:var(--amber); background:rgba(255,183,3,.09);}
+.bf-score-rank{
+  font-family:'Bungee',cursive; font-size:14px; color:var(--text-dim);
+  min-width:18px; text-align:center;
+}
+.bf-score-name{flex:1; text-align:left; font-size:15px; word-break:break-word;}
+.bf-score-num{font-family:'Bungee',cursive; font-size:18px; color:var(--amber);}
+
+.bf-stats{display:flex; flex-direction:column; gap:7px; margin-bottom:16px;}
+.bf-stat{
+  font-size:14px; line-height:1.5;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:9px 14px;
+}
+.bf-stat b{font-family:'Kanit',sans-serif; font-weight:700;}
+
+@media (max-width:420px){
+  .bf-pass-name{font-size:25px;}
+  .bf-role-answer{font-size:20px;}
+}

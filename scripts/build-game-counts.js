@@ -29,6 +29,7 @@ const PAGES = [
   { page: "favorites.html", unit: "คำถาม", files: [["favorites.js", "FAVORITES_LIST"]] },
   { page: "rapidfire.html", unit: "โจทย์", files: [["rapidfire.js", "RAPIDFIRE_LIST"]] },
   { page: "fake-artist.html", unit: "คำลับ", files: [["fake-artist.js", "FAKE_ARTIST_WORDS"]] },
+  { page: "bluff.html", unit: "คำถาม", files: [["bluff.js", "BLUFF_LIST"], ["world-trivia-qa.js", "WORLD_TRIVIA_QA"]] },
 ];
 
 function arrayLength(fileName, varName) {
