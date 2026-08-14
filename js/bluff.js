@@ -11,30 +11,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // รวมคลังคำถามของเกมนี้เข้ากับคลังทริเวียเดิม โดยเอาเฉพาะข้อที่คำตอบสั้นพอ
   // จะได้พูดออกเสียงและแต่งเลียนแบบได้ทัน (คำตอบยาว ๆ เล่นเกมนี้ไม่สนุก)
-  function buildPool() {
+  function buildPool(detailedOnly) {
     const seen = new Set();
     const pool = [];
     BLUFF_LIST.forEach((x) => {
       if (seen.has(x.question)) return;
       seen.add(x.question);
-      pool.push({ question: x.question, answer: x.answer });
+      pool.push({ question: x.question, answer: x.answer, detail: x.detail || [] });
     });
-    if (typeof WORLD_TRIVIA_QA !== "undefined") {
+    // คลังทริเวียเดิมไม่มีเกร็ดเพิ่มเติม จะดึงมาใช้ก็ต่อเมื่อเลือกโหมดคลังใหญ่
+    if (!detailedOnly && typeof WORLD_TRIVIA_QA !== "undefined") {
       WORLD_TRIVIA_QA.forEach((x) => {
         if (seen.has(x.question)) return;
         if (x.answer.length > 45) return;
         seen.add(x.question);
-        pool.push({ question: x.question, answer: x.answer });
+        pool.push({ question: x.question, answer: x.answer, detail: [] });
       });
     }
     return pool;
   }
 
-  const POOL = buildPool();
+  const POOL_DETAILED = buildPool(true);
+  const POOL_ALL = buildPool(false);
 
   const S = {
     players: [],
     peek: true,
+    detailedOnly: true,
     maxRounds: 10,
     round: 0,
     guesserIdx: 0,
@@ -109,6 +112,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  $("bfPoolSwitch").querySelectorAll("[data-pool]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      $("bfPoolSwitch").querySelectorAll("[data-pool]").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      S.detailedOnly = btn.dataset.pool === "detailed";
+      $("bfPoolHint").textContent = S.detailedOnly
+        ? "ใช้เฉพาะ " + POOL_DETAILED.length + " ข้อที่มีเกร็ดละเอียดให้คนรู้ความจริงขยายความ — แนะนำแบบนี้"
+        : "ใช้ทั้งหมด " + POOL_ALL.length + " ข้อ แต่ข้อที่ดึงมาจากคลังทริเวียเดิมจะไม่มีเกร็ดให้ ต้องขยายความเอง";
+    });
+  });
+
   $("bfRoundSwitch").querySelectorAll("[data-rounds]").forEach((btn) => {
     btn.addEventListener("click", () => {
       $("bfRoundSwitch").querySelectorAll("[data-rounds]").forEach((b) => b.classList.remove("active"));
@@ -132,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
       S.scores[p] = 0;
       S.stats[p] = { guessRight: 0, guessTotal: 0, fooled: 0, truthFound: 0, truthTotal: 0 };
     });
-    S.drawQuestion = createPicker(POOL, "pg_bluff");
+    S.drawQuestion = createPicker(S.detailedOnly ? POOL_DETAILED : POOL_ALL, S.detailedOnly ? "pg_bluff_d" : "pg_bluff_all");
     startRound();
   });
 
@@ -179,18 +193,35 @@ document.addEventListener("DOMContentLoaded", () => {
     $("bfRoleCard").classList.toggle("bf-role-truth", isTruth);
     $("bfRoleCard").classList.toggle("bf-role-liar", !isTruth);
 
+    const factBox = $("bfRoleFacts");
+    const hasDetail = S.current.detail && S.current.detail.length;
+    // ล้างทิ้งก่อนเสมอ ไม่ให้เกร็ดของคนก่อนหน้าค้างอยู่ใน DOM ตอนส่งเครื่องให้คนโกหก
+    factBox.innerHTML = "";
+    factBox.classList.add("bf-hidden");
+
     if (isTruth) {
       $("bfRoleLabel").textContent = "✅ คุณคือคนที่รู้ความจริง";
       $("bfRoleAnswer").textContent = S.current.answer;
-      $("bfRoleSub").textContent = "พูดคำตอบนี้ออกไปตรง ๆ แต่ทำให้ดูน่าเชื่อด้วยนะ ถ้าตอบเร็วเกินไปจะโดนจับได้";
+      $("bfRoleSub").textContent = hasDetail
+        ? "เอาเกร็ดข้างล่างไปขยายความให้ละเอียด ยิ่งเล่าลึกยิ่งน่าเชื่อ แต่อย่าตอบเร็วเกินไปจะโดนจับได้"
+        : "พูดคำตอบนี้ออกไปตรง ๆ แล้วขยายความเองตามที่รู้ ทำให้ดูน่าเชื่อด้วยนะ";
+      // เกร็ดเพิ่มเติมให้เฉพาะคนรู้ความจริงเท่านั้น
+      if (hasDetail) {
+        factBox.innerHTML =
+          '<div class="bf-facts-head">📚 เกร็ดที่เอาไปขยายความได้</div>' +
+          S.current.detail.map((d) => '<div class="bf-fact">' + esc(d) + "</div>").join("");
+        factBox.classList.remove("bf-hidden");
+      }
     } else if (S.peek) {
       $("bfRoleLabel").textContent = "🎭 คุณคือคนโกหก — คำตอบจริงคือ";
       $("bfRoleAnswer").textContent = S.current.answer;
-      $("bfRoleSub").textContent = "ห้ามพูดคำตอบนี้! ให้ดัดให้เพี้ยนไปนิดหน่อยจนคนทายแยกไม่ออก";
+      $("bfRoleSub").textContent =
+        "ห้ามพูดคำตอบนี้ตรง ๆ! ดัดตัวเลข/ชื่อให้เพี้ยนไปนิดหน่อย แล้ว" +
+        "ต้องแต่งเกร็ดประกอบขึ้นมาเองด้วย เพราะคนที่รู้จริงเขามีข้อมูลลึกกว่าคุณ";
     } else {
       $("bfRoleLabel").textContent = "🎭 คุณคือคนโกหก";
       $("bfRoleAnswer").textContent = "ไม่รู้คำตอบจริง";
-      $("bfRoleSub").textContent = "แต่งคำตอบขึ้นมาเองให้ฟังดูน่าเชื่อที่สุด แล้วพูดให้เหมือนรู้จริง";
+      $("bfRoleSub").textContent = "แต่งทั้งคำตอบและเกร็ดประกอบขึ้นมาเองให้ฟังดูน่าเชื่อที่สุด แล้วพูดให้เหมือนรู้จริง";
     }
     show("bfRole");
     if (navigator.vibrate) navigator.vibrate(40);
@@ -243,6 +274,15 @@ document.addEventListener("DOMContentLoaded", () => {
       : guesser + " โดนหลอก — " + picked + " ไม่ได้พูดความจริง";
     $("bfRealAnswer").textContent = S.current.answer;
     $("bfRealWho").textContent = "คนที่ได้คำตอบจริงรอบนี้คือ " + truthTeller;
+    // เฉลยเกร็ดจริงให้ทั้งวงเห็น จะได้รู้ว่าคนโกหกแต่งอะไรขึ้นมาเองบ้าง
+    if (S.current.detail && S.current.detail.length) {
+      $("bfRealFacts").innerHTML =
+        '<div class="bf-facts-head">📚 เกร็ดจริงที่คนรู้ความจริงถืออยู่</div>' +
+        S.current.detail.map((d) => '<div class="bf-fact">' + esc(d) + "</div>").join("");
+      $("bfRealFacts").classList.remove("bf-hidden");
+    } else {
+      $("bfRealFacts").classList.add("bf-hidden");
+    }
 
     $("bfScoreDelta").innerHTML = deltas
       .map((x) => '<div class="bf-delta"><b>' + esc(x.name) + "</b> +" + x.d + " <span>" + x.why + "</span></div>")
@@ -317,5 +357,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   $("bfPeekHint").textContent = PEEK_HINT.on;
+  $("bfPoolHint").textContent = "ใช้เฉพาะ " + POOL_DETAILED.length + " ข้อที่มีเกร็ดละเอียดให้คนรู้ความจริงขยายความ — แนะนำแบบนี้";
   renderPlayers();
 });

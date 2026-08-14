@@ -29,17 +29,18 @@ const PAGES = [
   { page: "favorites.html", unit: "คำถาม", files: [["favorites.js", "FAVORITES_LIST"]] },
   { page: "rapidfire.html", unit: "โจทย์", files: [["rapidfire.js", "RAPIDFIRE_LIST"]] },
   { page: "fake-artist.html", unit: "คำลับ", files: [["fake-artist.js", "FAKE_ARTIST_WORDS"]] },
-  { page: "bluff.html", unit: "คำถาม", files: [["bluff.js", "BLUFF_LIST"], ["world-trivia-qa.js", "WORLD_TRIVIA_QA"]] },
+  // เกมหลอกให้เชื่อดึงข้อจากคลังทริเวียมาใช้เฉพาะที่คำตอบสั้นพอจะพูดออกเสียงและแต่งเลียนแบบได้
+  { page: "bluff.html", unit: "คำถาม", files: [["bluff.js", "BLUFF_LIST"], ["world-trivia-qa.js", "WORLD_TRIVIA_QA", (x) => x.answer.length <= 45]] },
 ];
 
-function arrayLength(fileName, varName) {
+function arrayLength(fileName, varName, filter) {
   const src = fs.readFileSync(path.join(DATA_DIR, fileName), "utf8");
   const tmp = path.join(os.tmpdir(), "gc-" + fileName + "-" + process.pid + ".js");
   fs.writeFileSync(tmp, src + "\nmodule.exports = " + varName + ";\n");
   try {
     delete require.cache[require.resolve(tmp)];
     const list = require(tmp);
-    return list.length;
+    return filter ? list.filter(filter).length : list.length;
   } finally {
     fs.unlinkSync(tmp);
   }
@@ -47,7 +48,7 @@ function arrayLength(fileName, varName) {
 
 const counts = {};
 PAGES.forEach(({ page, unit, files }) => {
-  const count = files.reduce((sum, [fileName, varName]) => sum + arrayLength(fileName, varName), 0);
+  const count = files.reduce((sum, [fileName, varName, filter]) => sum + arrayLength(fileName, varName, filter), 0);
   counts[page] = { count, unit };
 });
 

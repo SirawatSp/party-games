@@ -3270,3 +3270,26 @@ html.hc-fs .hc-topbar{padding-right:150px;}
   .bf-pass-name{font-size:25px;}
   .bf-role-answer{font-size:20px;}
 }
+
+/* ---- หลอกให้เชื่อ: กล่องเกร็ดข้อมูลของคนรู้ความจริง ---- */
+.bf-facts{
+  margin-top:14px;
+  padding-top:13px;
+  border-top:1px dashed rgba(255,255,255,.18);
+  text-align:left;
+}
+.bf-facts-head{
+  font-family:'Kanit',sans-serif; font-weight:700; font-size:12.5px;
+  color:var(--text-dim); margin-bottom:8px;
+}
+.bf-fact{
+  position:relative;
+  font-size:14px; line-height:1.6;
+  padding-left:16px; margin-bottom:6px;
+}
+.bf-fact:last-child{margin-bottom:0;}
+.bf-fact::before{
+  content:"•";
+  position:absolute; left:2px; top:0;
+  color:var(--amber); font-weight:700;
+}
