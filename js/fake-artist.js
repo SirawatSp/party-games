@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ];
   const MIN_PLAYERS = 4;
   const MAX_PLAYERS = 10;
-  const PASSES = 2;          // ทุกคนได้วาดคนละ 2 เส้น
+  const DEFAULT_PASSES = 2;  // ค่าเริ่มต้น: ทุกคนได้วาดคนละ 2 เส้น (เลือกเป็น 1 เส้นได้ในหน้าตั้งค่า)
   const GUESS_OPTIONS = 4;   // จำนวนตัวเลือกตอนตัวปลอมทายคำ
   const DEFAULT_NAMES = ["เอ", "บี", "ซี", "ดี"];
 
@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     limit: 0,          // วินาทีต่อ 1 เส้น (0 = ไม่จับเวลา)
     gallery: [],       // เก็บภาพของทุกรอบไว้โชว์รวมกันตอนจบเกม
     round: 0,
+    passes: DEFAULT_PASSES, // จำนวนเส้นที่แต่ละคนได้วาดต่อ 1 รอบเกม
     topic: null,       // { cat, word }
     fakeIdx: -1,
     startIdx: 0,
@@ -112,6 +113,21 @@ document.addEventListener("DOMContentLoaded", () => {
       S.goal = parseInt(btn.dataset.goal, 10);
     });
   });
+
+  const PASS_HINT = {
+    1: "วนรอบเดียวจบ เร็วมาก เหมาะกับวงใหญ่หรือเล่นแก้เบื่อสั้น ๆ — แต่จับตัวปลอมยากขึ้นเพราะมีลายเส้นให้ดูน้อยกว่า",
+    2: "แบบมาตรฐาน ได้เห็นลายเส้นของทุกคนสองครั้ง จับตัวปลอมได้แม่นกว่า",
+  };
+
+  $("faPassSwitch").querySelectorAll(".fa-opt-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      $("faPassSwitch").querySelectorAll(".fa-opt-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      S.passes = parseInt(btn.dataset.passes, 10);
+      $("faPassHint").textContent = PASS_HINT[S.passes];
+    });
+  });
+  $("faPassHint").textContent = PASS_HINT[DEFAULT_PASSES];
 
   $("faLimitSwitch").querySelectorAll(".fa-opt-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -315,7 +331,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderDrawTurn() {
-    const total = S.players.length * PASSES;
+    const total = S.players.length * S.passes;
     const pass = Math.floor(S.turnPos / S.players.length) + 1;
     const idx = playerAt(S.turnPos % S.players.length);
     const p = S.players[idx];
@@ -325,7 +341,10 @@ document.addEventListener("DOMContentLoaded", () => {
     $("faDoneBtn").classList.add("fa-hidden");
     $("faRedrawBtn").classList.add("fa-hidden");
     $("faDrawHint").innerHTML = "ลากนิ้ว <b>1 เส้นเดียว</b> ห้ามยกนิ้วกลางคัน ห้ามเขียนตัวอักษรหรือตัวเลข";
-    $("faDrawRound").textContent = "เส้นที่ " + (S.turnPos + 1) + " / " + total + " · รอบวาดที่ " + pass + "/" + PASSES;
+    $("faDrawRound").textContent =
+      S.passes === 1
+        ? "เส้นที่ " + (S.turnPos + 1) + " / " + total + " · คนละเส้นเดียว"
+        : "เส้นที่ " + (S.turnPos + 1) + " / " + total + " · รอบวาดที่ " + pass + "/" + S.passes;
     $("faDrawCat").textContent = S.topic.cat;
     $("faDrawTurn").innerHTML = 'ตาของ <b style="color:' + p.color + '">' + esc(p.name) + "</b>";
     renderLegend($("faDrawLegend"));
@@ -351,7 +370,7 @@ document.addEventListener("DOMContentLoaded", () => {
     S.strokes.push({ p: playerAt(S.turnPos % S.players.length), pts: S.pending || [] });
     S.pending = null;
     S.turnPos++;
-    if (S.turnPos >= S.players.length * PASSES) {
+    if (S.turnPos >= S.players.length * S.passes) {
       goToVote();
     } else {
       renderDrawTurn();

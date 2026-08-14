@@ -58,6 +58,13 @@
       <div class="on-code" id="onCodeShow">—</div>
       <p class="fa-hint" id="onLobbyHint">บอกรหัสนี้ให้เพื่อนพิมพ์เข้ามา</p>
       <div class="fa-score-list" id="onLobbyList"></div>
+      <div class="fa-opt" id="onPassWrap">
+        <div class="fa-label">แต่ละคนวาดกี่เส้น</div>
+        <div class="fa-switch" id="onPassSwitch">
+          <button class="fa-opt-btn" data-passes="1" type="button">คนละ 1 เส้น ⚡</button>
+          <button class="fa-opt-btn active" data-passes="2" type="button">คนละ 2 เส้น</button>
+        </div>
+      </div>
       <div class="fa-opt" id="onGoalWrap">
         <div class="fa-label">เล่นถึงกี่แต้มถึงจบ</div>
         <div class="fa-switch" id="onGoalSwitch">
@@ -164,7 +171,7 @@
       <li>คนหนึ่งพิมพ์ชื่อแล้วกด <b>สร้างห้อง</b> จะได้รหัส 5 ตัว</li>
       <li>คนอื่นเปิดหน้านี้ พิมพ์ชื่อ ใส่รหัส แล้วกด <b>เข้าห้อง</b></li>
       <li>ครบ 4 คนขึ้นไป เจ้าของห้องกด <b>เริ่มเกม</b> ได้เลย (สูงสุด 10 คน)</li>
-      <li>ที่เหลือเหมือนโหมดเครื่องเดียวทุกอย่าง — วาดคนละ 1 เส้น 2 รอบ แล้วชี้ตัวปลอม</li>
+      <li>ที่เหลือเหมือนโหมดเครื่องเดียวทุกอย่าง — เจ้าของห้องเลือกได้ว่าจะวาดคนละ 1 เส้นรอบเดียวจบ หรือคนละ 2 เส้น แล้วชี้ตัวปลอม</li>
     </ol>
   </div>
 

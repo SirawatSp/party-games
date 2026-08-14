@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     isHost: false,
     myName: "",
     goal: 5,
+    passes: 2,
     state: null,       // สถานะสาธารณะล่าสุดจากโฮสต์
     role: null,        // บทบาทลับของเครื่องนี้
     guessOptions: null,
@@ -107,6 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
     S.room.host().then((code) => {
       S.game = new PGFakeArtistHost(S.room, FAKE_ARTIST_TOPICS, {
         goal: S.goal,
+        passes: S.passes,
         hostName: name,
         onState: (st) => { S.state = st; render(); },
         onPrivate: (type, d) => {
@@ -145,6 +147,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   $("onCode").addEventListener("input", (e) => {
     e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+  });
+
+  $("onPassSwitch").querySelectorAll(".fa-opt-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      $("onPassSwitch").querySelectorAll(".fa-opt-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      S.passes = parseInt(btn.dataset.passes, 10);
+      if (S.game) S.game.passes = S.passes;
+    });
   });
 
   $("onGoalSwitch").querySelectorAll(".fa-opt-btn").forEach((btn) => {
@@ -252,6 +263,8 @@ document.addEventListener("DOMContentLoaded", () => {
       ? "ครบแล้ว! เจ้าของห้องกดเริ่มได้เลย (เข้าเพิ่มได้ถึง 10 คน)"
       : "ตอนนี้ " + st.players.length + " คน — ต้องมีอย่างน้อย " + PGFakeArtistConst.MIN_PLAYERS + " คนถึงจะเริ่มได้";
     $("onGoalWrap").classList.toggle("fa-hidden", !S.isHost);
+    // ตัวเลือกจำนวนเส้นก็เป็นของเจ้าของห้องเหมือนกัน คนอื่นไม่ต้องเห็น
+    $("onPassWrap").classList.toggle("fa-hidden", !S.isHost);
     $("onStartGameBtn").classList.toggle("fa-hidden", !S.isHost || !enough);
     $("onWaitHost").classList.toggle("fa-hidden", S.isHost);
     show("onLobby");

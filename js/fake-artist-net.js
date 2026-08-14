@@ -16,7 +16,7 @@
   ];
   var MIN_PLAYERS = 4;
   var MAX_PLAYERS = 10;
-  var PASSES = 2;
+  var DEFAULT_PASSES = 2; // ค่าเริ่มต้น เจ้าของห้องเปลี่ยนเป็น 1 ได้จากล็อบบี้
   var GUESS_OPTIONS = 4;
 
   function shuffled(arr) {
@@ -34,6 +34,7 @@
     this.room = room;
     this.topics = topics;
     this.goal = opts.goal || 5;
+    this.passes = opts.passes || DEFAULT_PASSES; // แต่ละคนได้วาดกี่เส้นต่อรอบเกม
     this.hostName = opts.hostName || "โฮสต์";
     this.onState = opts.onState || function () {};
     this.onPrivate = opts.onPrivate || function () {};
@@ -100,7 +101,7 @@
       } else {
         this.order = this.order.filter(function (x) { return x !== id; });
         delete this.votes[id];
-        if (this.turnPos >= this.order.length * PASSES) this._toVote();
+        if (this.turnPos >= this.order.length * this.passes) this._toVote();
       }
     }
     this.publish();
@@ -146,7 +147,7 @@
     return this.order[this.turnPos % this.order.length];
   };
 
-  HostGame.prototype.totalTurns = function () { return this.order.length * PASSES; };
+  HostGame.prototype.totalTurns = function () { return this.order.length * this.passes; };
 
   HostGame.prototype.submitStroke = function (fromId, pts) {
     if (this.phase !== "draw") return false;
@@ -283,6 +284,7 @@
       phase: this.phase,
       roundNo: this.roundNo,
       goal: this.goal,
+      passes: this.passes,
       cat: this.topic ? this.topic.cat : null,
       players: this.players.map(function (p) {
         return { id: p.id, name: p.name, color: p.color, score: p.score };
@@ -305,5 +307,5 @@
   };
 
   global.PGFakeArtistHost = HostGame;
-  global.PGFakeArtistConst = { MIN_PLAYERS: MIN_PLAYERS, MAX_PLAYERS: MAX_PLAYERS, PASSES: PASSES, COLORS: COLORS };
+  global.PGFakeArtistConst = { MIN_PLAYERS: MIN_PLAYERS, MAX_PLAYERS: MAX_PLAYERS, DEFAULT_PASSES: DEFAULT_PASSES, COLORS: COLORS };
 })(window);
