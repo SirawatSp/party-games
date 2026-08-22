@@ -3390,3 +3390,123 @@ html.hc-fs .hc-topbar{padding-right:150px;}
   .bc-cur-name{font-size:25px;}
   .bc-meta{gap:16px;}
 }
+
+/* ==================== 27 · ทายถนน ==================== */
+:root{ --street:#38bdf8; }
+.chip-street{--accent:var(--street);} .chip-street .glow{background:var(--street);}
+
+.ss-hidden{display:none !important;}
+.ss-wrap{margin:22px 0 30px;}
+.ss-stage{
+  background:var(--card, var(--bg-card)); border:1px solid var(--line);
+  border-radius:22px; padding:26px 20px; text-align:center;
+}
+.ss-big-icon{font-size:42px; line-height:1; margin-bottom:10px;}
+.ss-h3{font-family:'Kanit',sans-serif; font-weight:800; font-size:21px; margin-bottom:12px;}
+.ss-hint{font-size:13.5px; color:var(--text-dim); line-height:1.6; margin-top:8px;}
+.ss-label{font-family:'Kanit',sans-serif; font-weight:700; font-size:14px; color:var(--text-dim); margin-bottom:8px;}
+.ss-opt{margin:18px 0;}
+.ss-switch{display:flex; gap:8px; justify-content:center; flex-wrap:wrap;}
+.ss-opt-btn{
+  font-family:'Kanit',sans-serif; font-weight:600; font-size:13.5px;
+  padding:9px 16px; border-radius:999px;
+  background:transparent; color:var(--text-dim);
+  border:1px solid var(--line); cursor:pointer; transition:.2s;
+}
+.ss-opt-btn:hover{border-color:var(--street); color:var(--text);}
+.ss-opt-btn.active{background:var(--street); border-color:var(--street); color:#04202e;}
+
+.ss-net-note,.ss-live-note{
+  font-size:13px; line-height:1.6; color:var(--text-dim);
+  background:rgba(56,189,248,.08); border:1px solid rgba(56,189,248,.35);
+  border-radius:14px; padding:11px 14px; margin:16px 0;
+}
+.ss-offline{
+  font-size:13.5px; line-height:1.6; color:var(--text);
+  background:rgba(251,113,133,.1); border:1px solid var(--rose);
+  border-radius:14px; padding:12px 14px; margin:14px 0;
+}
+.ss-warn{font-size:13.5px; color:var(--rose); margin:10px 0; line-height:1.6;}
+
+/* ---- แถบสถานะตอนเล่น ---- */
+.ss-bar{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px;}
+.ss-tag{font-size:12.5px; color:var(--text-dim); white-space:nowrap;}
+.ss-clock{font-family:'Bungee',cursive; font-size:26px; line-height:1; color:var(--street);}
+.ss-clock.ss-hot{color:var(--rose); animation:ssPulse .9s ease-in-out infinite;}
+@keyframes ssPulse{50%{opacity:.35;}}
+
+/* ---- กล่องภาพ 360° ---- */
+.ss-viewer-box{position:relative; border-radius:16px; overflow:hidden; border:1px solid var(--line); background:#05010a;}
+.ss-viewer{width:100%; height:min(58vh, 420px);}
+.ss-viewer pnx-photo-viewer{display:block; width:100%; height:100%;}
+.ss-status{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-size:14px; color:var(--text-dim); background:#05010a; text-align:center; padding:18px;
+}
+.ss-credit{font-size:11.5px; color:var(--text-dim); margin-top:8px; line-height:1.5;}
+.ss-actions{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:14px;}
+
+/* ---- แผงแผนที่ ---- */
+.ss-map-sheet{
+  position:fixed; inset:auto 0 0 0; z-index:40;
+  background:var(--bg-alt); border-top:2px solid var(--street);
+  border-radius:20px 20px 0 0; padding:12px 12px calc(12px + env(safe-area-inset-bottom));
+  box-shadow:0 -18px 50px -12px rgba(0,0,0,.75);
+  max-height:88vh; display:flex; flex-direction:column; gap:10px;
+}
+.ss-map-head{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  font-size:13.5px; color:var(--text-dim); padding:0 4px;
+}
+.ss-map-x{background:transparent; border:none; color:var(--text-dim); font-size:19px; line-height:1; cursor:pointer; padding:4px 8px;}
+.ss-map-x:hover{color:var(--rose);}
+.ss-map-holder{position:relative; border-radius:14px; overflow:hidden; background:#0c1526; border:1px solid var(--line);}
+.ss-map{display:block; width:100%; height:min(46vh, 340px); touch-action:none; cursor:crosshair;}
+.ss-reveal-map{margin:16px 0;}
+.ss-reveal-map .ss-map{height:min(38vh, 260px); cursor:default;}
+.ss-map-zoom{position:absolute; right:8px; bottom:8px; display:flex; flex-direction:column; gap:6px;}
+.ss-zoom-btn{
+  width:34px; height:34px; border-radius:9px; cursor:pointer;
+  background:rgba(10,6,16,.82); border:1px solid var(--line); color:var(--text);
+  font-size:16px; line-height:1; display:flex; align-items:center; justify-content:center;
+}
+.ss-zoom-btn:hover{border-color:var(--street);}
+
+/* ---- ตัวแผนที่ ---- */
+.wm-filler path{fill:#2a3850; stroke:none;}
+.wm-countries path{fill:#3d5273; stroke:#7d93b5; stroke-width:.8; vector-effect:non-scaling-stroke;}
+.wm-countries path:hover{fill:#516c96;}
+.wm-countries path.wm-hit{fill:var(--street); opacity:.55;}
+.wm-line{stroke:var(--gold); stroke-width:2; stroke-dasharray:6 5; fill:none; vector-effect:non-scaling-stroke;}
+.wm-pin circle{stroke:#05010a; stroke-width:2; vector-effect:non-scaling-stroke;}
+.wm-pin-guess circle{fill:var(--gold);}
+.wm-pin-guess .wm-pin-dot{fill:#05010a;}
+.wm-pin-answer circle{fill:var(--rose);}
+.wm-pin-answer .wm-pin-dot{fill:#05010a;}
+.wm-off{display:none;}
+
+/* ---- เฉลย ---- */
+.ss-where{font-family:'Kanit',sans-serif; font-weight:700; font-size:16px; color:var(--street); margin-bottom:4px;}
+.ss-points{display:flex; justify-content:center; gap:20px; flex-wrap:wrap; margin:14px 0 6px;}
+.ss-pt{display:flex; flex-direction:column; gap:2px;}
+.ss-pt-num{font-family:'Bungee',cursive; font-size:22px; line-height:1; color:var(--text);}
+.ss-pt-total .ss-pt-num{color:var(--street);}
+.ss-pt-cap{font-size:11.5px; color:var(--text-dim);}
+.ss-running{font-size:13px; color:var(--text-dim); margin:8px 0 12px;}
+.ss-attrib{font-size:11.5px; color:var(--text-dim); line-height:1.7; margin:12px 0 16px;}
+.ss-attrib a{color:var(--street);}
+
+/* ---- สรุป ---- */
+.ss-final{display:flex; flex-direction:column; gap:4px; margin:10px 0;}
+.ss-final-num{font-family:'Bungee',cursive; font-size:40px; line-height:1; color:var(--street);}
+.ss-final-cap{font-size:12.5px; color:var(--text-dim);}
+.ss-rows{margin:16px 0; display:flex; flex-direction:column; gap:6px;}
+.ss-row{
+  display:grid; grid-template-columns:26px 1fr auto auto; gap:10px; align-items:center;
+  font-size:13.5px; background:rgba(255,255,255,.04); border:1px solid var(--line);
+  border-radius:12px; padding:9px 12px; text-align:left;
+}
+.ss-row-n{color:var(--text-dim); font-size:12px;}
+.ss-row-name{font-family:'Kanit',sans-serif; font-weight:600;}
+.ss-row-km{color:var(--text-dim); font-size:12.5px;}
+.ss-row-pt{font-family:'Bungee',cursive; font-size:14px; color:var(--street);}

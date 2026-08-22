@@ -1,8 +1,12 @@
 // Service Worker สำหรับเล่นออฟไลน์ได้ทั้งเว็บ (เก็บ cache ทุกหน้า/สคริปต์/คลังโจทย์ไว้ในเครื่อง)
 // เปิดเว็บครั้งแรกตอนมีเน็ต ระบบจะโหลดเก็บไว้ให้อัตโนมัติ ครั้งต่อไปเปิดได้แม้ไม่มีเน็ตเลย
 // อัปเดตเนื้อหาเว็บทีไร ให้เปลี่ยนเลข CACHE_VERSION เพื่อบังคับดาวน์โหลดของใหม่ทับของเก่า
-const CACHE_VERSION = "party-games-v26";
+const CACHE_VERSION = "party-games-v27";
 
+// หมายเหตุ: เกม "ทายถนน" (street-scene) เก็บแค่โครงหน้ากับแผนที่ไว้เท่านั้น
+// ตัว viewer 360° (vendor/panoramax/*) กับภาพถนนไม่ได้เก็บไว้ เพราะไฟล์ใหญ่และต้องโหลดสดอยู่ดี
+// เปิดหน้าเกมตอนออฟไลน์จะยังขึ้นปกติ แต่จะบอกว่าเกมนี้ต้องต่อเน็ต
+// หน้า street-scene-curator.html เป็นเครื่องมือหลังบ้าน ไม่ได้เก็บ cache ไว้เช่นกัน
 const PRECACHE_URLS = [
   "./",
   "index.html",
@@ -26,6 +30,7 @@ const PRECACHE_URLS = [
   "psychology.html",
   "rapidfire.html",
   "roundhand.html",
+  "street-scene.html",
   "tapple.html",
   "taxi.html",
   "tenbut.html",
@@ -57,6 +62,8 @@ const PRECACHE_URLS = [
   "js/psychology.js",
   "js/rapidfire.js",
   "js/roundhand.js",
+  "js/street-scene.js",
+  "js/street-scene-api.js",
   "js/tapple.js",
   "js/taxi.js",
   "js/tenbut.js",
@@ -65,6 +72,7 @@ const PRECACHE_URLS = [
   "js/who-is-most.js",
   "js/who-ordered.js",
   "js/world-trivia.js",
+  "js/worldmap.js",
   "data/architects.js",
   "data/bluff.js",
   "data/borderchain.js",
@@ -83,6 +91,7 @@ const PRECACHE_URLS = [
   "data/psychology.js",
   "data/rapidfire.js",
   "data/roundhand.js",
+  "data/street-scenes.js",
   "data/race-animals.js",
   "data/shes-a-10-but.js",
   "data/tapple-categories-en.js",
@@ -93,6 +102,7 @@ const PRECACHE_URLS = [
   "data/who-is-most.js",
   "data/world-trivia-qa.js",
   "data/world-trivia.js",
+  "data/worldmap.js",
   "assets/logo.png",
 ];
 

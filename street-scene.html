@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ทายถนน — ดูภาพถนน 360° แล้วเดาว่าอยู่ตรงไหนของโลก</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0c0710">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <a class="brand-logo" href="index.html"><img class="brand-img" src="assets/logo.png" width="720" height="416" alt="Party Games — วงกำลังจะเหงา"></a>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--sky); color:#04202e;">27 · ภูมิศาสตร์ · ต้องต่อเน็ต</span>
+    <h1>ทายถนน</h1>
+    <p>โผล่ไปยืนกลางถนนที่ไหนสักแห่งบนโลก <b>หมุนดูได้รอบตัว 360°</b> เดินไปข้างหน้าถอยหลังก็ได้ — แล้วปักหมุดบนแผนที่ว่าคิดว่าตรงนี้คือที่ไหน ยิ่งใกล้ยิ่งได้คะแนนเยอะ</p>
+  </section>
+
+  <div class="ss-wrap">
+
+    <!-- 1. ตั้งค่า -->
+    <div class="ss-stage" id="ssSetup">
+      <div class="ss-big-icon">🛣</div>
+      <h3 class="ss-h3">ตั้งค่าก่อนออกเดินทาง</h3>
+
+      <div class="ss-opt">
+        <div class="ss-label">กี่ฉาก</div>
+        <div class="ss-switch" id="ssRoundSwitch">
+          <button class="ss-opt-btn" data-rounds="3" type="button">3 ฉาก</button>
+          <button class="ss-opt-btn active" data-rounds="5" type="button">5 ฉาก</button>
+          <button class="ss-opt-btn" data-rounds="8" type="button">8 ฉาก</button>
+        </div>
+      </div>
+
+      <div class="ss-opt">
+        <div class="ss-label">เวลาต่อ 1 ฉาก</div>
+        <div class="ss-switch" id="ssTimeSwitch">
+          <button class="ss-opt-btn" data-sec="60" type="button">60 วิ 🔥</button>
+          <button class="ss-opt-btn active" data-sec="90" type="button">90 วิ</button>
+          <button class="ss-opt-btn" data-sec="150" type="button">150 วิ</button>
+          <button class="ss-opt-btn" data-sec="0" type="button">ไม่จับเวลา</button>
+        </div>
+        <p class="ss-hint" id="ssMaxNote"></p>
+      </div>
+
+      <div class="ss-net-note">
+        🌐 เกมนี้ <b>ต้องต่อเน็ต</b> เพราะภาพถนนโหลดสดจากเซิร์ฟเวอร์ Panoramax เก็บไว้เล่นออฟไลน์ไม่ได้
+      </div>
+
+      <div class="ss-offline ss-hidden" id="ssOffline">
+        เกมนี้ต้องเชื่อมต่ออินเทอร์เน็ตเพื่อโหลดภาพถนน ตอนนี้เครื่องออฟไลน์อยู่ — เกมอื่นในเว็บยังเล่นได้ตามปกตินะ
+      </div>
+
+      <div class="ss-warn ss-hidden" id="ssWarn"></div>
+      <button class="btn" id="ssStartBtn" type="button">ออกเดินทาง 🧭</button>
+    </div>
+
+    <!-- 2. เล่น -->
+    <div class="ss-stage ss-hidden" id="ssPlay">
+      <div class="ss-bar">
+        <span class="ss-tag" id="ssRoundTag">ฉากที่ 1 / 5</span>
+        <span class="ss-clock" id="ssClock">90</span>
+        <span class="ss-tag" id="ssScoreTag">0 คะแนน</span>
+      </div>
+
+      <div class="ss-live-note ss-hidden" id="ssLiveNote">
+        ⚡ ตอนนี้สุ่มฉากสดจาก Panoramax เพราะคลังฉากที่คัดไว้ยังไม่พอ ความยากอาจเหวี่ยงหน่อย
+      </div>
+
+      <div class="ss-viewer-box">
+        <div class="ss-viewer" id="ssViewer"></div>
+        <div class="ss-status" id="ssStatus">กำลังหาฉาก...</div>
+      </div>
+      <p class="ss-credit" id="ssCredit"></p>
+
+      <div class="ss-actions">
+        <button class="btn" id="ssGuessBtn" type="button" disabled>ทายเลย 📍</button>
+        <button class="btn secondary" id="ssSkipBtn" type="button">เปลี่ยนฉาก 🔀</button>
+      </div>
+      <p class="ss-hint">ลากนิ้วบนภาพเพื่อหมุนดูรอบตัว · แตะลูกศรบนพื้นถนนเพื่อเดินไปข้างหน้า</p>
+
+      <!-- แผงแผนที่สำหรับปักหมุด -->
+      <div class="ss-map-sheet ss-hidden" id="ssMapSheet">
+        <div class="ss-map-head">
+          <span id="ssPickLabel">แตะบนแผนที่เพื่อปักหมุด</span>
+          <button class="ss-map-x" id="ssCloseMapBtn" type="button" aria-label="ปิดแผนที่">✕</button>
+        </div>
+        <div class="ss-map-holder" id="ssMapHolder">
+          <svg class="ss-map" id="ssMapSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+          <div class="ss-map-zoom">
+            <button class="ss-zoom-btn" id="ssZoomIn" type="button" aria-label="ซูมเข้า">+</button>
+            <button class="ss-zoom-btn" id="ssZoomOut" type="button" aria-label="ซูมออก">−</button>
+            <button class="ss-zoom-btn" id="ssZoomReset" type="button" aria-label="ดูทั้งโลก">⤢</button>
+          </div>
+        </div>
+        <button class="btn" id="ssConfirmBtn" type="button" disabled>ยืนยันคำตอบ ✅</button>
+      </div>
+    </div>
+
+    <!-- 3. เฉลย -->
+    <div class="ss-stage ss-hidden" id="ssReveal">
+      <div class="ss-big-icon" id="ssRevealIcon">🎯</div>
+      <h3 class="ss-h3" id="ssRevealTitle"></h3>
+      <p class="ss-where" id="ssRevealWhere"></p>
+
+      <div class="ss-map-holder ss-reveal-map" id="ssRevealMapWrap"></div>
+
+      <div class="ss-points">
+        <div class="ss-pt"><span class="ss-pt-num" id="ssPtDist">0</span><span class="ss-pt-cap">ความใกล้</span></div>
+        <div class="ss-pt"><span class="ss-pt-num" id="ssPtBonus">0</span><span class="ss-pt-cap">โบนัสเวลา</span></div>
+        <div class="ss-pt ss-pt-total"><span class="ss-pt-num" id="ssPtTotal">0</span><span class="ss-pt-cap">รอบนี้</span></div>
+      </div>
+      <p class="ss-running" id="ssRunning"></p>
+
+      <p class="ss-attrib" id="ssAttrib"></p>
+
+      <button class="btn" id="ssNextBtn" type="button">ฉากต่อไป →</button>
+    </div>
+
+    <!-- 4. สรุป -->
+    <div class="ss-stage ss-hidden" id="ssEnd">
+      <div class="ss-big-icon" id="ssEndIcon">🏆</div>
+      <h3 class="ss-h3" id="ssEndTitle"></h3>
+      <div class="ss-final">
+        <span class="ss-final-num" id="ssEndScore">0</span>
+        <span class="ss-final-cap" id="ssEndMax"></span>
+      </div>
+      <p class="ss-running" id="ssEndBest"></p>
+      <div class="ss-rows" id="ssEndRows"></div>
+      <button class="btn" id="ssAgainBtn" type="button">เล่นอีกรอบ 🔁</button>
+      <button class="btn secondary" id="ssBackBtn" type="button">เปลี่ยนค่า ⚙️</button>
+    </div>
+
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเล่น</h2>
+    <ol>
+      <li>เครื่องพาไปโผล่กลางถนนที่ไหนสักแห่งบนโลก <b>ไม่บอกว่าที่ไหน</b></li>
+      <li>ลากนิ้วบนภาพเพื่อ <b>หมุนดูรอบตัว 360°</b> มองหาป้าย ทะเบียนรถ ต้นไม้ ฝั่งที่รถวิ่ง อะไรก็ได้ที่เป็นเบาะแส</li>
+      <li>แตะลูกศรบนพื้นถนนเพื่อ <b>เดินไปข้างหน้า/ถอยหลัง</b> ตามเส้นทางที่คนถ่ายเดินไว้</li>
+      <li>กด <b>ทายเลย</b> แล้วปักหมุดบนแผนที่โลก ซูมเข้าออกได้ ลากเลื่อนได้</li>
+      <li>เฉลยแล้วดูว่าห่างจากของจริงกี่กิโล ได้กี่คะแนน แล้วไปฉากต่อไป</li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>คิดคะแนนยังไง</h2>
+    <ol>
+      <li><b>ความใกล้</b> เต็ม 5,000 คะแนน คิดจากสูตร <code>5000 × e<sup>−ระยะทาง(กม.) ÷ 2000</sup></code> — ทายตรงเป๊ะได้เกือบเต็ม ห่าง 2,000 กม. เหลือราว 1,840 ห่างครึ่งโลกก็เกือบศูนย์</li>
+      <li><b>โบนัสเวลา</b> เต็ม 1,000 คะแนน คิดจาก <code>1000 × วินาทีที่เหลือ ÷ เวลาต่อฉาก</code> — ตอบเร็วได้เยอะ ถ้าเลือกไม่จับเวลาก็ไม่มีโบนัสส่วนนี้</li>
+      <li>คิดระยะจาก <b>จุดของภาพแรกที่เห็นตอนเริ่มฉาก</b> ถึงจะเดินไปไกลแค่ไหนก็ตัดสินจากจุดตั้งต้นเสมอ</li>
+      <li>นาฬิกาจะยังไม่เดินจนกว่าภาพจะขึ้นจริง <b>เวลารอโหลดไม่กินเวลาของเรา</b></li>
+      <li>ถ้าฉากไหนโหลดไม่ขึ้น เครื่องจะเปลี่ยนฉากให้ใหม่โดย <b>ไม่เสียรอบ</b></li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>เรื่องภาพและเครดิต</h2>
+    <ol>
+      <li>ภาพถนน 360° มาจาก <b>Panoramax</b> คลังภาพถนนแบบเปิดที่ใคร ๆ ก็ร่วมถ่ายเข้ามาได้ ไม่ใช่ของ Google</li>
+      <li>ภาพแต่ละใบมี <b>เจ้าของและสัญญาอนุญาตของตัวเอง ไม่เหมือนกันทุกใบ</b> ทุกฉากจึงบอกชื่อคนถ่าย สัญญาอนุญาต และลิงก์ไปดูภาพต้นทางไว้ในหน้าเฉลย</li>
+      <li>รูปร่างประเทศบนแผนที่มาจาก <b>Natural Earth 1:110m</b> ซึ่งเป็นสาธารณสมบัติ ผ่านแพ็กเกจ world-atlas</li>
+      <li>แผนที่ตั้งชื่อเฉพาะ <b>รัฐสมาชิกสหประชาชาติ 165 ประเทศ</b> ส่วนแอนตาร์กติกา ดินแดนในปกครอง และดินแดนที่สถานะยังเป็นข้อพิพาท วาดเป็นพื้นดินเฉย ๆ ไม่ตั้งชื่อและไม่นับเป็นคำตอบ</li>
+      <li>เส้นเขตแดนบนแผนที่ใช้เพื่อความบันเทิงเท่านั้น ไม่ใช่การรับรองเขตแดนอย่างเป็นทางการ</li>
+      <li>เกมนี้เล่นกันสนุก ๆ ในวง ไม่ได้ออกแบบมากันคนโกง ถ้าใครตั้งใจไปแอบดูข้อมูลเบื้องหลังก็ทำได้อยู่ดี</li>
+    </ol>
+  </div>
+
+  <footer>โลกกว้างกว่าที่เห็นจากหน้าจอเยอะ 🛣</footer>
+</div>
+
+<script src="data/worldmap.js"></script>
+<script src="data/street-scenes.js"></script>
+<script src="js/main.js"></script>
+<script src="js/worldmap.js"></script>
+<script src="js/street-scene-api.js"></script>
+<script src="js/street-scene.js"></script>
+</body>
+</html>
