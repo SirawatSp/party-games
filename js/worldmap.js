@@ -33,6 +33,10 @@ function wmByCode(code) {
   for (var i = 0; i < WORLD_MAP.countries.length; i++) {
     if (WORLD_MAP.countries[i].code === code) return WORLD_MAP.countries[i];
   }
+  var dots = WORLD_MAP.dots || [];
+  for (var j = 0; j < dots.length; j++) {
+    if (dots[j].code === code) return dots[j];
+  }
   return null;
 }
 
@@ -102,6 +106,16 @@ function wmSvgMarkup() {
     parts.push('<path data-code="' + c.code + '" d="' + c.d + '"><title>' + wmEscape(c.th) + "</title></path>");
   });
   parts.push("</g>");
+  // ประเทศจิ๋วที่ไม่มีรูปร่างในข้อมูล 1:110m วาดเป็นวงกลมแทน จะได้ไฮไลต์ได้เหมือนกัน
+  parts.push('<g class="wm-dots">');
+  (WORLD_MAP.dots || []).forEach(function (c) {
+    var p = wmProject(c.lat, c.lon);
+    parts.push(
+      '<circle data-code="' + c.code + '" cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) +
+      '" r="4"><title>' + wmEscape(c.th) + "</title></circle>"
+    );
+  });
+  parts.push("</g>");
   return parts.join("");
 }
 
@@ -128,6 +142,7 @@ function wmCreateMap(svg, opts) {
     '<g class="wm-pin wm-pin-answer wm-off"><circle r="9"/><circle class="wm-pin-dot" r="3.4"/></g>' +
     "</g>";
 
+  var dotEls = svg.querySelectorAll(".wm-dots circle");
   var line = svg.querySelector(".wm-line");
   var guessPin = svg.querySelector(".wm-pin-guess");
   var answerPin = svg.querySelector(".wm-pin-answer");
@@ -138,6 +153,7 @@ function wmCreateMap(svg, opts) {
     // หมุดกับเส้นต้องคงขนาดบนจอเท่าเดิมไม่ว่าจะซูมแค่ไหน
     var k = view.w / WORLD_MAP.width;
     svg.style.setProperty("--wm-k", k);
+    for (var di = 0; di < dotEls.length; di++) dotEls[di].setAttribute("r", Math.max(1.2, 4 * k));
     [guessPin, answerPin].forEach(function (pin) {
       var lat = pin.getAttribute("data-lat");
       if (lat === null) return;
@@ -146,16 +162,25 @@ function wmCreateMap(svg, opts) {
     });
   }
 
+  // สัดส่วนของกล่องจริงบนหน้าจอ — ต้องให้ viewBox สูงเท่ากับสัดส่วนนี้เสมอ
+  // ไม่งั้น SVG จะย่อ viewBox ให้พอดีกรอบแล้วโชว์แผนที่ส่วนที่อยู่นอก viewBox เพิ่มมาด้วย
+  // ผลคือระดับซูมที่คำนวณไว้เพี้ยนไปตามขนาดจอของแต่ละเครื่อง
+  function aspect() {
+    var r = svg.getBoundingClientRect();
+    return r.width && r.height ? r.width / r.height : home.w / home.h;
+  }
+
   function clamp() {
     if (view.w > WORLD_MAP.width) view.w = WORLD_MAP.width;
     if (view.w < WM_MIN_W) view.w = WM_MIN_W;
-    view.h = view.w * (home.h / home.w);
+    view.h = view.w / aspect();
     if (view.h > WORLD_MAP.height) {
-      view.h = WORLD_MAP.height;
-      view.w = view.h * (home.w / home.h);
+      // กรอบสูงกว่าตัวโลก จัดกลางแนวตั้ง ปล่อยให้มีที่ว่างบนล่างแทนที่จะบิดสัดส่วน
+      view.y = (WORLD_MAP.height - view.h) / 2;
+    } else {
+      view.y = Math.max(0, Math.min(WORLD_MAP.height - view.h, view.y));
     }
     view.x = Math.max(0, Math.min(WORLD_MAP.width - view.w, view.x));
-    view.y = Math.max(0, Math.min(WORLD_MAP.height - view.h, view.y));
   }
 
   function zoomAt(factor, clientX, clientY) {
@@ -288,6 +313,52 @@ function wmCreateMap(svg, opts) {
       line.setAttribute("d", "M" + a.x + " " + a.y + "L" + b.x + " " + b.y);
       line.classList.remove("wm-off");
     },
+    // ทาคลาสให้ประเทศเป็นชุด (ใช้ตอนอยากไฮไลต์หลายประเทศพร้อมกัน เช่นโซ่ที่ต่อมาแล้ว)
+    // ล้างคลาสเดิมออกจากทุกประเทศก่อนเสมอ จะได้ไม่มีของค้างจากรอบก่อน
+    setClass: function (codes, cls) {
+      var prev = svg.querySelectorAll("." + cls);
+      for (var i = 0; i < prev.length; i++) prev[i].classList.remove(cls);
+      (codes || []).forEach(function (code) {
+        var el = svg.querySelector('[data-code="' + code + '"]');
+        if (el) el.classList.add(cls);
+      });
+    },
+    // ซูมไปที่ประเทศหนึ่ง เผื่อขอบไว้ให้เห็นเพื่อนบ้านรอบ ๆ ด้วย
+    focus: function (code, spread) {
+      var el = svg.querySelector('[data-code="' + code + '"]');
+      if (!el) return;
+      var bb;
+      try {
+        bb = el.getBBox();
+      } catch (e) {
+        return;
+      }
+      var cx = bb.x + bb.width / 2;
+      var cy = bb.y + bb.height / 2;
+      // กว้างพอที่จะใส่ทั้งประเทศลงไปได้ (คิดสัดส่วนจอด้วย) แล้วเผื่อขอบเป็นระยะคงที่
+      // ใช้ระยะคงที่แทนการคูณ เพราะถ้าคูณ ประเทศใหญ่อย่างสหรัฐฯ จะเผื่อจนเห็นทั้งโลก
+      // ส่วนประเทศจิ๋วอย่างโมนาโกกรอบเกือบเป็นศูนย์ ระยะคงที่ก็ยังทำให้เห็นเพื่อนบ้าน
+      var base = Math.max(bb.width, bb.height * aspect());
+      var w = base * 1.5 + (spread === undefined ? 120 : spread);
+      var maxW = WORLD_MAP.width * 0.55; // ซูมอัตโนมัติไม่ควรถอยจนเห็นทั้งโลก
+      // ประเทศที่คร่อมเส้นแบ่งวันสากล (รัสเซีย ฟิจิ) จะได้กรอบกว้างเท่าทั้งแผนที่
+      // ถ้าเจอแบบนั้นให้ยึดพิกัดกลางประเทศแทน ไม่งั้นจะซูมออกจนเห็นทั้งโลกทุกที
+      if (bb.width > WORLD_MAP.width * 0.6) {
+        var info = wmByCode(code);
+        if (info) {
+          var p = wmProject(info.lat, info.lon);
+          cx = p.x;
+          cy = p.y;
+          w = WORLD_MAP.width * 0.42;
+        }
+      }
+      view.w = Math.min(Math.max(w, WM_MIN_W), maxW);
+      clamp();
+      view.x = cx - view.w / 2;
+      view.y = cy - view.h / 2;
+      clamp();
+      apply();
+    },
     highlight: function (code) {
       if (highlighted) highlighted.classList.remove("wm-hit");
       highlighted = code ? svg.querySelector('path[data-code="' + code + '"]') : null;
@@ -314,7 +385,7 @@ function wmCreateMap(svg, opts) {
       view.w = w;
       clamp();
       // ถ้าสูงไม่พอครอบทั้งสองจุด ให้ถอยออกอีก
-      while (view.h < maxY - minY + m && view.w < WORLD_MAP.width) {
+      while (view.h < maxY - minY + m * 0.6 && view.w < WORLD_MAP.width) {
         view.w = Math.min(WORLD_MAP.width, view.w * 1.25);
         clamp();
       }
@@ -348,6 +419,21 @@ function wmCreateMap(svg, opts) {
       zoomAt(factor, r.left + r.width / 2, r.top + r.height / 2);
     },
   };
+
+  // แผนที่มักถูกสร้างตอนกล่องยังซ่อนอยู่ (อยู่ในแผงที่ยังไม่เปิด) ตอนนั้นวัดขนาดได้ 0
+  // พอกล่องโผล่มาจริงหรือหมุนจอ สัดส่วนเปลี่ยน ต้องคำนวณ viewBox ใหม่ ไม่งั้นค้างค่าเก่า
+  if (typeof ResizeObserver !== "undefined") {
+    var ro = new ResizeObserver(function () {
+      clamp();
+      apply();
+    });
+    ro.observe(svg);
+  } else {
+    window.addEventListener("resize", function () {
+      clamp();
+      apply();
+    });
+  }
 
   apply();
   return api;

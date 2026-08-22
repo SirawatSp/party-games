@@ -70,6 +70,15 @@
       </div>
 
       <div class="bc-opt">
+        <div class="bc-label">แผนที่ประกอบ</div>
+        <div class="bc-switch" id="bcMapSwitch">
+          <button class="bc-opt-btn active" data-map="on" type="button">แสดงแผนที่ 🗺</button>
+          <button class="bc-opt-btn" data-map="off" type="button">ไม่ต้อง</button>
+        </div>
+        <p class="bc-hint" id="bcMapHint"></p>
+      </div>
+
+      <div class="bc-opt">
         <div class="bc-label">ตัวช่วย</div>
         <div class="bc-switch" id="bcHintSwitch">
           <button class="bc-opt-btn active" data-hint="on" type="button">บอกจำนวนเพื่อนบ้าน</button>
@@ -99,6 +108,22 @@
         <div class="bc-cur-hint" id="bcCurHint"></div>
       </div>
 
+      <div class="bc-map-box" id="bcMapBox">
+        <div class="bc-map-holder" id="bcMapHolder">
+          <svg class="bc-map" id="bcMapSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+          <div class="bc-map-zoom">
+            <button class="bc-zoom-btn" id="bcZoomIn" type="button" aria-label="ซูมเข้า">+</button>
+            <button class="bc-zoom-btn" id="bcZoomOut" type="button" aria-label="ซูมออก">−</button>
+            <button class="bc-zoom-btn" id="bcZoomFit" type="button" aria-label="กลับไปที่ประเทศปัจจุบัน">◎</button>
+            <button class="bc-zoom-btn" id="bcZoomAll" type="button" aria-label="ดูทั้งโลก">⤢</button>
+          </div>
+        </div>
+        <div class="bc-map-legend">
+          <span><i class="bc-key bc-key-now"></i>ประเทศตอนนี้</span>
+          <span><i class="bc-key bc-key-used"></i>ที่ต่อมาแล้ว</span>
+        </div>
+      </div>
+
       <div class="bc-answer">
         <input class="bc-input bc-answer-input" id="bcAnswer" type="text" maxlength="30" placeholder="พิมพ์ประเทศที่ติดกัน" autocomplete="off" autocapitalize="off" spellcheck="false">
         <button class="btn" id="bcSubmitBtn" type="button">ตอบ →</button>
@@ -123,6 +148,14 @@
         <div class="bc-meta-item"><span class="bc-meta-num" id="bcEndBest">0</span><span class="bc-meta-cap">สถิติสูงสุด</span></div>
       </div>
       <div class="bc-chain" id="bcEndChain"></div>
+      <div class="bc-map-box" id="bcEndMapBox">
+        <div class="bc-map-holder" id="bcEndMapHolder"></div>
+        <div class="bc-map-legend">
+          <span><i class="bc-key bc-key-now"></i>ประเทศสุดท้าย</span>
+          <span><i class="bc-key bc-key-used"></i>เส้นทางที่ต่อมา</span>
+          <span><i class="bc-key bc-key-miss"></i>ที่ยังไปต่อได้</span>
+        </div>
+      </div>
       <div class="bc-missed" id="bcMissed"></div>
       <button class="btn" id="bcAgainBtn" type="button">เล่นอีกรอบ 🔁</button>
       <button class="btn secondary" id="bcBackBtn" type="button">เปลี่ยนโหมด ⚙️</button>
@@ -150,6 +183,17 @@
   </div>
 
   <div class="panel reveal-up">
+    <h2>แผนที่ประกอบ</h2>
+    <ol>
+      <li>แผนที่จะ <b>ซูมไปที่ประเทศปัจจุบัน</b> ให้อัตโนมัติทุกครั้งที่ต่อโซ่สำเร็จ จะได้เห็นว่ารอบ ๆ มีใครบ้าง</li>
+      <li>สีเขียวคือประเทศที่อยู่ตอนนี้ สีจางคือประเทศที่ใช้ไปแล้ว (ห้ามซ้ำ)</li>
+      <li>ลากเพื่อเลื่อน หนีบสองนิ้วหรือหมุนล้อเพื่อซูม · ปุ่ม ◎ กลับไปที่ประเทศปัจจุบัน · ปุ่ม ⤢ ดูทั้งโลก</li>
+      <li>แผนที่ <b>ไม่บอกชื่อประเทศ</b> ต้องรู้เองว่ารูปร่างไหนคือประเทศอะไร ถ้าอยากเล่นโหดกว่านี้ปิดแผนที่ได้ในหน้าตั้งค่า</li>
+      <li>ประเทศจิ๋วอย่างโมนาโก ซานมารีโน วาติกัน อันดอร์รา ลิกเตนสไตน์ เล็กเกินกว่าจะวาดเป็นรูปร่างได้ จึงขึ้นเป็นจุดกลม ๆ แทน</li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up">
     <h2>พิมพ์ยังไงก็ได้</h2>
     <ol>
       <li>พิมพ์ <b>ภาษาไทยหรืออังกฤษ</b> ก็ได้ เช่น "ลาว" หรือ "Laos"</li>
@@ -172,7 +216,9 @@
 </div>
 
 <script src="data/borderchain.js"></script>
+<script src="data/worldmap.js"></script>
 <script src="js/main.js"></script>
+<script src="js/worldmap.js"></script>
 <script src="js/borderchain.js"></script>
 </body>
 </html>

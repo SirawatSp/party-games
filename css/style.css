@@ -3510,3 +3510,33 @@ html.hc-fs .hc-topbar{padding-right:150px;}
 .ss-row-name{font-family:'Kanit',sans-serif; font-weight:600;}
 .ss-row-km{color:var(--text-dim); font-size:12.5px;}
 .ss-row-pt{font-family:'Bungee',cursive; font-size:14px; color:var(--street);}
+
+/* ---- แผนที่ประกอบในเกมต่อพรมแดน ---- */
+.bc-map-box{margin:16px 0;}
+.bc-map-holder{position:relative; border-radius:14px; overflow:hidden; background:#0c1526; border:1px solid var(--line);}
+.bc-map{display:block; width:100%; height:min(42vh, 300px); touch-action:none; cursor:grab;}
+.bc-map:active{cursor:grabbing;}
+.bc-map-zoom{position:absolute; right:8px; bottom:8px; display:flex; flex-direction:column; gap:6px;}
+.bc-zoom-btn{
+  width:32px; height:32px; border-radius:9px; cursor:pointer;
+  background:rgba(10,6,16,.82); border:1px solid var(--line); color:var(--text);
+  font-size:15px; line-height:1; display:flex; align-items:center; justify-content:center;
+}
+.bc-zoom-btn:hover{border-color:var(--mint);}
+.bc-map-legend{
+  display:flex; gap:14px; justify-content:center; flex-wrap:wrap;
+  font-size:11.5px; color:var(--text-dim); margin-top:8px;
+}
+.bc-map-legend span{display:inline-flex; align-items:center; gap:5px;}
+.bc-key{width:11px; height:11px; border-radius:3px; display:inline-block; border:1px solid rgba(255,255,255,.25);}
+.bc-key-now{background:var(--mint);}
+.bc-key-used{background:#6b8ab5;}
+.bc-key-miss{background:var(--amber);}
+
+/* ประเทศจิ๋วที่วาดเป็นจุด ใช้สีชุดเดียวกับประเทศที่วาดเป็นรูปร่าง */
+.wm-dots circle{fill:#3d5273; stroke:#7d93b5; stroke-width:.8; vector-effect:non-scaling-stroke;}
+
+/* สถานะการไฮไลต์ประเทศบนแผนที่ (ใช้ร่วมกับ .wm-countries / .wm-dots) */
+.wm-countries path.wm-used,.wm-dots circle.wm-used{fill:#6b8ab5;}
+.wm-countries path.wm-miss,.wm-dots circle.wm-miss{fill:var(--amber);}
+.wm-countries path.wm-now,.wm-dots circle.wm-now{fill:var(--mint); stroke:#eafff6; stroke-width:1.4;}

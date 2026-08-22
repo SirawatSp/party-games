@@ -5,6 +5,10 @@ document.addEventListener("DOMContentLoaded", () => {
     coop: "ทุกคนช่วยกันตะโกนคำตอบ แข่งกับเวลาอย่างเดียว เครื่องจำสถิติสูงสุดของเครื่องนี้ไว้ให้",
     turn: "วนตอบทีละคน ใครตอบผิดหรือหมดเวลาตกรอบทันที เหลือคนสุดท้ายคือผู้ชนะ",
   };
+  const MAP_HINT = {
+    on: "ซูมไปที่ประเทศปัจจุบันให้อัตโนมัติ จะได้เห็นว่ารอบ ๆ มีประเทศอะไรบ้าง (ไม่บอกชื่อนะ)",
+    off: "ไม่มีแผนที่ ต้องนึกภาพเอาเอง",
+  };
   const HINT_HINT = {
     on: "บอกว่าประเทศปัจจุบันเหลือเพื่อนบ้านที่ยังไม่ได้ใช้กี่ประเทศ",
     off: "ไม่บอกอะไรเลย ต้องรู้เองล้วน ๆ",
@@ -46,6 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
     totalTime: 90,
     turnTime: 15,
     hintOn: true,
+    mapOn: true,
     players: [],
     alive: [],
     turnIdx: 0,
@@ -136,6 +141,38 @@ document.addEventListener("DOMContentLoaded", () => {
       S.turnTime = parseInt(b.dataset.turn, 10);
     });
   });
+  $("bcMapSwitch").querySelectorAll("[data-map]").forEach((b) => {
+    b.addEventListener("click", () => {
+      $("bcMapSwitch").querySelectorAll("[data-map]").forEach((x) => x.classList.remove("active"));
+      b.classList.add("active");
+      S.mapOn = b.dataset.map === "on";
+      $("bcMapHint").textContent = MAP_HINT[S.mapOn ? "on" : "off"];
+    });
+  });
+  $("bcMapHint").textContent = MAP_HINT.on;
+
+  // ---------- แผนที่ ----------
+  // ใช้แผนที่อันเดียวทั้งตอนเล่นและตอนจบเกม ย้ายไปมาระหว่างสองกล่อง
+  const MAP = wmCreateMap($("bcMapSvg"), {});
+
+  $("bcZoomIn").addEventListener("click", () => MAP.zoomBy(1 / 1.5));
+  $("bcZoomOut").addEventListener("click", () => MAP.zoomBy(1.5));
+  $("bcZoomFit").addEventListener("click", () => S.cur && MAP.focus(S.cur.code));
+  $("bcZoomAll").addEventListener("click", () => MAP.reset());
+
+  // จำไว้ว่าซูมค้างอยู่ที่ประเทศไหน จะได้ขยับกล้องเฉพาะตอนประเทศเปลี่ยนจริง
+  // ถ้าขยับทุกครั้งที่วาดใหม่ (เช่นตอนสลับตาผู้เล่น) จะเด้งกลับจนคนเลื่อนดูเองไม่ได้
+  let mapFocusCode = null;
+  function paintMap(force) {
+    if (!S.mapOn) return;
+    MAP.setClass(S.chain, "wm-used");
+    MAP.setClass([S.cur.code], "wm-now");
+    if (force || mapFocusCode !== S.cur.code) {
+      MAP.focus(S.cur.code);
+      mapFocusCode = S.cur.code;
+    }
+  }
+
   $("bcHintSwitch").querySelectorAll("[data-hint]").forEach((b) => {
     b.addEventListener("click", () => {
       $("bcHintSwitch").querySelectorAll("[data-hint]").forEach((x) => x.classList.remove("active"));
@@ -185,7 +222,13 @@ document.addEventListener("DOMContentLoaded", () => {
     $("bcSubmitBtn").disabled = false;
     $("bcClockCap").textContent = S.mode === "turn" ? "วิ (ตานี้)" : "วินาที";
     show("bcPlay");
+    // ย้ายแผนที่กลับเข้าหน้าเล่น (ตอนจบเกมรอบก่อนมันถูกย้ายไปอยู่หน้าสรุป)
+    $("bcMapHolder").appendChild($("bcMapSvg"));
+    $("bcMapBox").classList.toggle("bc-hidden", !S.mapOn);
+    MAP.setClass([], "wm-miss");
+    mapFocusCode = null;
     render();
+    paintMap(true);
     startTimer();
     $("bcAnswer").focus();
   }
@@ -244,6 +287,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "ถึงตา <b>" + esc(S.alive[S.turnIdx]) + "</b> · เหลือผู้เล่น " + S.alive.length + " คน";
     }
     renderChain("bcChain");
+    paintMap(false);
   }
   function renderChain(target) {
     $(target).innerHTML = S.chain
@@ -371,6 +415,21 @@ document.addEventListener("DOMContentLoaded", () => {
     $("bcEndLen").textContent = len;
     $("bcEndBest").textContent = Math.max(best, S.mode === "coop" ? len : best);
     renderChain("bcEndChain");
+
+    // สรุปเส้นทางทั้งหมดบนแผนที่ พร้อมชี้ว่าตรงประเทศสุดท้ายยังไปต่อทางไหนได้บ้าง
+    $("bcEndMapBox").classList.toggle("bc-hidden", !S.mapOn);
+    if (S.mapOn) {
+      $("bcEndMapHolder").appendChild($("bcMapSvg"));
+      MAP.setClass(S.chain, "wm-used");
+      MAP.setClass([S.cur.code], "wm-now");
+      MAP.setClass(remainingNeighbors(), "wm-miss");
+      const pts = S.chain
+        .concat(remainingNeighbors())
+        .map((code) => wmByCode(code))
+        .filter(Boolean)
+        .map((c) => ({ lat: c.lat, lon: c.lon }));
+      if (pts.length) MAP.fit(pts, 120);
+    }
 
     // บอกว่าตรงประเทศสุดท้ายยังมีทางไปต่อไหม จะได้รู้ว่าพลาดอะไร
     const left = remainingNeighbors();

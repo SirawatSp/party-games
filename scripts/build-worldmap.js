@@ -129,6 +129,27 @@ geo.features.forEach((f) => {
 
 out.sort((a, b) => a.code.localeCompare(b.code));
 
+// ประเทศจิ๋วอย่างโมนาโก ซานมารีโน วาติกัน เล็กเกินกว่าจะมีรูปร่างในข้อมูล 1:110m
+// แต่เกม "ต่อพรมแดน" มีประเทศพวกนี้อยู่ ถ้าไม่วาดอะไรเลย ตอบถูกแล้วแผนที่จะเงียบ
+// จึงเก็บเป็นจุดพร้อมพิกัดกลางประเทศไว้ ให้วาดเป็นวงกลมเล็ก ๆ แทนรูปร่าง
+const haveShape = {};
+out.forEach((c) => (haveShape[c.code] = true));
+const dots = [];
+const seenDot = {};
+const dotRe = /code: "([A-Z]{3})"/g;
+let dotM;
+while ((dotM = dotRe.exec(bcSrc))) {
+  const code = dotM[1];
+  if (haveShape[code] || seenDot[code]) continue;
+  seenDot[code] = true;
+  const info = wc.find((c) => c.cca3 === code);
+  if (!info) throw new Error("ไม่รู้จักประเทศ " + code + " จึงหาพิกัดกลางประเทศไม่ได้");
+  if (!TH[code]) throw new Error("ยังไม่มีชื่อไทยของ " + code);
+  dots.push({ code: code, th: TH[code], en: info.name.common, lat: info.latlng[0], lon: info.latlng[1] });
+}
+dots.sort((a, b) => a.code.localeCompare(b.code));
+console.error("dot countries " + dots.length + ": " + dots.map((d) => d.code).join(" "));
+
 console.error("matched " + out.length + " countries, filler shapes " + filler.length);
 
 const header = [
@@ -139,7 +160,9 @@ const header = [
   "//",
   "// ระบบพิกัด: equirectangular บนผืนผ้าใบ " + W + "x" + H + " หน่วย",
   "//   x = (lon + 180) / 360 * " + W + "   ,   y = (90 - lat) / 180 * " + H,
-  "// countries = รัฐสมาชิกสหประชาชาติที่มีชื่อและเลือกตอบได้",
+  "// countries = รัฐสมาชิกสหประชาชาติที่มีชื่อและเลือกตอบได้ เก็บเป็นรูปร่าง path",
+  "// dots      = ประเทศจิ๋วที่เล็กเกินกว่าจะมีรูปร่างในข้อมูล 1:110m (โมนาโก วาติกัน ฯลฯ)",
+  "//             เก็บแค่พิกัดกลางประเทศไว้ ให้วาดเป็นวงกลมเล็ก ๆ แทน",
   "// filler    = รูปร่างพื้นดินที่ไม่ตั้งชื่อ (แอนตาร์กติกา ดินแดนในปกครอง ดินแดนพิพาท)",
   "//             วาดไว้ไม่ให้แผนที่มีรูโหว่ แต่ไม่นับเป็นคำตอบและไม่แสดงชื่อ",
   "//",
@@ -171,6 +194,15 @@ const body = out
   .join("\n");
 
 const tail = [
+  "  ],",
+  "  dots: [",
+  dots
+    .map(
+      (d) =>
+        "    { code: " + JSON.stringify(d.code) + ", th: " + JSON.stringify(d.th) +
+        ", en: " + JSON.stringify(d.en) + ", lat: " + d.lat + ", lon: " + d.lon + " },"
+    )
+    .join("\n"),
   "  ],",
   "  filler: [",
   filler.map((d) => "    " + JSON.stringify(d) + ",").join("\n"),
