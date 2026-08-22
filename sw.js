@@ -1,7 +1,7 @@
 // Service Worker สำหรับเล่นออฟไลน์ได้ทั้งเว็บ (เก็บ cache ทุกหน้า/สคริปต์/คลังโจทย์ไว้ในเครื่อง)
 // เปิดเว็บครั้งแรกตอนมีเน็ต ระบบจะโหลดเก็บไว้ให้อัตโนมัติ ครั้งต่อไปเปิดได้แม้ไม่มีเน็ตเลย
 // อัปเดตเนื้อหาเว็บทีไร ให้เปลี่ยนเลข CACHE_VERSION เพื่อบังคับดาวน์โหลดของใหม่ทับของเก่า
-const CACHE_VERSION = "party-games-v25";
+const CACHE_VERSION = "party-games-v26";
 
 const PRECACHE_URLS = [
   "./",
@@ -9,6 +9,7 @@ const PRECACHE_URLS = [
   "manifest.json",
   "animalrace.html",
   "bluff.html",
+  "borderchain.html",
   "category.html",
   "charades.html",
   "crocodile.html",
@@ -36,6 +37,7 @@ const PRECACHE_URLS = [
   "css/style.css",
   "js/animalrace.js",
   "js/bluff.js",
+  "js/borderchain.js",
   "js/category.js",
   "js/charades.js",
   "js/crocodile.js",
@@ -65,6 +67,7 @@ const PRECACHE_URLS = [
   "js/world-trivia.js",
   "data/architects.js",
   "data/bluff.js",
+  "data/borderchain.js",
   "data/category-game.js",
   "data/charades.js",
   "data/drinking-games.js",

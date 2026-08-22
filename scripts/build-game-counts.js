@@ -30,6 +30,7 @@ const PAGES = [
   { page: "rapidfire.html", unit: "โจทย์", files: [["rapidfire.js", "RAPIDFIRE_LIST"]] },
   { page: "fake-artist.html", unit: "คำลับ", files: [["fake-artist.js", "FAKE_ARTIST_WORDS"]] },
   // เกมหลอกให้เชื่อดึงข้อจากคลังทริเวียมาใช้เฉพาะที่คำตอบสั้นพอจะพูดออกเสียงและแต่งเลียนแบบได้
+  { page: "borderchain.html", unit: "ประเทศ", files: [["borderchain.js", "BORDER_COUNTRIES"]] },
   { page: "bluff.html", unit: "คำถาม", files: [["bluff.js", "BLUFF_LIST"], ["world-trivia-qa.js", "WORLD_TRIVIA_QA", (x) => x.answer.length <= 45]] },
 ];
 

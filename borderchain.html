@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ต่อพรมแดน — เกมต่อประเทศที่มีชายแดนติดกัน</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0c0710">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <a class="brand-logo" href="index.html"><img class="brand-img" src="assets/logo.png" width="720" height="416" alt="Party Games — วงกำลังจะเหงา"></a>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--teal, var(--mint)); color:#022016;">26 · ภูมิศาสตร์ · ต่อคำ</span>
+    <h1>ต่อพรมแดน</h1>
+    <p>เครื่องสุ่มประเทศตั้งต้นมาให้ — พิมพ์ชื่อประเทศที่มี <b>ชายแดนทางบกติดกับประเทศนั้น</b> ตอบถูกแล้วประเทศที่ตอบจะกลายเป็นประเทศใหม่ ต่อไปเรื่อย ๆ <b>ห้ามซ้ำ</b> จะไปได้ไกลแค่ไหนก่อนตัน</p>
+  </section>
+
+  <div class="bc-stage-wrap">
+
+    <!-- 1. ตั้งค่า -->
+    <div class="bc-stage" id="bcSetup">
+      <div class="bc-big-icon">🗺</div>
+      <h3 class="bc-h3">เล่นแบบไหน</h3>
+
+      <div class="bc-opt">
+        <div class="bc-label">โหมด</div>
+        <div class="bc-switch" id="bcModeSwitch">
+          <button class="bc-opt-btn active" data-mode="coop" type="button">ทั้งวงช่วยกัน 🤝</button>
+          <button class="bc-opt-btn" data-mode="turn" type="button">ผลัดกันตอบ ⚔️</button>
+        </div>
+        <p class="bc-hint" id="bcModeHint"></p>
+      </div>
+
+      <!-- โหมดช่วยกัน: ตั้งเวลารวม -->
+      <div class="bc-opt" id="bcTimeOpt">
+        <div class="bc-label">เวลาทั้งเกม</div>
+        <div class="bc-switch" id="bcTimeSwitch">
+          <button class="bc-opt-btn" data-time="60" type="button">60 วิ</button>
+          <button class="bc-opt-btn active" data-time="90" type="button">90 วิ</button>
+          <button class="bc-opt-btn" data-time="180" type="button">3 นาที</button>
+          <button class="bc-opt-btn" data-time="0" type="button">ไม่จับเวลา</button>
+        </div>
+      </div>
+
+      <!-- โหมดผลัด: ใส่ชื่อผู้เล่น + เวลาต่อตา -->
+      <div class="bc-players bc-hidden" id="bcPlayerOpt">
+        <div class="bc-opt">
+          <div class="bc-label">ใครเล่นบ้าง (2 คนขึ้นไป)</div>
+          <div class="bc-player-add">
+            <input class="bc-input" id="bcNameInput" type="text" maxlength="12" placeholder="พิมพ์ชื่อแล้วกดเพิ่ม" autocomplete="off">
+            <button class="btn secondary" id="bcAddBtn" type="button">เพิ่ม +</button>
+          </div>
+          <div class="bc-player-list" id="bcPlayerList"></div>
+        </div>
+        <div class="bc-opt">
+          <div class="bc-label">เวลาต่อ 1 ตา</div>
+          <div class="bc-switch" id="bcTurnSwitch">
+            <button class="bc-opt-btn" data-turn="10" type="button">10 วิ 🔥</button>
+            <button class="bc-opt-btn active" data-turn="15" type="button">15 วิ</button>
+            <button class="bc-opt-btn" data-turn="30" type="button">30 วิ</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bc-opt">
+        <div class="bc-label">ตัวช่วย</div>
+        <div class="bc-switch" id="bcHintSwitch">
+          <button class="bc-opt-btn active" data-hint="on" type="button">บอกจำนวนเพื่อนบ้าน</button>
+          <button class="bc-opt-btn" data-hint="off" type="button">ไม่บอกอะไรเลย 😈</button>
+        </div>
+        <p class="bc-hint" id="bcHintHint"></p>
+      </div>
+
+      <div class="bc-warn" id="bcWarn"></div>
+      <button class="btn" id="bcStartBtn" type="button">เริ่มเกม 🚩</button>
+    </div>
+
+    <!-- 2. เล่น -->
+    <div class="bc-stage bc-hidden" id="bcPlay">
+      <div class="bc-meta">
+        <div class="bc-meta-item"><span class="bc-meta-num" id="bcClock">90</span><span class="bc-meta-cap" id="bcClockCap">วินาที</span></div>
+        <div class="bc-meta-item"><span class="bc-meta-num" id="bcScore">0</span><span class="bc-meta-cap">คะแนน</span></div>
+        <div class="bc-meta-item"><span class="bc-meta-num" id="bcChainLen">1</span><span class="bc-meta-cap">ความยาวโซ่</span></div>
+      </div>
+
+      <div class="bc-turn bc-hidden" id="bcTurnTag"></div>
+
+      <div class="bc-current">
+        <div class="bc-cur-label">ตอนนี้อยู่ที่</div>
+        <div class="bc-cur-name" id="bcCurName"></div>
+        <div class="bc-cur-en" id="bcCurEn"></div>
+        <div class="bc-cur-hint" id="bcCurHint"></div>
+      </div>
+
+      <div class="bc-answer">
+        <input class="bc-input bc-answer-input" id="bcAnswer" type="text" maxlength="30" placeholder="พิมพ์ประเทศที่ติดกัน" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <button class="btn" id="bcSubmitBtn" type="button">ตอบ →</button>
+      </div>
+      <div class="bc-feedback" id="bcFeedback"></div>
+
+      <div class="bc-chain" id="bcChain"></div>
+
+      <div class="bc-actions">
+        <button class="btn secondary" id="bcGiveUpBtn" type="button">ยอมแพ้ / จบเกม 🏁</button>
+      </div>
+    </div>
+
+    <!-- 3. จบเกม -->
+    <div class="bc-stage bc-hidden" id="bcEnd">
+      <div class="bc-big-icon" id="bcEndIcon">🏁</div>
+      <h3 class="bc-h3" id="bcEndTitle"></h3>
+      <p class="bc-end-text" id="bcEndText"></p>
+      <div class="bc-meta">
+        <div class="bc-meta-item"><span class="bc-meta-num" id="bcEndScore">0</span><span class="bc-meta-cap">คะแนน</span></div>
+        <div class="bc-meta-item"><span class="bc-meta-num" id="bcEndLen">0</span><span class="bc-meta-cap">ประเทศในโซ่</span></div>
+        <div class="bc-meta-item"><span class="bc-meta-num" id="bcEndBest">0</span><span class="bc-meta-cap">สถิติสูงสุด</span></div>
+      </div>
+      <div class="bc-chain" id="bcEndChain"></div>
+      <div class="bc-missed" id="bcMissed"></div>
+      <button class="btn" id="bcAgainBtn" type="button">เล่นอีกรอบ 🔁</button>
+      <button class="btn secondary" id="bcBackBtn" type="button">เปลี่ยนโหมด ⚙️</button>
+    </div>
+
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเล่น</h2>
+    <ol>
+      <li>เครื่องสุ่มประเทศตั้งต้นมาให้ 1 ประเทศ</li>
+      <li>พิมพ์ชื่อประเทศที่ <b>มีชายแดนทางบกติดกับประเทศนั้น</b> เช่น อยู่ที่ <b>ไทย</b> ตอบได้ว่า ลาว เมียนมา กัมพูชา หรือมาเลเซีย</li>
+      <li>ตอบถูก ประเทศที่ตอบจะกลายเป็นประเทศใหม่ แล้วต่อจากตรงนั้นไปเรื่อย ๆ</li>
+      <li><b>ห้ามใช้ประเทศซ้ำ</b> ที่เคยอยู่ในโซ่แล้ว</li>
+      <li>เกมจบเมื่อหมดเวลา หรือเมื่อประเทศปัจจุบันไม่เหลือเพื่อนบ้านที่ยังไม่ได้ใช้เลย</li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>2 โหมด</h2>
+    <ol>
+      <li><b>🤝 ทั้งวงช่วยกัน</b> — ทุกคนช่วยกันตะโกนคำตอบ แข่งกับเวลาอย่างเดียว ทำสถิติโซ่ให้ยาวที่สุด เครื่องจำสถิติสูงสุดของเครื่องนี้ไว้ให้</li>
+      <li><b>⚔️ ผลัดกันตอบ</b> — วนตอบทีละคน ใครตอบผิดหรือหมดเวลา <b>ตกรอบทันที</b> เหลือคนสุดท้ายคือผู้ชนะ โหมดนี้แหละที่เอาไว้เล่นในวง</li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>พิมพ์ยังไงก็ได้</h2>
+    <ol>
+      <li>พิมพ์ <b>ภาษาไทยหรืออังกฤษ</b> ก็ได้ เช่น "ลาว" หรือ "Laos"</li>
+      <li>ชื่อเรียกติดปากใช้ได้ เช่น <b>พม่า</b> (เมียนมา), <b>อเมริกา</b> (สหรัฐอเมริกา), <b>อังกฤษ</b> (สหราชอาณาจักร), <b>ฮอลแลนด์</b> (เนเธอร์แลนด์)</li>
+      <li>รหัสประเทศก็ได้ เช่น <b>TH</b>, <b>LAO</b>, <b>JP</b> — เว้นวรรคหรือไม่เว้นก็ได้ ไม่สนตัวพิมพ์เล็กใหญ่</li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>เรื่องข้อมูลเขตแดน</h2>
+    <ol>
+      <li>ข้อมูลพรมแดนมาจากชุดข้อมูลเปิด <b>world-countries 5.1.0</b> (สัญญาอนุญาต ODbL 1.0)</li>
+      <li>เกมนี้ใช้เฉพาะ <b>รัฐสมาชิกสหประชาชาติ 155 ประเทศที่มีพรมแดนทางบก</b> — ดินแดนอย่างฮ่องกง มาเก๊า ยิบรอลตาร์ ปาเลสไตน์ และโคโซโว ไม่ได้อยู่ในเกม เพราะเป็นกรณีอ่อนไหวและทำให้เถียงกันว่านับเป็นประเทศไหม</li>
+      <li>ตัดพรมแดนที่ข้อมูลบันทึกไว้ข้างเดียวออกแล้ว เช่นชุดข้อมูลเดิมระบุว่าศรีลังกาติดอินเดีย ทั้งที่ศรีลังกาเป็นเกาะ</li>
+      <li>เขตแดนระหว่างประเทศเป็นเรื่องอ่อนไหว ข้อมูลชุดนี้ใช้เพื่อความบันเทิงเท่านั้น ไม่ใช่การรับรองเขตแดนอย่างเป็นทางการ</li>
+    </ol>
+  </div>
+
+  <footer>โลกใบนี้เชื่อมกันมากกว่าที่คิด 🌏</footer>
+</div>
+
+<script src="data/borderchain.js"></script>
+<script src="js/main.js"></script>
+<script src="js/borderchain.js"></script>
+</body>
+</html>
