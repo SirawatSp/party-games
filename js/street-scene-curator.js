@@ -9,7 +9,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const $ = (id) => document.getElementById(id);
   const picked = {}; // pictureId -> scene
-  let viewerLoaded = false;
 
   // เติมรายชื่อโซนจากไฟล์เดียวกับที่เกมใช้
   STREET_SCENE_AREAS.forEach((a, i) => {
@@ -185,15 +184,9 @@ document.addEventListener("DOMContentLoaded", () => {
       el.setAttribute("psv-options", '{"picturesNavigation":"seq"}');
       host.appendChild(el);
     };
-    if (viewerLoaded) return mount();
-    const tag = document.createElement("script");
-    tag.src = STREET_SCENE_CONFIG.viewerSrc;
-    tag.onload = () => {
-      viewerLoaded = true;
-      mount();
-    };
-    tag.onerror = () => ($("cuViewer").textContent = "โหลดตัวแสดงภาพไม่สำเร็จ");
-    document.head.appendChild(tag);
+    ssLoadViewer()
+      .then(mount)
+      .catch(() => ($("cuViewer").textContent = "โหลดตัวแสดงภาพไม่สำเร็จ"));
   }
 
   $("cuClosePreview").addEventListener("click", () => {

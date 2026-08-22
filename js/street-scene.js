@@ -204,24 +204,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ---------- ตัว viewer ----------
-  let viewerLoading = null;
-  function loadViewerScript() {
-    if (window.customElements && customElements.get("pnx-photo-viewer")) return Promise.resolve();
-    if (viewerLoading) return viewerLoading;
-    viewerLoading = new Promise((resolve, reject) => {
-      const tag = document.createElement("script");
-      tag.src = STREET_SCENE_CONFIG.viewerSrc;
-      tag.onload = () => resolve();
-      tag.onerror = () => reject(new Error("โหลดตัวแสดงภาพไม่สำเร็จ"));
-      document.head.appendChild(tag);
-    });
-    return viewerLoading;
-  }
-
   function mountViewer(scene) {
     const host = $("ssViewer");
     host.innerHTML = "";
-    loadViewerScript()
+    ssLoadViewer()
       .then(() => {
         const el = document.createElement("pnx-photo-viewer");
         el.id = "ssPano";

@@ -200,3 +200,48 @@ function ssValidate(item) {
     },
   };
 }
+
+// ---- โหลดตัวแสดงภาพ 360° ------------------------------------------------
+//
+// บันเดิลที่เราเก็บไว้เป็นรูปแบบ CommonJS บรรทัดสุดท้ายของไฟล์เขียนค่าลงตัวแปร `exports`
+// ซึ่งหน้าเว็บธรรมดาไม่มี ถ้าโหลดตรง ๆ จะได้ ReferenceError ค้างไว้ทุกครั้ง
+// (ตัว custom element ลงทะเบียนเสร็จไปก่อนบรรทัดนั้นแล้ว เกมจึงยังเล่นได้ แต่ไม่ควรปล่อยไว้)
+// วิธีแก้คือวางกล่องเปล่าไว้ให้มันเขียนลง แล้วเก็บกวาดทิ้งหลังโหลดเสร็จ
+// จะได้ไม่ต้องแก้ไฟล์ของเขา และอัปเดตเวอร์ชันใหม่ทับได้เลย
+
+var ssViewerPromise = null;
+
+function ssLoadViewer() {
+  if (window.customElements && customElements.get("pnx-photo-viewer")) return Promise.resolve();
+  if (ssViewerPromise) return ssViewerPromise;
+
+  ssViewerPromise = new Promise(function (resolve, reject) {
+    var hadExports = "exports" in window;
+    var hadModule = "module" in window;
+    if (!hadExports) window.exports = {};
+    if (!hadModule) window.module = { exports: window.exports };
+
+    var cleanup = function () {
+      if (!hadExports) {
+        try { delete window.exports; } catch (e) { window.exports = undefined; }
+      }
+      if (!hadModule) {
+        try { delete window.module; } catch (e) { window.module = undefined; }
+      }
+    };
+
+    var tag = document.createElement("script");
+    tag.src = STREET_SCENE_CONFIG.viewerSrc;
+    tag.onload = function () {
+      cleanup();
+      resolve();
+    };
+    tag.onerror = function () {
+      cleanup();
+      ssViewerPromise = null; // ให้ลองใหม่ได้ถ้าเน็ตกลับมา
+      reject(new Error("โหลดตัวแสดงภาพไม่สำเร็จ"));
+    };
+    document.head.appendChild(tag);
+  });
+  return ssViewerPromise;
+}
