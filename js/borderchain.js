@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const MODE_HINT = {
     coop: "ทุกคนช่วยกันตะโกนคำตอบ แข่งกับเวลาอย่างเดียว เครื่องจำสถิติสูงสุดของเครื่องนี้ไว้ให้",
     turn: "วนตอบทีละคน ใครตอบผิดหรือหมดเวลาตกรอบทันที เหลือคนสุดท้ายคือผู้ชนะ",
+    route: "มีประเทศตั้งต้นกับปลายทางมาให้ ต้องต่อประเทศไปให้ถึง · เดินซ้ำได้ ยิ่งใช้น้อยก้าวยิ่งได้คะแนนเยอะ",
   };
   const MAP_HINT = {
     on: "ซูมไปที่ประเทศปัจจุบันให้อัตโนมัติ จะได้เห็นว่ารอบ ๆ มีประเทศอะไรบ้าง (ไม่บอกชื่อนะ)",
@@ -45,12 +46,67 @@ document.addEventListener("DOMContentLoaded", () => {
     LOOKUP[norm(c.en)] = c.code;
   });
 
+  // ---------- ค้นทางบนกราฟพรมแดน ----------
+  // BFS จากประเทศหนึ่ง ได้ระยะทาง (จำนวนก้าว) ไปทุกประเทศที่เดินถึงได้ พร้อมทางกลับ
+  // ใช้สามอย่าง: สร้างโจทย์ที่การันตีว่ามีทางไปถึง, บอกใบ้ว่าเหลืออีกกี่ก้าว, เฉลยทางสั้นสุด
+  function bfs(fromCode) {
+    const dist = { [fromCode]: 0 };
+    const prev = {};
+    const queue = [fromCode];
+    for (let i = 0; i < queue.length; i++) {
+      const cur = queue[i];
+      const c = BY_CODE[cur];
+      if (!c) continue;
+      for (const nb of c.borders) {
+        if (dist[nb] !== undefined) continue;
+        dist[nb] = dist[cur] + 1;
+        prev[nb] = cur;
+        queue.push(nb);
+      }
+    }
+    return { dist, prev };
+  }
+
+  function shortestPath(fromCode, toCode) {
+    const { dist, prev } = bfs(fromCode);
+    if (dist[toCode] === undefined) return null;
+    const path = [toCode];
+    let cur = toCode;
+    while (cur !== fromCode) {
+      cur = prev[cur];
+      path.unshift(cur);
+    }
+    return path;
+  }
+
+  // สุ่มโจทย์ที่ต้องต่ออย่างน้อย steps ประเทศพอดี
+  // กราฟพรมแดนโลกไม่ได้เชื่อมกันทั้งหมด (ทวีปอเมริกาแยกจากยูเรเซีย-แอฟริกา
+  // และมีคู่เกาะอย่างไอร์แลนด์-สหราชอาณาจักรที่เดินไปไหนไม่ได้ไกล)
+  // จึงต้องสุ่มตั้งต้นแล้วเช็กว่ามีปลายทางที่ระยะเท่านี้จริงไหม ไม่เจอก็สุ่มใหม่
+  function makeRoute(steps) {
+    const pool = BORDER_COUNTRIES.slice();
+    for (let attempt = 0; attempt < 400; attempt++) {
+      const start = pool[Math.floor(Math.random() * pool.length)];
+      // ตั้งต้นที่ประเทศซึ่งมีเพื่อนบ้านอย่างน้อย 2 ประเทศ ไม่งั้นก้าวแรกถูกบังคับ ไม่ต้องคิดเลย
+      if (start.borders.length < 2) continue;
+      const { dist } = bfs(start.code);
+      const targets = Object.keys(dist).filter((code) => dist[code] === steps);
+      if (!targets.length) continue;
+      const target = targets[Math.floor(Math.random() * targets.length)];
+      return { start: start, target: BY_CODE[target], optimal: steps };
+    }
+    return null;
+  }
+
   const S = {
     mode: "coop",
     totalTime: 90,
     turnTime: 15,
     hintOn: true,
     mapOn: true,
+    routeSteps: 5,
+    target: null,
+    optimal: 0,
     players: [],
     alive: [],
     turnIdx: 0,
@@ -124,6 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
       $("bcModeHint").textContent = MODE_HINT[S.mode];
       $("bcPlayerOpt").classList.toggle("bc-hidden", S.mode !== "turn");
       $("bcTimeOpt").classList.toggle("bc-hidden", S.mode === "turn");
+      $("bcRouteOpt").classList.toggle("bc-hidden", S.mode !== "route");
       warn("");
     });
   });
@@ -141,6 +198,14 @@ document.addEventListener("DOMContentLoaded", () => {
       S.turnTime = parseInt(b.dataset.turn, 10);
     });
   });
+  $("bcRouteSwitch").querySelectorAll("[data-steps]").forEach((b) => {
+    b.addEventListener("click", () => {
+      $("bcRouteSwitch").querySelectorAll("[data-steps]").forEach((x) => x.classList.remove("active"));
+      b.classList.add("active");
+      S.routeSteps = parseInt(b.dataset.steps, 10);
+    });
+  });
+
   $("bcMapSwitch").querySelectorAll("[data-map]").forEach((b) => {
     b.addEventListener("click", () => {
       $("bcMapSwitch").querySelectorAll("[data-map]").forEach((x) => x.classList.remove("active"));
@@ -166,6 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function paintMap(force) {
     if (!S.mapOn) return;
     MAP.setClass(S.chain, "wm-used");
+    MAP.setClass(S.target ? [S.target.code] : [], "wm-goal");
     MAP.setClass([S.cur.code], "wm-now");
     if (force || mapFocusCode !== S.cur.code) {
       MAP.focus(S.cur.code);
@@ -205,7 +271,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function startGame() {
     stopTimer();
-    S.cur = pickStart();
+    S.target = null;
+    S.optimal = 0;
+    if (S.mode === "route") {
+      const route = makeRoute(S.routeSteps);
+      if (!route) {
+        return warn("สุ่มโจทย์ระยะนี้ไม่ได้ ลองเลือกระยะอื่นดู");
+      }
+      S.cur = route.start;
+      S.target = route.target;
+      S.optimal = route.optimal;
+    } else {
+      S.cur = pickStart();
+    }
     S.chain = [S.cur.code];
     S.used = new Set([S.cur.code]);
     S.score = 0;
@@ -229,6 +307,15 @@ document.addEventListener("DOMContentLoaded", () => {
     mapFocusCode = null;
     render();
     paintMap(true);
+    // โหมดหาทางต้องเห็นก่อนว่าปลายทางอยู่ทางไหน ไม่งั้นไม่รู้จะเดินไปทางไหน
+    if (S.mode === "route" && S.mapOn && S.target) {
+      const a = wmByCode(S.cur.code);
+      const b = wmByCode(S.target.code);
+      if (a && b) {
+        MAP.fit([{ lat: a.lat, lon: a.lon }, { lat: b.lat, lon: b.lon }], 160);
+        mapFocusCode = S.cur.code;
+      }
+    }
     startTimer();
     $("bcAnswer").focus();
   }
@@ -242,7 +329,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   function startTimer() {
     stopTimer();
-    if (S.mode === "coop" && !S.totalTime) {
+    if (S.mode !== "turn" && !S.totalTime) {
       $("bcClock").textContent = "∞";
       return;
     }
@@ -274,12 +361,32 @@ document.addEventListener("DOMContentLoaded", () => {
     $("bcCurName").textContent = S.cur.th;
     $("bcCurEn").textContent = S.cur.en;
     $("bcScore").textContent = S.score;
-    $("bcChainLen").textContent = S.chain.length;
 
-    const left = remainingNeighbors().length;
-    $("bcCurHint").textContent = S.hintOn
-      ? "เหลือเพื่อนบ้านที่ยังไม่ได้ใช้ " + left + " ประเทศ (ทั้งหมด " + S.cur.borders.length + ")"
-      : "";
+    const isRoute = S.mode === "route";
+    $("bcGoal").classList.toggle("bc-hidden", !isRoute);
+    $("bcLegendGoal").classList.toggle("bc-hidden", !isRoute);
+    $("bcChainCap").textContent = isRoute ? "ก้าวที่ใช้" : "ความยาวโซ่";
+    $("bcChainLen").textContent = isRoute ? S.chain.length - 1 : S.chain.length;
+
+    if (isRoute) {
+      $("bcGoalName").textContent = S.target.th;
+      $("bcGoalMeta").textContent = "ทางที่สั้นที่สุดคือ " + S.optimal + " ก้าว";
+      // ตัวช่วยบอกว่าจากตรงนี้เหลืออีกอย่างน้อยกี่ก้าว ใช้ดูว่าเดินถูกทางหรือเดินอ้อม
+      if (S.hintOn) {
+        const left = bfs(S.cur.code).dist[S.target.code];
+        $("bcCurHint").textContent =
+          left === 0
+            ? "ถึงแล้ว!"
+            : "จากตรงนี้เหลืออีกอย่างน้อย " + left + " ก้าว · ประเทศนี้ติดกับ " + S.cur.borders.length + " ประเทศ";
+      } else {
+        $("bcCurHint").textContent = "";
+      }
+    } else {
+      const left = remainingNeighbors().length;
+      $("bcCurHint").textContent = S.hintOn
+        ? "เหลือเพื่อนบ้านที่ยังไม่ได้ใช้ " + left + " ประเทศ (ทั้งหมด " + S.cur.borders.length + ")"
+        : "";
+    }
 
     $("bcTurnTag").classList.toggle("bc-hidden", S.mode !== "turn");
     if (S.mode === "turn") {
@@ -320,7 +427,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!code) {
       return miss("ไม่รู้จักประเทศ \"" + raw + "\" — ลองพิมพ์ชื่อเต็มหรือภาษาอังกฤษดู", false);
     }
-    if (S.used.has(code)) {
+    // โหมดหาทางเดินซ้ำได้ จะได้ถอยออกจากทางตันแล้วลองทางใหม่ ไม่ต้องเริ่มใหม่ทั้งเกม
+    if (S.mode !== "route" && S.used.has(code)) {
       return miss(BY_CODE[code].th + " ใช้ไปแล้วในโซ่นี้", true);
     }
     if (S.cur.borders.indexOf(code) < 0) {
@@ -329,20 +437,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ตอบถูก
     S.streak++;
-    const gain = 100 + 25 * (S.streak - 1);
+    // โหมดหาทางคิดคะแนนตอนจบทีเดียวจากจำนวนก้าวที่ใช้ ระหว่างทางจึงไม่ให้แต้ม
+    // ไม่งั้นเดินอ้อมยิ่งเยอะยิ่งได้คะแนน ซึ่งขัดกับเป้าหมายของโหมด
+    const gain = S.mode === "route" ? 0 : 100 + 25 * (S.streak - 1);
     S.score += gain;
     S.used.add(code);
     S.chain.push(code);
     S.cur = BY_CODE[code];
-    feedback("✅ " + S.cur.th + " ถูกต้อง! +" + gain + (S.streak > 1 ? " (ต่อเนื่อง " + S.streak + ")" : ""), "ok");
+    feedback(
+      S.mode === "route"
+        ? "✅ " + S.cur.th + " — ต่อได้ " + (S.chain.length - 1) + " ก้าวแล้ว"
+        : "✅ " + S.cur.th + " ถูกต้อง! +" + gain + (S.streak > 1 ? " (ต่อเนื่อง " + S.streak + ")" : ""),
+      "ok"
+    );
     if (navigator.vibrate) navigator.vibrate(30);
 
     if (S.mode === "turn") {
       nextTurn();
-    } else {
-      S.timeLeft = S.timeLeft; // โหมดช่วยกันใช้เวลารวม ไม่รีเซ็ต
     }
     render();
+
+    if (S.mode === "route") {
+      if (code === S.target.code) endGame("ถึงแล้ว");
+      return;
+    }
 
     // ตันเมื่อไม่เหลือเพื่อนบ้านที่ยังไม่ได้ใช้
     if (remainingNeighbors().length === 0) {
@@ -394,6 +512,66 @@ document.addEventListener("DOMContentLoaded", () => {
     const best = readBest();
     const isRecord = S.mode === "coop" && len > best;
     if (isRecord) writeBest(len);
+
+    if (S.mode === "route") {
+      const used = S.chain.length - 1;
+      const extra = Math.max(0, used - S.optimal);
+      const won = reason === "ถึงแล้ว";
+      // ถึงปลายทางด้วยทางที่สั้นที่สุด = เต็ม 1000 เกินมาก้าวละหัก 120 แต่ไม่ต่ำกว่า 200
+      S.score = won ? Math.max(200, 1000 - extra * 120) : 0;
+      $("bcEndIcon").textContent = won ? (extra === 0 ? "🎯" : "🏁") : reason === "หมดเวลา" ? "⌛" : "🏳️";
+      $("bcEndTitle").textContent = won
+        ? extra === 0
+          ? "ถึงแล้ว! และใช้ทางที่สั้นที่สุดด้วย"
+          : "ถึงแล้ว!"
+        : reason === "หมดเวลา"
+        ? "หมดเวลาก่อนถึง"
+        : "ยอมแพ้";
+      $("bcEndText").textContent = won
+        ? "จาก" + BY_CODE[S.chain[0]].th + " ถึง" + S.target.th + " ใช้ " + used + " ก้าว" +
+          (extra === 0 ? " เท่ากับทางที่สั้นที่สุดพอดี" : " (สั้นที่สุดคือ " + S.optimal + " ก้าว)")
+        : "เป้าหมายคือ" + S.target.th + " ยังไปไม่ถึง";
+
+      $("bcEndScore").textContent = S.score;
+      $("bcEndLen").textContent = used;
+      $("bcEndLenCap").textContent = "ก้าวที่ใช้";
+      $("bcEndBest").textContent = S.optimal;
+      $("bcEndBestCap").textContent = "สั้นที่สุด";
+      renderChain("bcEndChain");
+
+      // เฉลยทางที่สั้นที่สุดให้ดู จะได้รู้ว่าควรเดินทางไหน
+      const best = shortestPath(S.chain[0], S.target.code);
+      $("bcMissed").innerHTML = best
+        ? '<div class="bc-missed-head">ทางที่สั้นที่สุด (' + (best.length - 1) + " ก้าว)</div>" +
+          best.map((c) => '<span class="bc-missed-chip">' + esc(BY_CODE[c].th) + "</span>").join('<span class="bc-arrow">→</span>')
+        : "";
+
+      $("bcEndMapBox").classList.toggle("bc-hidden", !S.mapOn);
+      $("bcEndLegendGoal").classList.remove("bc-hidden");
+      $("bcEndLegendMiss").textContent = "ทางที่สั้นที่สุด";
+      if (S.mapOn) {
+        $("bcEndMapHolder").appendChild($("bcMapSvg"));
+        MAP.setClass(S.chain, "wm-used");
+        MAP.setClass(best || [], "wm-miss");
+        MAP.setClass([S.target.code], "wm-goal");
+        MAP.setClass([S.cur.code], "wm-now");
+        const pts = S.chain
+          .concat(best || [])
+          .map((c) => wmByCode(c))
+          .filter(Boolean)
+          .map((c) => ({ lat: c.lat, lon: c.lon }));
+        if (pts.length) MAP.fit(pts, 120);
+      }
+      show("bcEnd");
+      if (navigator.vibrate) navigator.vibrate([120, 60, 120]);
+      return;
+    }
+
+    $("bcEndLenCap").textContent = "ประเทศในโซ่";
+    $("bcEndBestCap").textContent = "สถิติสูงสุด";
+    $("bcEndLegendGoal").classList.add("bc-hidden");
+    $("bcEndLegendMiss").textContent = "ที่ยังไปต่อได้";
+    MAP.setClass([], "wm-goal");
 
     if (S.mode === "turn") {
       $("bcEndIcon").textContent = "🏆";

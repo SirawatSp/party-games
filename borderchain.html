@@ -34,6 +34,7 @@
         <div class="bc-switch" id="bcModeSwitch">
           <button class="bc-opt-btn active" data-mode="coop" type="button">ทั้งวงช่วยกัน 🤝</button>
           <button class="bc-opt-btn" data-mode="turn" type="button">ผลัดกันตอบ ⚔️</button>
+          <button class="bc-opt-btn" data-mode="route" type="button">หาทางไปให้ถึง 🎯</button>
         </div>
         <p class="bc-hint" id="bcModeHint"></p>
       </div>
@@ -69,6 +70,17 @@
         </div>
       </div>
 
+      <div class="bc-opt bc-hidden" id="bcRouteOpt">
+        <div class="bc-label">ไกลแค่ไหน</div>
+        <div class="bc-switch" id="bcRouteSwitch">
+          <button class="bc-opt-btn" data-steps="3" type="button">ใกล้ · 3 ต่อ</button>
+          <button class="bc-opt-btn active" data-steps="5" type="button">กลาง · 5 ต่อ</button>
+          <button class="bc-opt-btn" data-steps="7" type="button">ไกล · 7 ต่อ</button>
+          <button class="bc-opt-btn" data-steps="10" type="button">โหด · 10 ต่อ</button>
+        </div>
+        <p class="bc-hint">ตัวเลขคือจำนวนประเทศที่ต้องต่อ <b>อย่างน้อยที่สุด</b> ถึงจะไปถึงปลายทาง</p>
+      </div>
+
       <div class="bc-opt">
         <div class="bc-label">แผนที่ประกอบ</div>
         <div class="bc-switch" id="bcMapSwitch">
@@ -96,10 +108,16 @@
       <div class="bc-meta">
         <div class="bc-meta-item"><span class="bc-meta-num" id="bcClock">90</span><span class="bc-meta-cap" id="bcClockCap">วินาที</span></div>
         <div class="bc-meta-item"><span class="bc-meta-num" id="bcScore">0</span><span class="bc-meta-cap">คะแนน</span></div>
-        <div class="bc-meta-item"><span class="bc-meta-num" id="bcChainLen">1</span><span class="bc-meta-cap">ความยาวโซ่</span></div>
+        <div class="bc-meta-item"><span class="bc-meta-num" id="bcChainLen">1</span><span class="bc-meta-cap" id="bcChainCap">ความยาวโซ่</span></div>
       </div>
 
       <div class="bc-turn bc-hidden" id="bcTurnTag"></div>
+
+      <div class="bc-goal bc-hidden" id="bcGoal">
+        <span class="bc-goal-cap">ต้องไปให้ถึง</span>
+        <span class="bc-goal-name" id="bcGoalName"></span>
+        <span class="bc-goal-meta" id="bcGoalMeta"></span>
+      </div>
 
       <div class="bc-current">
         <div class="bc-cur-label">ตอนนี้อยู่ที่</div>
@@ -121,6 +139,7 @@
         <div class="bc-map-legend">
           <span><i class="bc-key bc-key-now"></i>ประเทศตอนนี้</span>
           <span><i class="bc-key bc-key-used"></i>ที่ต่อมาแล้ว</span>
+          <span class="bc-hidden" id="bcLegendGoal"><i class="bc-key bc-key-goal"></i>ปลายทาง</span>
         </div>
       </div>
 
@@ -144,8 +163,8 @@
       <p class="bc-end-text" id="bcEndText"></p>
       <div class="bc-meta">
         <div class="bc-meta-item"><span class="bc-meta-num" id="bcEndScore">0</span><span class="bc-meta-cap">คะแนน</span></div>
-        <div class="bc-meta-item"><span class="bc-meta-num" id="bcEndLen">0</span><span class="bc-meta-cap">ประเทศในโซ่</span></div>
-        <div class="bc-meta-item"><span class="bc-meta-num" id="bcEndBest">0</span><span class="bc-meta-cap">สถิติสูงสุด</span></div>
+        <div class="bc-meta-item"><span class="bc-meta-num" id="bcEndLen">0</span><span class="bc-meta-cap" id="bcEndLenCap">ประเทศในโซ่</span></div>
+        <div class="bc-meta-item"><span class="bc-meta-num" id="bcEndBest">0</span><span class="bc-meta-cap" id="bcEndBestCap">สถิติสูงสุด</span></div>
       </div>
       <div class="bc-chain" id="bcEndChain"></div>
       <div class="bc-map-box" id="bcEndMapBox">
@@ -153,7 +172,8 @@
         <div class="bc-map-legend">
           <span><i class="bc-key bc-key-now"></i>ประเทศสุดท้าย</span>
           <span><i class="bc-key bc-key-used"></i>เส้นทางที่ต่อมา</span>
-          <span><i class="bc-key bc-key-miss"></i>ที่ยังไปต่อได้</span>
+          <span><i class="bc-key bc-key-miss"></i><span id="bcEndLegendMiss">ที่ยังไปต่อได้</span></span>
+          <span class="bc-hidden" id="bcEndLegendGoal"><i class="bc-key bc-key-goal"></i>ปลายทาง</span>
         </div>
       </div>
       <div class="bc-missed" id="bcMissed"></div>
@@ -175,10 +195,23 @@
   </div>
 
   <div class="panel reveal-up">
-    <h2>2 โหมด</h2>
+    <h2>3 โหมด</h2>
     <ol>
       <li><b>🤝 ทั้งวงช่วยกัน</b> — ทุกคนช่วยกันตะโกนคำตอบ แข่งกับเวลาอย่างเดียว ทำสถิติโซ่ให้ยาวที่สุด เครื่องจำสถิติสูงสุดของเครื่องนี้ไว้ให้</li>
       <li><b>⚔️ ผลัดกันตอบ</b> — วนตอบทีละคน ใครตอบผิดหรือหมดเวลา <b>ตกรอบทันที</b> เหลือคนสุดท้ายคือผู้ชนะ โหมดนี้แหละที่เอาไว้เล่นในวง</li>
+      <li><b>🎯 หาทางไปให้ถึง</b> — มีประเทศตั้งต้นกับปลายทาง ต้องหาทางต่อประเทศไปให้ถึง ยิ่งใช้น้อยก้าวยิ่งได้คะแนนเยอะ</li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>🎯 โหมดหาทางไปให้ถึง</h2>
+    <ol>
+      <li>เครื่องสุ่ม <b>ประเทศตั้งต้น</b> กับ <b>ประเทศปลายทาง</b> มาให้ แล้วต่อประเทศที่ชายแดนติดกันไปเรื่อย ๆ จนถึงปลายทาง</li>
+      <li>โจทย์ทุกข้อ <b>มีทางไปถึงแน่นอน</b> เครื่องคำนวณไว้แล้วว่าอย่างน้อยต้องต่อกี่ประเทศ</li>
+      <li>โหมดนี้ <b>เดินซ้ำประเทศเดิมได้</b> ต่างจากโหมดอื่น จะได้ถอยออกจากทางตันแล้วลองใหม่ได้ แต่ทุกก้าวถูกนับหมด</li>
+      <li>ไปถึงด้วยจำนวนก้าว <b>เท่ากับทางที่สั้นที่สุด</b> ได้คะแนนเต็ม เกินมาก้าวละหักหน่อย</li>
+      <li>เปิดตัวช่วยไว้ เครื่องจะบอกว่า <b>เหลืออีกอย่างน้อยกี่ประเทศ</b> ถึงจะถึงปลายทาง ใช้ดูว่าเดินถูกทางไหม</li>
+      <li>จบเกมแล้วดูได้ว่า <b>ทางที่สั้นที่สุดคือทางไหน</b></li>
     </ol>
   </div>
 
