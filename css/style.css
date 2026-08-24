@@ -3599,3 +3599,15 @@ html.hc-fs .hc-topbar{padding-right:150px;}
 .bc-goal-meta{font-size:11.5px; color:var(--text-dim);}
 .wm-countries path.wm-goal,.wm-dots circle.wm-goal{fill:var(--gold); stroke:#fff4cc; stroke-width:1.4;}
 .bc-key-goal{background:var(--gold);}
+
+/* กดประเทศในโซ่เพื่อย้อนกลับ (เฉพาะโหมดหาทางไปให้ถึง) */
+.bc-link-back{
+  font-family:'Sarabun',sans-serif; font-size:inherit; color:var(--text);
+  cursor:pointer; transition:.15s;
+  /* บนจอสัมผัสไม่มี hover ต้องบอกตั้งแต่แรกว่ากดได้ ด้วยขอบสีทองจาง ๆ กับเส้นประใต้ตัวอักษร */
+  border-color:rgba(255,210,63,.45);
+  border-style:dashed;
+}
+.bc-link-back:hover,.bc-link-back:focus-visible{
+  border-color:var(--gold); border-style:solid; color:var(--gold); background:rgba(255,210,63,.12);
+}

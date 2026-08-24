@@ -378,6 +378,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const isRoute = S.mode === "route";
     $("bcGoal").classList.toggle("bc-hidden", !isRoute);
     $("bcLegendGoal").classList.toggle("bc-hidden", !isRoute);
+    // บอกวิธีย้อนกลับเฉพาะตอนมีอะไรให้ย้อนจริง ๆ
+    $("bcBackHint").classList.toggle("bc-hidden", !isRoute || S.chain.length < 2);
     $("bcChainCap").textContent = isRoute ? "ก้าวที่ใช้" : "ความยาวโซ่";
     $("bcChainLen").textContent = isRoute ? S.chain.length - 1 : S.chain.length;
 
@@ -410,18 +412,45 @@ document.addEventListener("DOMContentLoaded", () => {
     paintMap(false);
   }
   function renderChain(target) {
+    // โหมดหาทางกดย้อนกลับได้ ทำเป็นปุ่มจริงเพื่อให้กดด้วยคีย์บอร์ดและ screen reader ได้ด้วย
+    const canRewind = target === "bcChain" && S.mode === "route" && !S.over;
     $(target).innerHTML = S.chain
       .map((code, i) => {
         const c = BY_CODE[code];
         const last = i === S.chain.length - 1;
-        return (
-          '<span class="bc-link' + (last ? " bc-link-cur" : "") + '">' +
-          (i === 0 ? "🚩 " : "") + esc(c.th) +
-          "</span>"
-        );
+        const cls = "bc-link" + (last ? " bc-link-cur" : "") + (canRewind && !last ? " bc-link-back" : "");
+        const label = (i === 0 ? "🚩 " : "") + esc(c.th);
+        if (canRewind && !last) {
+          return (
+            '<button type="button" class="' + cls + '" data-back="' + i + '" title="ย้อนกลับมาที่' +
+            esc(c.th) + '">' + label + "</button>"
+          );
+        }
+        return '<span class="' + cls + '">' + label + "</span>";
       })
       .join('<span class="bc-arrow">→</span>');
   }
+
+  // กดประเทศที่เคยตอบไปแล้วเพื่อย้อนกลับไปจุดนั้น เผื่อเดินมาผิดทาง
+  // ตัดโซ่ทิ้งตั้งแต่จุดนั้นเป็นต้นไป ไม่ใช่เดินย้อนกลับ จำนวนก้าวจึงลดลงจริง
+  function rewindTo(index) {
+    if (S.over || S.mode !== "route") return;
+    if (index < 0 || index >= S.chain.length - 1) return;
+    const back = BY_CODE[S.chain[index]];
+    S.chain = S.chain.slice(0, index + 1);
+    S.used = new Set(S.chain);
+    S.cur = back;
+    S.streak = 0;
+    feedback("↩︎ ย้อนกลับมาที่" + back.th + " แล้ว — ลองทางใหม่ได้เลย", "ok");
+    render();
+    $("bcAnswer").focus();
+  }
+
+  $("bcChain").addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-back]");
+    if (!btn) return;
+    rewindTo(parseInt(btn.getAttribute("data-back"), 10));
+  });
 
   function feedback(msg, kind) {
     const el = $("bcFeedback");
