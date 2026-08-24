@@ -2,10 +2,10 @@
 // รันใหม่ทุกครั้งที่แก้ไขคลังโจทย์: node scripts/build-game-counts.js
 const GAME_COUNTS = {
   "category.html": { count: 358, unit: "หมวด" },
-  "charades.html": { count: 344, unit: "คำ" },
+  "charades.html": { count: 739, unit: "คำ" },
   "drinking-games.html": { count: 17, unit: "เกม" },
-  "flashquiz.html": { count: 251, unit: "คำถาม" },
-  "guess-number.html": { count: 89, unit: "โจทย์" },
+  "flashquiz.html": { count: 326, unit: "คำถาม" },
+  "guess-number.html": { count: 134, unit: "โจทย์" },
   "insider.html": { count: 446, unit: "คำ" },
   "matchup.html": { count: 291, unit: "คำถาม" },
   "personal-facts.html": { count: 372, unit: "หัวข้อ" },
