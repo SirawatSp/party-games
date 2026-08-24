@@ -12,6 +12,7 @@ const PAGES = [
   { page: "charades.html", unit: "คำ", files: [["charades.js", "CHARADES_WORDS"]] },
   { page: "drinking-games.html", unit: "เกม", files: [["drinking-games.js", "DRINKING_GAMES"]] },
   { page: "flashquiz.html", unit: "คำถาม", files: [["flashquiz.js", "FLASHQUIZ_LIST"]] },
+  { page: "flirt.html", unit: "สถานการณ์", files: [["flirt.js", "FLIRT_LIST"]] },
   { page: "guess-number.html", unit: "โจทย์", files: [["guess-number.js", "GUESS_NUMBER_LIST"]] },
   { page: "insider.html", unit: "คำ", files: [["insider.js", "INSIDER_WORDS"]] },
   { page: "matchup.html", unit: "คำถาม", files: [["matchup.js", "MATCHUP_LIST"]] },

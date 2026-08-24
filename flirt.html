@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>จีบหรือแค่นิสัยดี — เกมตัดสินใจว่านี่คือจีบหรือแค่นิสัยดี</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0c0710">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <a class="brand-logo" href="index.html"><img class="brand-img" src="assets/logo.png" width="720" height="416" alt="Party Games — วงกำลังจะเหงา"></a>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head reveal-up">
+    <span class="kicker" style="background:var(--rose); color:#2b0713;">28 · เถียงกัน · ความรัก</span>
+    <h1>จีบหรือแค่นิสัยดี</h1>
+    <p>เครื่องสุ่มสถานการณ์มาให้ <b>ทั้งวงตัดสินพร้อมกัน</b> ว่านี่คือจีบ หรือเขาแค่เป็นคนนิสัยดี — ไม่มีคำตอบถูก สนุกตรงที่เถียงกันนี่แหละ</p>
+  </section>
+
+  <div class="fl-wrap">
+    <div class="fl-cats" id="flCats"></div>
+
+    <div class="fl-card" id="flCard">
+      <div class="fl-cat-tag" id="flCatTag"></div>
+      <div class="fl-text" id="flText">กดปุ่มข้างล่างเพื่อเริ่ม</div>
+
+      <div class="fl-twist fl-hidden" id="flTwist"></div>
+
+      <div class="fl-vote" id="flVote">
+        <button class="fl-btn fl-btn-flirt" id="flFlirtBtn" type="button">จีบชัด ๆ 😏</button>
+        <button class="fl-btn fl-btn-friend" id="flFriendBtn" type="button">แค่นิสัยดี 🙂</button>
+      </div>
+      <p class="fl-verdict" id="flVerdict"></p>
+    </div>
+
+    <div class="fl-actions">
+      <button class="btn" id="flNextBtn" type="button">สถานการณ์ต่อไป →</button>
+      <button class="btn secondary" id="flTwistBtn" type="button">พลิกสถานการณ์ 🔀</button>
+    </div>
+
+    <div class="fl-score" id="flScore"></div>
+    <button class="fl-reset" id="flResetBtn" type="button">ล้างสถิติของวงนี้</button>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเล่น</h2>
+    <ol>
+      <li>เครื่องสุ่มสถานการณ์ขึ้นมา ให้ทุกคนอ่านพร้อมกัน</li>
+      <li>นับ <b>3-2-1</b> แล้วทุกคนตอบพร้อมกันว่า <b>"จีบ"</b> หรือ <b>"นิสัยดี"</b></li>
+      <li>กดปุ่มฝั่งที่คนในวงตอบมากกว่า เครื่องจะเก็บสถิติของวงไว้ให้</li>
+      <li>ใครตอบไม่เหมือนคนอื่น <b>ต้องอธิบายให้ฟังว่าทำไม</b> — ตรงนี้แหละของจริง</li>
+      <li>ถ้าวงเถียงกันไม่จบ กด <b>พลิกสถานการณ์</b> เพื่อเปลี่ยนเงื่อนไข แล้วดูว่าคำตอบเปลี่ยนไหม</li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>ทำไมถึงไม่มีเฉลย</h2>
+    <ol>
+      <li>เกมนี้ <b>ไม่มีคำตอบถูกผิด</b> สถานการณ์ทุกข้อคัดมาให้เถียงได้จริงทั้งสองทาง ถ้าชัดเจนไปทางใดทางหนึ่งก็ไม่ต้องเล่นแล้ว</li>
+      <li>ปุ่มโหวตมีไว้เก็บสถิติว่า <b>วงนี้คิดยังไง</b> ไม่ใช่ให้เครื่องตัดสิน</li>
+      <li><b>ตัวพลิกสถานการณ์</b> เปลี่ยนแค่เงื่อนไขเดียว แต่มักทำให้คำตอบทั้งวงพลิกทันที ลองดูว่าจริงไหม</li>
+      <li>สถานการณ์ทั้งหมดเป็นเรื่องสมมติที่แต่งขึ้น ไม่ได้อ้างอิงใครจริง ๆ</li>
+    </ol>
+  </div>
+
+  <footer>บางทีเขาก็แค่นิสัยดีจริง ๆ นะ 🙂</footer>
+</div>
+
+<script src="data/flirt.js"></script>
+<script src="js/main.js"></script>
+<script src="js/flirt.js"></script>
+</body>
+</html>

@@ -3611,3 +3611,60 @@ html.hc-fs .hc-topbar{padding-right:150px;}
 .bc-link-back:hover,.bc-link-back:focus-visible{
   border-color:var(--gold); border-style:solid; color:var(--gold); background:rgba(255,210,63,.12);
 }
+
+/* ==================== 28 · จีบหรือแค่นิสัยดี ==================== */
+:root{ --flirt:#ff5c8a; }
+.chip-flirt{--accent:var(--flirt);} .chip-flirt .glow{color:var(--flirt);}
+
+.fl-hidden{display:none !important;}
+.fl-wrap{margin:22px 0 30px;}
+
+.fl-cats{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:18px;}
+.fl-cat{
+  font-family:'Kanit',sans-serif; font-weight:600; font-size:13px;
+  padding:8px 14px; border-radius:999px; cursor:pointer; transition:.2s;
+  background:transparent; color:var(--text-dim); border:1px solid var(--line);
+}
+.fl-cat:hover{border-color:var(--flirt); color:var(--text);}
+.fl-cat.active{background:var(--flirt); border-color:var(--flirt); color:#2b0713;}
+.fl-cat-n{opacity:.65; font-size:11px;}
+
+.fl-card{
+  background:linear-gradient(155deg, rgba(255,92,138,.13), rgba(255,92,138,.03));
+  border:1px solid var(--flirt); border-radius:22px;
+  padding:26px 20px; text-align:center;
+}
+@keyframes flPop{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+.fl-pop{animation:flPop .22s ease-out;}
+.fl-cat-tag{
+  display:inline-block; font-size:11.5px; color:var(--text-dim);
+  background:rgba(255,255,255,.06); border:1px solid var(--line);
+  border-radius:999px; padding:4px 12px; margin-bottom:14px;
+}
+.fl-text{font-family:'Kanit',sans-serif; font-weight:700; font-size:20px; line-height:1.55;}
+.fl-twist{
+  margin-top:16px; font-size:14.5px; line-height:1.6; color:var(--gold);
+  background:rgba(255,210,63,.1); border:1px dashed var(--gold);
+  border-radius:14px; padding:11px 14px;
+}
+.fl-vote{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:20px;}
+.fl-btn{
+  font-family:'Kanit',sans-serif; font-weight:700; font-size:15px;
+  padding:13px 22px; border-radius:14px; cursor:pointer; transition:.18s;
+  border:2px solid var(--line); background:rgba(255,255,255,.04); color:var(--text);
+  flex:1 1 150px; max-width:220px;
+}
+.fl-btn-flirt:hover{border-color:var(--flirt); color:var(--flirt);}
+.fl-btn-friend:hover{border-color:var(--mint); color:var(--mint);}
+.fl-btn-flirt.chosen{background:var(--flirt); border-color:var(--flirt); color:#2b0713;}
+.fl-btn-friend.chosen{background:var(--mint); border-color:var(--mint); color:#022016;}
+.fl-verdict{font-size:13.5px; color:var(--text-dim); margin-top:14px; min-height:20px; line-height:1.6;}
+
+.fl-actions{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:18px;}
+.fl-score{font-size:13.5px; color:var(--text-dim); text-align:center; margin-top:18px; line-height:1.8;}
+.fl-mood{color:var(--flirt);}
+.fl-reset{
+  display:block; margin:10px auto 0; font-size:12px; cursor:pointer;
+  background:transparent; border:none; color:var(--text-dim); text-decoration:underline;
+}
+.fl-reset:hover{color:var(--rose);}

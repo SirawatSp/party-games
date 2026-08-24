@@ -1,7 +1,7 @@
 // Service Worker สำหรับเล่นออฟไลน์ได้ทั้งเว็บ (เก็บ cache ทุกหน้า/สคริปต์/คลังโจทย์ไว้ในเครื่อง)
 // เปิดเว็บครั้งแรกตอนมีเน็ต ระบบจะโหลดเก็บไว้ให้อัตโนมัติ ครั้งต่อไปเปิดได้แม้ไม่มีเน็ตเลย
 // อัปเดตเนื้อหาเว็บทีไร ให้เปลี่ยนเลข CACHE_VERSION เพื่อบังคับดาวน์โหลดของใหม่ทับของเก่า
-const CACHE_VERSION = "party-games-v35";
+const CACHE_VERSION = "party-games-v36";
 
 // หมายเหตุ: เกม "ทายถนน" (street-scene) เก็บโครงหน้า แผนที่ และคลังสถานที่ไว้
 // โหมด "สถานที่สำคัญ" จึงเล่นได้เต็มรูปแบบตอนออฟไลน์
@@ -23,6 +23,7 @@ const PRECACHE_URLS = [
   "fake-artist.html",
   "fake-artist-online.html",
   "flashquiz.html",
+  "flirt.html",
   "guess-number.html",
   "hues-and-cues.html",
   "insider.html",
@@ -54,6 +55,7 @@ const PRECACHE_URLS = [
   "js/fake-artist-online.js",
   "js/net-room.js",
   "js/flashquiz.js",
+  "js/flirt.js",
   "js/guess-number.js",
   "js/hues-and-cues.js",
   "js/insider.js",
@@ -84,6 +86,7 @@ const PRECACHE_URLS = [
   "data/favorites.js",
   "data/fake-artist.js",
   "data/flashquiz.js",
+  "data/flirt.js",
   "data/game-counts.js",
   "data/guess-number.js",
   "data/hues-and-cues.js",
