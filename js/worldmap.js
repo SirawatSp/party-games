@@ -159,12 +159,17 @@ function wmCreateMap(svg, opts) {
   var answerPin = svg.querySelector(".wm-pin-answer");
   var highlighted = null;
 
+  var lastK = -1;
   function apply() {
     svg.setAttribute("viewBox", view.x + " " + view.y + " " + view.w + " " + view.h);
     // หมุดกับเส้นต้องคงขนาดบนจอเท่าเดิมไม่ว่าจะซูมแค่ไหน
     var k = view.w / WORLD_MAP.width;
-    svg.style.setProperty("--wm-k", k);
-    for (var di = 0; di < dotEls.length; di++) dotEls[di].setAttribute("r", Math.max(1.2, 4 * k));
+    // ตอนลากอย่างเดียวความกว้างไม่เปลี่ยน ขนาดหมุด/จุดก็ไม่ต้องเขียนใหม่
+    if (k !== lastK) {
+      lastK = k;
+      svg.style.setProperty("--wm-k", k);
+      for (var di = 0; di < dotEls.length; di++) dotEls[di].setAttribute("r", Math.max(1.2, 4 * k));
+    }
     [guessPin, answerPin].forEach(function (pin) {
       var lat = pin.getAttribute("data-lat");
       if (lat === null) return;
@@ -173,11 +178,26 @@ function wmCreateMap(svg, opts) {
     });
   }
 
+  // ขนาดและตำแหน่งของกล่องบนจอ — แคชไว้ ห้ามเรียก getBoundingClientRect ทุกครั้งที่นิ้วขยับ
+  // เพราะเรียกทันทีหลังแก้ viewBox = บังคับเบราว์เซอร์คำนวณ layout ของเส้นทั้งแผนที่ใหม่
+  // นิ้วลากบนจอ 120Hz จะกลายเป็นบังคับ layout 240 ครั้งต่อวินาที กระตุกชัดบนมือถือ
+  var rectCache = null;
+  function rect() {
+    if (!rectCache) rectCache = svg.getBoundingClientRect();
+    return rectCache;
+  }
+  function invalidateRect() {
+    rectCache = null;
+  }
+  // ตำแหน่งกล่องเปลี่ยนได้เมื่อหน้าเลื่อนหรือจอหมุน ล้างแคชตอนนั้นและตอนเริ่มแตะทุกครั้ง
+  window.addEventListener("scroll", invalidateRect, { passive: true });
+  window.addEventListener("resize", invalidateRect);
+
   // สัดส่วนของกล่องจริงบนหน้าจอ — ต้องให้ viewBox สูงเท่ากับสัดส่วนนี้เสมอ
   // ไม่งั้น SVG จะย่อ viewBox ให้พอดีกรอบแล้วโชว์แผนที่ส่วนที่อยู่นอก viewBox เพิ่มมาด้วย
   // ผลคือระดับซูมที่คำนวณไว้เพี้ยนไปตามขนาดจอของแต่ละเครื่อง
   function aspect() {
-    var r = svg.getBoundingClientRect();
+    var r = rect();
     return r.width && r.height ? r.width / r.height : home.w / home.h;
   }
 
@@ -195,7 +215,7 @@ function wmCreateMap(svg, opts) {
   }
 
   function zoomAt(factor, clientX, clientY) {
-    var r = svg.getBoundingClientRect();
+    var r = rect();
     var fx = r.width ? (clientX - r.left) / r.width : 0.5;
     var fy = r.height ? (clientY - r.top) / r.height : 0.5;
     var ax = view.x + fx * view.w;
@@ -209,12 +229,57 @@ function wmCreateMap(svg, opts) {
   }
 
   function toUser(clientX, clientY) {
-    var r = svg.getBoundingClientRect();
+    var r = rect();
     if (!r.width || !r.height) return null;
     return {
       x: view.x + ((clientX - r.left) / r.width) * view.w,
       y: view.y + ((clientY - r.top) / r.height) * view.h,
     };
+  }
+
+  // ---- รวมการขยับนิ้วเป็นการวาดครั้งเดียวต่อเฟรม ----
+  //
+  // นิ้วบนจอมือถือส่งเหตุการณ์ได้ถี่กว่าจอวาดจริง (120-240Hz เทียบกับ 60fps)
+  // ถ้าคำนวณและเขียน viewBox ทุกเหตุการณ์ = ทำงานทิ้งเปล่าหลายรอบต่อหนึ่งเฟรม
+  // จึงเก็บระยะที่ขยับสะสมไว้ แล้วค่อยคิดทีเดียวตอนเบราว์เซอร์พร้อมวาดเฟรมถัดไป
+  var pendingPan = null;
+  var pendingZoom = null;
+  var rafId = 0;
+
+  function schedule() {
+    if (rafId) return;
+    rafId = requestAnimationFrame(function () {
+      rafId = 0;
+      flushPending();
+    });
+  }
+
+  function flushPending() {
+    if (pendingZoom) {
+      var z = pendingZoom;
+      pendingZoom = null;
+      pendingPan = null;
+      zoomAt(z.factor, z.x, z.y);
+      return;
+    }
+    if (!pendingPan) return;
+    var p = pendingPan;
+    pendingPan = null;
+    var r = rect();
+    if (!r.width) return;
+    view.x -= (p.dx / r.width) * view.w;
+    view.y -= (p.dy / r.height) * view.h;
+    clamp();
+    apply();
+  }
+
+  // ปล่อยนิ้วแล้วต้องวาดส่วนที่ค้างทันที ไม่ต้องรอเฟรมถัดไป
+  function flushNow() {
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
+    flushPending();
   }
 
   // ---- การกด/ลาก/หนีบ ----
@@ -232,6 +297,8 @@ function wmCreateMap(svg, opts) {
 
   svg.addEventListener("pointerdown", function (e) {
     if (locked) return;
+    invalidateRect();
+    svg.classList.add("wm-busy");
     pointers[e.pointerId] = { x: e.clientX, y: e.clientY };
     if (Object.keys(pointers).length === 1) {
       dragged = 0;
@@ -254,12 +321,13 @@ function wmCreateMap(svg, opts) {
     var n = Object.keys(pointers).length;
     if (n === 1) {
       dragged += Math.abs(dx) + Math.abs(dy);
-      var r = svg.getBoundingClientRect();
-      if (!r.width) return;
-      view.x -= (dx / r.width) * view.w;
-      view.y -= (dy / r.height) * view.h;
-      clamp();
-      apply();
+      if (pendingPan) {
+        pendingPan.dx += dx;
+        pendingPan.dy += dy;
+      } else {
+        pendingPan = { dx: dx, dy: dy };
+      }
+      schedule();
     } else if (n === 2 && pinchStart) {
       dragged += 20;
       var l = pointerList();
@@ -267,7 +335,9 @@ function wmCreateMap(svg, opts) {
       if (dist > 4 && pinchStart.dist > 4) {
         var mid = { x: (l[0].x + l[1].x) / 2, y: (l[0].y + l[1].y) / 2 };
         var want = pinchStart.w * (pinchStart.dist / dist);
-        zoomAt(want / view.w, mid.x, mid.y);
+        // เก็บเป้าหมายล่าสุดไว้พอ ค่าเก่าระหว่างเฟรมไม่มีประโยชน์แล้ว
+        pendingZoom = { factor: want / view.w, x: mid.x, y: mid.y };
+        schedule();
       }
     }
   });
@@ -277,6 +347,8 @@ function wmCreateMap(svg, opts) {
     var wasSingle = Object.keys(pointers).length === 1;
     delete pointers[e.pointerId];
     if (Object.keys(pointers).length < 2) pinchStart = null;
+    if (!Object.keys(pointers).length) svg.classList.remove("wm-busy");
+    flushNow();
     if (locked || !wasSingle) return;
     if (dragged < 6 && Date.now() - downAt < 600 && opts.onPick) {
       var u = toUser(e.clientX, e.clientY);
@@ -291,6 +363,8 @@ function wmCreateMap(svg, opts) {
   svg.addEventListener("pointercancel", function (e) {
     delete pointers[e.pointerId];
     pinchStart = null;
+    if (!Object.keys(pointers).length) svg.classList.remove("wm-busy");
+    flushNow();
   });
 
   svg.addEventListener(
@@ -440,7 +514,9 @@ function wmCreateMap(svg, opts) {
       apply();
     },
     zoomBy: function (factor) {
-      var r = svg.getBoundingClientRect();
+      // มาจากการกดปุ่ม ไม่ใช่เส้นทางร้อน วัดใหม่ให้ชัวร์ (หน้าอาจถูกเลื่อนมาก่อน)
+      invalidateRect();
+      var r = rect();
       zoomAt(factor, r.left + r.width / 2, r.top + r.height / 2);
     },
   };
@@ -449,12 +525,14 @@ function wmCreateMap(svg, opts) {
   // พอกล่องโผล่มาจริงหรือหมุนจอ สัดส่วนเปลี่ยน ต้องคำนวณ viewBox ใหม่ ไม่งั้นค้างค่าเก่า
   if (typeof ResizeObserver !== "undefined") {
     var ro = new ResizeObserver(function () {
+      invalidateRect();
       clamp();
       apply();
     });
     ro.observe(svg);
   } else {
     window.addEventListener("resize", function () {
+      invalidateRect();
       clamp();
       apply();
     });

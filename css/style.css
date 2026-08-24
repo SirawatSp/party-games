@@ -196,17 +196,23 @@ a{color:inherit; text-decoration:none;}
 .card:nth-child(7){transform:rotate(1.1deg);}
 .card:hover{ transform:scale(1.03) rotate(0deg); box-shadow:var(--shadow-pink); border-color:var(--pink); }
 
+/* หน้าแรกมีการ์ด 27 ใบ ใบละหนึ่งวง ถ้าใช้ filter:blur เบราว์เซอร์ต้องแรสเตอร์เบลอ 27 รอบ
+   ตอนเปิดหน้า radial-gradient ให้หน้าตาเหมือนกันแต่วาดตรง ๆ ไม่ต้องผ่านตัวกรอง */
 .card .glow{
-  position:absolute; width:180px; height:180px; border-radius:50%;
-  filter:blur(60px); opacity:.35; z-index:0;
-  top:-60px; right:-60px;
+  position:absolute; width:300px; height:300px; border-radius:50%;
+  opacity:.35; z-index:0;
+  top:-120px; right:-120px;
+  background:radial-gradient(closest-side, currentColor, transparent 70%);
 }
 .card-count{
   position:absolute; top:16px; right:16px; z-index:2;
   font-family:'Kanit',sans-serif; font-weight:700; font-size:12px;
-  color:var(--text); background:rgba(12,7,16,.55);
+  color:var(--text); background:rgba(12,7,16,.82);
   border:1px solid var(--line); border-radius:999px;
-  padding:4px 11px; backdrop-filter:blur(4px);
+  /* เดิมมี backdrop-filter:blur(4px) แต่มีป้ายแบบนี้ 24 ใบบนหน้าเดียว
+     แต่ละใบบังคับให้เบราว์เซอร์แยกเลเยอร์แล้วอ่านพื้นหลังมาเบลอ แพงมากบนมือถือ
+     พื้นหลังทึบขึ้นอีกนิดแทน ตาแทบแยกไม่ออกแต่เบากว่าเยอะ */
+  padding:4px 11px;
   pointer-events:none; white-space:nowrap;
 }
 .card .num{
@@ -251,25 +257,25 @@ a{color:inherit; text-decoration:none;}
 .card:hover .go svg{transform:translateX(6px);}
 
 /* accent chip colors per card */
-.chip-pink{--accent:var(--pink);} .chip-pink .glow{background:var(--pink);}
-.chip-cyan{--accent:var(--cyan);} .chip-cyan .glow{background:var(--cyan);}
-.chip-lime{--accent:var(--lime);} .chip-lime .glow{background:var(--lime);}
-.chip-amber{--accent:var(--amber);} .chip-amber .glow{background:var(--amber);}
-.chip-violet{--accent:var(--violet);} .chip-violet .glow{background:var(--violet);}
-.chip-orange{--accent:var(--orange);} .chip-orange .glow{background:var(--orange);}
-.chip-teal{--accent:var(--teal);} .chip-teal .glow{background:var(--teal);}
-.chip-indigo{--accent:var(--indigo);} .chip-indigo .glow{background:var(--indigo);}
-.chip-crimson{--accent:var(--crimson);} .chip-crimson .glow{background:var(--crimson);}
-.chip-gold{--accent:var(--gold);} .chip-gold .glow{background:var(--gold);}
-.chip-sky{--accent:var(--sky);} .chip-sky .glow{background:var(--sky);}
-.chip-coral{--accent:var(--coral);} .chip-coral .glow{background:var(--coral);}
-.chip-mint{--accent:var(--mint);} .chip-mint .glow{background:var(--mint);}
-.chip-rose{--accent:var(--rose);} .chip-rose .glow{background:var(--rose);}
-.chip-grape{--accent:var(--grape);} .chip-grape .glow{background:var(--grape);}
-.chip-milktea{--accent:var(--milktea);} .chip-milktea .glow{background:var(--milktea);}
-.chip-croc{--accent:var(--croc);} .chip-croc .glow{background:var(--croc);}
-.chip-taxi{--accent:var(--taxi);} .chip-taxi .glow{background:var(--taxi);}
-.chip-race{--accent:var(--race);} .chip-race .glow{background:var(--race);}
+.chip-pink{--accent:var(--pink);} .chip-pink .glow{color:var(--pink);}
+.chip-cyan{--accent:var(--cyan);} .chip-cyan .glow{color:var(--cyan);}
+.chip-lime{--accent:var(--lime);} .chip-lime .glow{color:var(--lime);}
+.chip-amber{--accent:var(--amber);} .chip-amber .glow{color:var(--amber);}
+.chip-violet{--accent:var(--violet);} .chip-violet .glow{color:var(--violet);}
+.chip-orange{--accent:var(--orange);} .chip-orange .glow{color:var(--orange);}
+.chip-teal{--accent:var(--teal);} .chip-teal .glow{color:var(--teal);}
+.chip-indigo{--accent:var(--indigo);} .chip-indigo .glow{color:var(--indigo);}
+.chip-crimson{--accent:var(--crimson);} .chip-crimson .glow{color:var(--crimson);}
+.chip-gold{--accent:var(--gold);} .chip-gold .glow{color:var(--gold);}
+.chip-sky{--accent:var(--sky);} .chip-sky .glow{color:var(--sky);}
+.chip-coral{--accent:var(--coral);} .chip-coral .glow{color:var(--coral);}
+.chip-mint{--accent:var(--mint);} .chip-mint .glow{color:var(--mint);}
+.chip-rose{--accent:var(--rose);} .chip-rose .glow{color:var(--rose);}
+.chip-grape{--accent:var(--grape);} .chip-grape .glow{color:var(--grape);}
+.chip-milktea{--accent:var(--milktea);} .chip-milktea .glow{color:var(--milktea);}
+.chip-croc{--accent:var(--croc);} .chip-croc .glow{color:var(--croc);}
+.chip-taxi{--accent:var(--taxi);} .chip-taxi .glow{color:var(--taxi);}
+.chip-race{--accent:var(--race);} .chip-race .glow{color:var(--race);}
 
 /* ---------- footer ---------- */
 footer{
@@ -1671,13 +1677,17 @@ body::after{
 @media (prefers-reduced-motion:no-preference){
   html::after{
     content:"";
-    position:fixed; left:0; right:0; top:-40vh; height:40vh;
+    position:fixed; left:0; right:0; top:0; height:40vh;
     z-index:9997; pointer-events:none; opacity:.045;
     background:linear-gradient(180deg, transparent, rgba(150,225,255,.85), transparent);
+    /* ใช้ transform ไม่ใช่ top: transform วาดบนเลเยอร์แยกโดยไม่ต้องคำนวณ layout ใหม่
+       ของเดิมอนิเมต top ทำให้เบราว์เซอร์คำนวณ layout ทั้งหน้าใหม่ราว 60 ครั้งต่อวินาที
+       ตลอดเวลาที่เปิดเว็บทิ้งไว้ ทั้งที่หน้าจอไม่มีอะไรขยับ */
+    will-change:transform;
     animation:crtSweep 7s linear infinite;
   }
 }
-@keyframes crtSweep{ 0%{top:-42vh;} 100%{top:142vh;} }
+@keyframes crtSweep{ 0%{transform:translateY(-42vh);} 100%{transform:translateY(142vh);} }
 
 /* ---------- หัวข้อใหญ่: RGB split แบบจอ CRT ---------- */
 .hero h1, .page-head h1{
@@ -1815,7 +1825,7 @@ footer::before{
 
 /* ================= HUES & CUES (ทายเฉดสี) ================= */
 :root{ --hues:#e879f9; }
-.chip-hues{--accent:var(--hues);} .chip-hues .glow{background:var(--hues);}
+.chip-hues{--accent:var(--hues);} .chip-hues .glow{color:var(--hues);}
 
 .hc-stage{
   background:#0a0610;
@@ -2178,7 +2188,7 @@ html.hc-fs .hc-topbar{padding-right:150px;}
 
 /* ================= ของโปรดของเธอ (FAVORITES · เปิดบทสนทนา) ================= */
 :root{ --fav:#c4b5fd; }
-.chip-fav{--accent:var(--fav);} .chip-fav .glow{background:var(--fav);}
+.chip-fav{--accent:var(--fav);} .chip-fav .glow{color:var(--fav);}
 
 .fav-hidden{display:none !important;}
 
@@ -2331,7 +2341,7 @@ html.hc-fs .hc-topbar{padding-right:150px;}
 
 /* ================= ถามไวตอบไว (RAPID FIRE · บอกมา 3 อย่าง) ================= */
 :root{ --rapid:#ff9500; }
-.chip-rapid{--accent:var(--rapid);} .chip-rapid .glow{background:var(--rapid);}
+.chip-rapid{--accent:var(--rapid);} .chip-rapid .glow{color:var(--rapid);}
 
 .rf-hidden{display:none !important;}
 
@@ -2509,7 +2519,7 @@ html.hc-fs .hc-topbar{padding-right:150px;}
 
 /* ================= ศิลปินตัวปลอม (FAKE ARTIST · วาดจับโกหก) ================= */
 :root{ --fake:#ffe600; }
-.chip-fake{--accent:var(--fake);} .chip-fake .glow{background:var(--fake);}
+.chip-fake{--accent:var(--fake);} .chip-fake .glow{color:var(--fake);}
 
 .fa-hidden{display:none !important;}
 .fa-stage-wrap{margin:22px 0;}
@@ -3393,7 +3403,7 @@ html.hc-fs .hc-topbar{padding-right:150px;}
 
 /* ==================== 27 · ทายถนน ==================== */
 :root{ --street:#38bdf8; }
-.chip-street{--accent:var(--street);} .chip-street .glow{background:var(--street);}
+.chip-street{--accent:var(--street);} .chip-street .glow{color:var(--street);}
 
 .ss-hidden{display:none !important;}
 .ss-wrap{margin:22px 0 30px;}
@@ -3475,7 +3485,18 @@ html.hc-fs .hc-topbar{padding-right:150px;}
 /* ---- ตัวแผนที่ ---- */
 .wm-filler path{fill:#2a3850; stroke:none;}
 .wm-countries path{fill:#3d5273; stroke:#7d93b5; stroke-width:.8; vector-effect:non-scaling-stroke;}
-.wm-countries path:hover{fill:#516c96;}
+
+/* บนจอสัมผัสไม่มี hover อยู่แล้ว และการให้เบราว์เซอร์หาว่านิ้วโดนประเทศไหน
+   ต้องไล่ทดสอบเส้นทั้ง 165 ประเทศทุกครั้งที่นิ้วขยับ ปิดไปเลยจะลื่นกว่ามาก
+   (เกมไม่ได้ใช้ DOM ตัดสินว่าแตะโดนประเทศไหน ใช้การคำนวณจากพิกัดแทน) */
+.wm-countries path,.wm-filler path,.wm-dots circle,.wm-marks{pointer-events:none;}
+@media (hover:hover) and (pointer:fine){
+  .wm-countries path{pointer-events:auto;}
+  .wm-countries path:hover{fill:#516c96;}
+}
+
+/* ระหว่างลาก/หนีบ ยอมลดความคมของเส้นเพื่อให้วาดทันเฟรม พอปล่อยนิ้วค่อยคมเหมือนเดิม */
+.wm-busy .wm-countries path,.wm-busy .wm-filler path{shape-rendering:optimizeSpeed;}
 .wm-countries path.wm-hit{fill:var(--street); opacity:.55;}
 .wm-line{stroke:var(--gold); stroke-width:2; stroke-dasharray:6 5; fill:none; vector-effect:non-scaling-stroke;}
 .wm-pin circle{stroke:#05010a; stroke-width:2; vector-effect:non-scaling-stroke;}
