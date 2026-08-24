@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const MODE_HINT = {
     coop: "ทุกคนช่วยกันตะโกนคำตอบ แข่งกับเวลาอย่างเดียว เครื่องจำสถิติสูงสุดของเครื่องนี้ไว้ให้",
     turn: "วนตอบทีละคน ใครตอบผิดหรือหมดเวลาตกรอบทันที เหลือคนสุดท้ายคือผู้ชนะ",
-    route: "มีประเทศตั้งต้นกับปลายทางมาให้ ต้องต่อประเทศไปให้ถึง · เดินซ้ำได้ ยิ่งใช้น้อยก้าวยิ่งได้คะแนนเยอะ",
+    route: "มีประเทศตั้งต้นกับปลายทางมาให้ ต้องต่อประเทศไปให้ถึง · เดินซ้ำได้ ไม่จำกัดจำนวนก้าว ปลายทางยิ่งไกลยิ่งได้คะแนนเยอะ",
   };
   const MAP_HINT = {
     on: "ซูมไปที่ประเทศปัจจุบันให้อัตโนมัติ จะได้เห็นว่ารอบ ๆ มีประเทศอะไรบ้าง (ไม่บอกชื่อนะ)",
@@ -14,6 +14,15 @@ document.addEventListener("DOMContentLoaded", () => {
     on: "บอกว่าประเทศปัจจุบันเหลือเพื่อนบ้านที่ยังไม่ได้ใช้กี่ประเทศ",
     off: "ไม่บอกอะไรเลย ต้องรู้เองล้วน ๆ",
   };
+  // โหมดหาทางใช้ตัวช่วยคนละอย่าง จึงต้องอธิบายคนละแบบ
+  const HINT_HINT_ROUTE = {
+    on: "บอกว่าจากประเทศปัจจุบันเหลืออีกอย่างน้อยกี่ก้าวถึงจะถึงปลายทาง ใช้ดูว่าเดินถูกทางไหม",
+    off: "ไม่บอกอะไรเลย ต้องหาทางเอง",
+  };
+  function updateHintHint() {
+    const table = S.mode === "route" ? HINT_HINT_ROUTE : HINT_HINT;
+    $("bcHintHint").textContent = table[S.hintOn ? "on" : "off"];
+  }
   const BEST_KEY = "pg_borderchain_best";
 
   // ---------- เตรียมข้อมูลค้นหา ----------
@@ -79,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return path;
   }
 
-  // สุ่มโจทย์ที่ต้องต่ออย่างน้อย steps ประเทศพอดี
+  // สุ่มโจทย์ที่ต้องต่ออย่างน้อย steps ประเทศพอดี — ส่ง steps = 0 คือไม่ล็อกระยะ สุ่มอิสระ
   // กราฟพรมแดนโลกไม่ได้เชื่อมกันทั้งหมด (ทวีปอเมริกาแยกจากยูเรเซีย-แอฟริกา
   // และมีคู่เกาะอย่างไอร์แลนด์-สหราชอาณาจักรที่เดินไปไหนไม่ได้ไกล)
   // จึงต้องสุ่มตั้งต้นแล้วเช็กว่ามีปลายทางที่ระยะเท่านี้จริงไหม ไม่เจอก็สุ่มใหม่
@@ -90,10 +99,13 @@ document.addEventListener("DOMContentLoaded", () => {
       // ตั้งต้นที่ประเทศซึ่งมีเพื่อนบ้านอย่างน้อย 2 ประเทศ ไม่งั้นก้าวแรกถูกบังคับ ไม่ต้องคิดเลย
       if (start.borders.length < 2) continue;
       const { dist } = bfs(start.code);
-      const targets = Object.keys(dist).filter((code) => dist[code] === steps);
+      // สุ่มอิสระ: เอาปลายทางไหนก็ได้ที่เดินถึง ขอแค่ไม่ใช่ประเทศติดกันเฉย ๆ
+      const targets = Object.keys(dist).filter((code) =>
+        steps > 0 ? dist[code] === steps : dist[code] >= 2
+      );
       if (!targets.length) continue;
       const target = targets[Math.floor(Math.random() * targets.length)];
-      return { start: start, target: BY_CODE[target], optimal: steps };
+      return { start: start, target: BY_CODE[target], optimal: dist[target] };
     }
     return null;
   }
@@ -181,6 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
       $("bcPlayerOpt").classList.toggle("bc-hidden", S.mode !== "turn");
       $("bcTimeOpt").classList.toggle("bc-hidden", S.mode === "turn");
       $("bcRouteOpt").classList.toggle("bc-hidden", S.mode !== "route");
+      updateHintHint();
       warn("");
     });
   });
@@ -244,7 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
       $("bcHintSwitch").querySelectorAll("[data-hint]").forEach((x) => x.classList.remove("active"));
       b.classList.add("active");
       S.hintOn = b.dataset.hint === "on";
-      $("bcHintHint").textContent = HINT_HINT[S.hintOn ? "on" : "off"];
+      updateHintHint();
     });
   });
 
@@ -370,7 +383,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (isRoute) {
       $("bcGoalName").textContent = S.target.th;
-      $("bcGoalMeta").textContent = "ทางที่สั้นที่สุดคือ " + S.optimal + " ก้าว";
+      $("bcGoalMeta").textContent = "ทางที่สั้นที่สุดคือ " + S.optimal + " ก้าว · เดินกี่ก้าวก็ได้";
       // ตัวช่วยบอกว่าจากตรงนี้เหลืออีกอย่างน้อยกี่ก้าว ใช้ดูว่าเดินถูกทางหรือเดินอ้อม
       if (S.hintOn) {
         const left = bfs(S.cur.code).dist[S.target.code];
@@ -515,21 +528,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (S.mode === "route") {
       const used = S.chain.length - 1;
-      const extra = Math.max(0, used - S.optimal);
+      const perfect = used === S.optimal;
       const won = reason === "ถึงแล้ว";
-      // ถึงปลายทางด้วยทางที่สั้นที่สุด = เต็ม 1000 เกินมาก้าวละหัก 120 แต่ไม่ต่ำกว่า 200
-      S.score = won ? Math.max(200, 1000 - extra * 120) : 0;
-      $("bcEndIcon").textContent = won ? (extra === 0 ? "🎯" : "🏁") : reason === "หมดเวลา" ? "⌛" : "🏳️";
+      // ไม่จำกัดจำนวนก้าวและไม่หักคะแนนตามก้าว เดินอ้อมกี่รอบก็ได้ ขอแค่ไปให้ถึง
+      // คะแนนคิดจากความไกลของโจทย์แทน ปลายทางยิ่งไกลยิ่งได้เยอะ
+      S.score = won ? S.optimal * 200 : 0;
+      $("bcEndIcon").textContent = won ? (perfect ? "🎯" : "🏁") : reason === "หมดเวลา" ? "⌛" : "🏳️";
       $("bcEndTitle").textContent = won
-        ? extra === 0
-          ? "ถึงแล้ว! และใช้ทางที่สั้นที่สุดด้วย"
+        ? perfect
+          ? "ถึงแล้ว! และเดินได้สั้นที่สุดพอดีด้วย"
           : "ถึงแล้ว!"
         : reason === "หมดเวลา"
         ? "หมดเวลาก่อนถึง"
         : "ยอมแพ้";
       $("bcEndText").textContent = won
         ? "จาก" + BY_CODE[S.chain[0]].th + " ถึง" + S.target.th + " ใช้ " + used + " ก้าว" +
-          (extra === 0 ? " เท่ากับทางที่สั้นที่สุดพอดี" : " (สั้นที่สุดคือ " + S.optimal + " ก้าว)")
+          (perfect ? " เท่ากับทางที่สั้นที่สุดพอดี" : " (ทางที่สั้นที่สุดคือ " + S.optimal + " ก้าว)")
         : "เป้าหมายคือ" + S.target.th + " ยังไปไม่ถึง";
 
       $("bcEndScore").textContent = S.score;
