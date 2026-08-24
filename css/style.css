@@ -3573,8 +3573,13 @@ html.hc-fs .hc-topbar{padding-right:150px;}
   color:var(--street); border:1px solid var(--street); border-radius:999px;
   padding:4px 12px; margin-bottom:12px;
 }
-.ss-lm-name{font-family:'Kanit',sans-serif; font-weight:800; font-size:26px; line-height:1.25;}
-.ss-lm-en{font-size:13px; color:var(--text-dim); margin-top:2px;}
+/* ไม่มี .ss-lm-name / .ss-lm-en แล้ว — ห้ามโชว์ชื่อสถานที่ตอนกำลังเล่น */
+.ss-lm-photo-box{
+  margin-top:12px; border-radius:14px; overflow:hidden;
+  background:#05010a; border:1px solid var(--line);
+}
+.ss-lm-photo{display:block; width:100%; height:min(46vh,360px); object-fit:cover;}
+.ss-lm-credit{font-size:11px; color:var(--text-dim); margin-top:7px; line-height:1.5;}
 .ss-lm-clue{font-size:14.5px; line-height:1.7; margin-top:14px;}
 .ss-fact{
   font-size:13.5px; line-height:1.75; text-align:left;

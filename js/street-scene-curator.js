@@ -268,3 +268,49 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
+
+// ---- ตรวจรูปของโหมดสถานที่สำคัญ ----
+// รูปหลักของบทความวิกิพีเดียบางอันไม่ใช่ตัวสถานที่ หรือมีชื่อเขียนอยู่ในรูป (= เฉลย)
+// ตรวจอัตโนมัติแทนตาคนไม่ได้ หน้านี้จึงโหลดมาเรียงให้ดูทีเดียวครบ
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("cuLmCheck");
+  if (!btn || typeof LANDMARKS === "undefined") return;
+  const grid = document.getElementById("cuLmGrid");
+  const status = document.getElementById("cuLmStatus");
+
+  btn.addEventListener("click", () => {
+    btn.disabled = true;
+    grid.innerHTML = "";
+    let done = 0;
+    let missing = 0;
+    status.textContent = "กำลังโหลด... 0/" + LANDMARKS.length;
+
+    // ยิงทีละไม่กี่ตัว ไม่งั้นโดนจำกัดอัตราการเรียก
+    const queue = LANDMARKS.slice();
+    const worker = () => {
+      const lm = queue.shift();
+      if (!lm) return Promise.resolve();
+      return lmLoadPhoto(lm).then((photo) => {
+        done++;
+        if (!photo) missing++;
+        const cell = document.createElement("div");
+        cell.style.cssText = "font-size:11px; line-height:1.4;";
+        cell.innerHTML =
+          (photo
+            ? '<img src="' + photo.src + '" style="width:100%; height:100px; object-fit:cover; border-radius:8px;" loading="lazy">'
+            : '<div style="width:100%; height:100px; border-radius:8px; background:#2a1020; display:flex; align-items:center; justify-content:center; color:#fb7185;">ไม่มีรูป</div>') +
+          "<div><b>" + lm.th + "</b></div>" +
+          '<div style="color:var(--text-dim)">' + (lm.wiki || lm.en) + "</div>" +
+          (photo && photo.credit ? '<div style="color:var(--text-dim)">' + photo.credit.license + "</div>" : "");
+        grid.appendChild(cell);
+        status.textContent = "กำลังโหลด... " + done + "/" + LANDMARKS.length + " · ไม่มีรูป " + missing + " แห่ง";
+        return worker();
+      });
+    };
+    Promise.all([worker(), worker(), worker(), worker()]).then(() => {
+      status.textContent =
+        "เสร็จแล้ว " + done + " แห่ง · ไม่มีรูป " + missing + " แห่ง — ไล่ดูว่ามีรูปไหนไม่ใช่ตัวสถานที่ หรือมีชื่อเขียนอยู่ในรูปบ้าง";
+      btn.disabled = false;
+    });
+  });
+});

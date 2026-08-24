@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const MAX_SCENE_TRIES = 4;
 
   const MODE_HINT = {
-    landmark: "บอกชื่อสถานที่กับเบาะแสมาให้ แล้วปักหมุดว่าอยู่ตรงไหนของโลก · เล่นได้ไม่ต้องมีเน็ต",
+    landmark: "โชว์รูปสถานที่มาให้แบบไม่บอกชื่อ แล้วปักหมุดว่าอยู่ตรงไหนของโลก · โหลดรูปไม่ได้จะให้เบาะแสข้อความแทน",
     street: "โผล่ไปยืนกลางถนนจริง หมุนดูรอบตัวหาเบาะแสเอง ยากกว่าเยอะ · ต้องต่อเน็ต",
   };
   const CAT_LABEL = {
@@ -45,6 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
     timer: null,
     ticking: false,
     liveMode: false,
+    loadToken: 0,
     viewerReady: false,
     watchdog: null,
     map: null,
@@ -313,17 +314,71 @@ document.addEventListener("DOMContentLoaded", () => {
       answer: { lat: lm.lat, lon: lm.lon },
       country: lm.country,
       landmark: lm,
+      photo: null,
     };
     $("ssLmCat").textContent = CAT_LABEL[lm.cat] || "";
-    $("ssLmName").textContent = lm.th;
-    $("ssLmEn").textContent = lm.en;
-    $("ssLmClue").textContent = "💡 " + lm.clue;
-    $("ssStatus").classList.add("ss-hidden");
-    $("ssGuessBtn").disabled = false;
+    // ห้ามโชว์ชื่อสถานที่ตอนกำลังเล่นเด็ดขาด ชื่อหลายอันมีคำตอบอยู่ในตัวเอง
+    // (เช่น "กำแพงเมืองจีน") เก็บไว้เฉลยตอนจบรอบ
+    $("ssLmPhotoBox").classList.add("ss-hidden");
+    $("ssLmPhoto").removeAttribute("src");
+    $("ssLmCredit").textContent = "";
+    $("ssLmClue").classList.add("ss-hidden");
+    $("ssStatus").textContent = "กำลังโหลดรูป...";
+    $("ssStatus").classList.remove("ss-hidden");
+    $("ssGuessBtn").disabled = true;
     $("ssCredit").textContent = "";
-    S.busy = false;
-    S.viewerReady = true;
-    startTimer();
+
+    const token = ++S.loadToken;
+    lmLoadPhoto(lm).then((photo) => {
+      // ผู้เล่นอาจกดเปลี่ยนรอบหรือออกจากเกมไปแล้วระหว่างรอโหลด อย่าเขียนทับของใหม่
+      if (token !== S.loadToken) return;
+      S.scene.photo = photo;
+
+      // โหลดรูปไม่ได้ก็ยังเล่นต่อได้ด้วยเบาะแสข้อความ โหมดนี้ต้องเล่นได้ตอนไม่มีเน็ต
+      const useClue = () => {
+        S.scene.photo = null;
+        $("ssLmPhotoBox").classList.add("ss-hidden");
+        $("ssLmCredit").textContent = "";
+        $("ssLmClue").textContent = "💡 " + lm.clue;
+        $("ssLmClue").classList.remove("ss-hidden");
+        ready();
+      };
+
+      const ready = () => {
+        $("ssStatus").classList.add("ss-hidden");
+        $("ssGuessBtn").disabled = false;
+        S.busy = false;
+        S.viewerReady = true;
+        startTimer();
+      };
+
+      if (!photo) return useClue();
+
+      // รอให้รูปขึ้นจอจริง ๆ ก่อนค่อยเริ่มจับเวลา เวลารอโหลดต้องไม่กินเวลาผู้เล่น
+      const img = $("ssLmPhoto");
+      let settled = false;
+      const shown = () => {
+        if (settled) return;
+        settled = true;
+        img.onload = img.onerror = null;
+        $("ssLmPhotoBox").classList.remove("ss-hidden");
+        // เครดิตตอนเล่นบอกแค่คนถ่ายกับสัญญาอนุญาต ไม่ใส่ลิงก์ต้นทางเพราะลิงก์มีชื่อสถานที่
+        if (photo.credit) {
+          $("ssLmCredit").textContent = "รูปโดย " + photo.credit.author + " · " + photo.credit.license;
+        }
+        ready();
+      };
+      img.onload = shown;
+      img.onerror = () => {
+        if (settled) return;
+        settled = true;
+        img.onload = img.onerror = null;
+        useClue();
+      };
+      img.src = photo.src;
+      // มาจากแคชแล้วบางทีไม่ยิง event ให้ เช็กซ้ำเอง
+      if (img.complete && img.naturalWidth > 0) shown();
+    });
   }
 
   // ---------- ตัว viewer ----------
@@ -504,7 +559,21 @@ document.addEventListener("DOMContentLoaded", () => {
       const lm = scene.landmark;
       $("ssFact").textContent = "📖 " + lm.fact;
       $("ssFact").classList.remove("ss-hidden");
-      $("ssAttrib").innerHTML = "";
+      // เฉลยแล้วจึงโชว์เครดิตเต็มพร้อมลิงก์ต้นทางได้ (ลิงก์มีชื่อสถานที่อยู่)
+      if (scene.photo && scene.photo.credit) {
+        const c = scene.photo.credit;
+        const bits = ["รูปจาก <b>Wikimedia Commons</b>", "โดย <b>" + esc(c.author) + "</b>"];
+        bits.push(
+          c.licenseUrl
+            ? 'สัญญาอนุญาต <a href="' + esc(c.licenseUrl) + '" target="_blank" rel="noopener noreferrer">' + esc(c.license) + "</a>"
+            : "สัญญาอนุญาต " + esc(c.license)
+        );
+        if (c.sourceUrl)
+          bits.push('<a href="' + esc(c.sourceUrl) + '" target="_blank" rel="noopener noreferrer">ดูรูปต้นทาง ↗</a>');
+        $("ssAttrib").innerHTML = bits.join(" · ");
+      } else {
+        $("ssAttrib").innerHTML = "";
+      }
       $("ssNextBtn").textContent = S.round >= S.playRounds ? "ดูสรุปคะแนน 🏁" : "ฉากต่อไป →";
       S.busy = false;
       return;

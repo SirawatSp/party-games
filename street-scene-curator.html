@@ -84,6 +84,20 @@
   </div>
 
   <div class="cu-panel">
+    <h2 style="font-size:17px; margin-bottom:12px;">4 · ตรวจรูปของโหมดสถานที่สำคัญ</h2>
+    <p class="cu-status">
+      โหมดสถานที่ดึงรูปหลักของบทความวิกิพีเดียภาษาอังกฤษมาโชว์แบบไม่บอกชื่อ
+      แต่บางบทความรูปหลักอาจไม่ใช่ตัวสถานที่ (เป็นแผนที่ ตราสัญลักษณ์ ภาพวาด)
+      หรือมีชื่อสถานที่เขียนอยู่ในรูปเลย ซึ่งเท่ากับเฉลย — ต้องใช้ตาคนดู
+      <br>ที่ไหนใช้ไม่ได้ ให้ใส่ฟิลด์ <code>wiki: "ชื่อบทความอื่น"</code> ในรายการนั้นใน
+      <code>data/landmarks.js</code> เพื่อชี้ไปบทความที่รูปดีกว่า
+    </p>
+    <button class="btn secondary" id="cuLmCheck" type="button" style="margin:0;">โหลดรูปทั้งหมดมาดู 🖼</button>
+    <p class="cu-status" id="cuLmStatus"></p>
+    <div id="cuLmGrid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; margin-top:12px;"></div>
+  </div>
+
+  <div class="cu-panel">
     <h2 style="font-size:17px; margin-bottom:12px;">3 · ตรวจคลังฉากที่มีอยู่</h2>
     <p class="cu-status">ควรรันก่อน deploy ทุกครั้ง ฉากไหนหายหรือเปลี่ยนสถานะจะได้รู้ก่อนผู้เล่นเจอ</p>
     <button class="btn secondary" id="cuVerify" type="button" style="margin:0;">ตรวจทุกฉากในคลัง 🩺</button>
@@ -93,6 +107,8 @@
 
 <script src="data/worldmap.js"></script>
 <script src="data/street-scenes.js"></script>
+<script src="data/landmarks.js"></script>
+<script src="js/landmark-photo.js"></script>
 <script src="js/worldmap.js"></script>
 <script src="js/street-scene-api.js"></script>
 <script src="js/street-scene-curator.js"></script>
