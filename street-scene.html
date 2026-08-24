@@ -17,9 +17,9 @@
   </div>
 
   <section class="page-head reveal-up">
-    <span class="kicker" style="background:var(--sky); color:#04202e;">27 · ภูมิศาสตร์ · ต้องต่อเน็ต</span>
+    <span class="kicker" style="background:var(--sky); color:#04202e;">27 · ภูมิศาสตร์ · ปักหมุด</span>
     <h1>ทายถนน</h1>
-    <p>โผล่ไปยืนกลางถนนที่ไหนสักแห่งบนโลก <b>หมุนดูได้รอบตัว 360°</b> เดินไปข้างหน้าถอยหลังก็ได้ — แล้วปักหมุดบนแผนที่ว่าคิดว่าตรงนี้คือที่ไหน ยิ่งใกล้ยิ่งได้คะแนนเยอะ</p>
+    <p>ปักหมุดบนแผนที่โลกว่าที่นี่คือที่ไหน ยิ่งใกล้ยิ่งได้คะแนนเยอะ — เล่นได้สองแบบ: <b>สถานที่สำคัญ</b> ให้ชื่อกับเบาะแสมา (เล่นได้ไม่ต้องมีเน็ต) หรือ <b>ภาพถนนจริง</b> ที่โผล่ไปยืนกลางถนนแล้วหมุนดูรอบตัว 360°</p>
   </section>
 
   <div class="ss-wrap">
@@ -28,6 +28,27 @@
     <div class="ss-stage" id="ssSetup">
       <div class="ss-big-icon">🛣</div>
       <h3 class="ss-h3">ตั้งค่าก่อนออกเดินทาง</h3>
+
+      <div class="ss-opt">
+        <div class="ss-label">เล่นแบบไหน</div>
+        <div class="ss-switch" id="ssModeSwitch">
+          <button class="ss-opt-btn active" data-mode="landmark" type="button">สถานที่สำคัญ 🗿</button>
+          <button class="ss-opt-btn" data-mode="street" type="button">ภาพถนนจริง 🛣</button>
+        </div>
+        <p class="ss-hint" id="ssModeHint"></p>
+      </div>
+
+      <div class="ss-opt" id="ssCatOpt">
+        <div class="ss-label">หมวดสถานที่</div>
+        <div class="ss-switch" id="ssCatSwitch">
+          <button class="ss-opt-btn active" data-cat="all" type="button">คละทุกหมวด</button>
+          <button class="ss-opt-btn" data-cat="wonder7" type="button">7 สิ่งมหัศจรรย์ ✨</button>
+          <button class="ss-opt-btn" data-cat="landmark" type="button">สิ่งก่อสร้างดัง 🏛</button>
+          <button class="ss-opt-btn" data-cat="nature" type="button">ธรรมชาติ 🏔</button>
+          <button class="ss-opt-btn" data-cat="thai" type="button">ในไทย 🇹🇭</button>
+        </div>
+        <p class="ss-hint" id="ssCatHint"></p>
+      </div>
 
       <div class="ss-opt">
         <div class="ss-label">กี่ฉาก</div>
@@ -49,12 +70,12 @@
         <p class="ss-hint" id="ssMaxNote"></p>
       </div>
 
-      <div class="ss-net-note">
+      <div class="ss-net-note ss-hidden" id="ssNetNote">
         🌐 เกมนี้ <b>ต้องต่อเน็ต</b> เพราะภาพถนนโหลดสดจากเซิร์ฟเวอร์ Panoramax เก็บไว้เล่นออฟไลน์ไม่ได้
       </div>
 
       <div class="ss-offline ss-hidden" id="ssOffline">
-        เกมนี้ต้องเชื่อมต่ออินเทอร์เน็ตเพื่อโหลดภาพถนน ตอนนี้เครื่องออฟไลน์อยู่ — เกมอื่นในเว็บยังเล่นได้ตามปกตินะ
+        โหมดภาพถนนต้องเชื่อมต่ออินเทอร์เน็ต ตอนนี้เครื่องออฟไลน์อยู่ — สลับไปเล่น <b>โหมดสถานที่สำคัญ</b> ได้เลย โหมดนั้นไม่ต้องใช้เน็ต
       </div>
 
       <div class="ss-warn ss-hidden" id="ssWarn"></div>
@@ -73,7 +94,14 @@
         ⚡ ตอนนี้สุ่มฉากสดจาก Panoramax เพราะคลังฉากที่คัดไว้ยังไม่พอ ความยากอาจเหวี่ยงหน่อย
       </div>
 
-      <div class="ss-viewer-box">
+      <div class="ss-landmark ss-hidden" id="ssLandmark">
+        <div class="ss-lm-cat" id="ssLmCat"></div>
+        <div class="ss-lm-name" id="ssLmName"></div>
+        <div class="ss-lm-en" id="ssLmEn"></div>
+        <div class="ss-lm-clue" id="ssLmClue"></div>
+      </div>
+
+      <div class="ss-viewer-box" id="ssViewerBox">
         <div class="ss-viewer" id="ssViewer"></div>
         <div class="ss-status" id="ssStatus">กำลังหาฉาก...</div>
       </div>
@@ -83,7 +111,7 @@
         <button class="btn" id="ssGuessBtn" type="button" disabled>ทายเลย 📍</button>
         <button class="btn secondary" id="ssSkipBtn" type="button">เปลี่ยนฉาก 🔀</button>
       </div>
-      <p class="ss-hint">ลากนิ้วบนภาพเพื่อหมุนดูรอบตัว · แตะลูกศรบนพื้นถนนเพื่อเดินไปข้างหน้า</p>
+      <p class="ss-hint" id="ssPlayHint"></p>
 
       <!-- แผงแผนที่สำหรับปักหมุด -->
       <div class="ss-map-sheet ss-hidden" id="ssMapSheet">
@@ -118,6 +146,7 @@
       </div>
       <p class="ss-running" id="ssRunning"></p>
 
+      <p class="ss-fact ss-hidden" id="ssFact"></p>
       <p class="ss-attrib" id="ssAttrib"></p>
 
       <button class="btn" id="ssNextBtn" type="button">ฉากต่อไป →</button>
@@ -140,7 +169,15 @@
   </div>
 
   <div class="panel reveal-up">
-    <h2>วิธีเล่น</h2>
+    <h2>สองโหมด</h2>
+    <ol>
+      <li><b>🗿 สถานที่สำคัญ</b> — เครื่องบอกชื่อสถานที่กับเบาะแสสั้น ๆ แล้วให้ปักหมุดว่าอยู่ตรงไหนของโลก มีทั้ง 7 สิ่งมหัศจรรย์ยุคใหม่และยุคโบราณ สิ่งก่อสร้างดัง ธรรมชาติ และที่เที่ยวในไทย โหมดนี้ <b>ง่ายกว่าและไม่ต้องต่อเน็ต</b></li>
+      <li><b>🛣 ภาพถนนจริง</b> — โผล่ไปยืนกลางถนนจริงที่ไหนสักแห่ง หมุนดูรอบตัวหาเบาะแสเอาเอง ยากกว่าเยอะ และ <b>ต้องต่อเน็ต</b> เพราะภาพโหลดสดจาก Panoramax</li>
+    </ol>
+  </div>
+
+  <div class="panel reveal-up">
+    <h2>วิธีเล่นโหมดภาพถนน</h2>
     <ol>
       <li>เครื่องพาไปโผล่กลางถนนที่ไหนสักแห่งบนโลก <b>ไม่บอกว่าที่ไหน</b></li>
       <li>ลากนิ้วบนภาพเพื่อ <b>หมุนดูรอบตัว 360°</b> มองหาป้าย ทะเบียนรถ ต้นไม้ ฝั่งที่รถวิ่ง อะไรก็ได้ที่เป็นเบาะแส</li>
@@ -164,7 +201,7 @@
   <div class="panel reveal-up">
     <h2>เรื่องภาพและเครดิต</h2>
     <ol>
-      <li>ภาพถนน 360° มาจาก <b>Panoramax</b> คลังภาพถนนแบบเปิดที่ใคร ๆ ก็ร่วมถ่ายเข้ามาได้ ไม่ใช่ของ Google</li>
+      <li>โหมดภาพถนนใช้ภาพ 360° จาก <b>Panoramax</b> คลังภาพถนนแบบเปิดที่ใคร ๆ ก็ร่วมถ่ายเข้ามาได้ ไม่ใช่ของ Google</li>
       <li>ภาพแต่ละใบมี <b>เจ้าของและสัญญาอนุญาตของตัวเอง ไม่เหมือนกันทุกใบ</b> ทุกฉากจึงบอกชื่อคนถ่าย สัญญาอนุญาต และลิงก์ไปดูภาพต้นทางไว้ในหน้าเฉลย</li>
       <li>รูปร่างประเทศบนแผนที่มาจาก <b>Natural Earth 1:110m</b> ซึ่งเป็นสาธารณสมบัติ ผ่านแพ็กเกจ world-atlas</li>
       <li>แผนที่ตั้งชื่อเฉพาะ <b>รัฐสมาชิกสหประชาชาติ 165 ประเทศ</b> ส่วนแอนตาร์กติกา ดินแดนในปกครอง และดินแดนที่สถานะยังเป็นข้อพิพาท วาดเป็นพื้นดินเฉย ๆ ไม่ตั้งชื่อและไม่นับเป็นคำตอบ</li>
@@ -178,6 +215,7 @@
 
 <script src="data/worldmap.js"></script>
 <script src="data/street-scenes.js"></script>
+<script src="data/landmarks.js"></script>
 <script src="js/main.js"></script>
 <script src="js/worldmap.js"></script>
 <script src="js/street-scene-api.js"></script>

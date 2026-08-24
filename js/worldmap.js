@@ -72,6 +72,17 @@ function wmHitExact(x, y) {
 // พิกัดริมทะเลอาจหลุดออกนอกรูปร่างประเทศได้ เพราะแผนที่ 1:110m ตัดรายละเอียดชายฝั่งทิ้ง
 // ถ้าจุดตรง ๆ ไม่โดนใคร ให้ลองขยับออกไปรอบ ๆ ทีละนิดก่อนจะยอมแพ้
 function ssCountryAt(lat, lon) {
+  // ประเทศจิ๋วไม่มีรูปร่างให้ทดสอบ ต้องเช็กด้วยระยะจากจุดกลางก่อนเสมอ
+  // ไม่งั้นพิกัดในสิงคโปร์หรือโมนาโกจะถูกนับเป็นประเทศใหญ่ที่ล้อมอยู่
+  var dots = WORLD_MAP.dots || [];
+  for (var i = 0; i < dots.length; i++) {
+    var d = dots[i];
+    // เทียบเป็นองศาโดยย่อระยะตามลองจิจูดด้วย cos(lat) ให้ใกล้เคียงระยะจริงบนพื้นโลก
+    var dLat = lat - d.lat;
+    var dLon = (lon - d.lon) * Math.cos((lat * Math.PI) / 180);
+    if (Math.sqrt(dLat * dLat + dLon * dLon) <= (d.r || 0.05)) return d;
+  }
+
   var p = wmProject(lat, lon);
   var hit = wmHitExact(p.x, p.y);
   if (hit) return hit;
@@ -413,6 +424,20 @@ function wmCreateMap(svg, opts) {
     },
     lock: function (on) {
       locked = !!on;
+    },
+    // ความกว้างของกรอบที่มองเห็นตอนนี้ (หน่วยแผนที่) ใช้ดูว่าตอนนี้ซูมออกอยู่แค่ไหน
+    width: function () {
+      return view.w;
+    },
+    // เลื่อนไปที่พิกัดหนึ่งพร้อมกำหนดความกว้างของกรอบ
+    centerOn: function (lat, lon, w) {
+      var p = wmProject(lat, lon);
+      view.w = w;
+      clamp();
+      view.x = p.x - view.w / 2;
+      view.y = p.y - view.h / 2;
+      clamp();
+      apply();
     },
     zoomBy: function (factor) {
       var r = svg.getBoundingClientRect();

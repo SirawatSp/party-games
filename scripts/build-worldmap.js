@@ -47,6 +47,7 @@ const EXTRA_TH = {
   SLB: "หมู่เกาะโซโลมอน",
   TTO: "ตรินิแดดและโตเบโก",
   VUT: "วานูอาตู",
+  SGP: "สิงคโปร์",
 };
 
 const TH = Object.assign({}, EXTRA_TH);
@@ -136,16 +137,32 @@ const haveShape = {};
 out.forEach((c) => (haveShape[c.code] = true));
 const dots = [];
 const seenDot = {};
-const dotRe = /code: "([A-Z]{3})"/g;
-let dotM;
-while ((dotM = dotRe.exec(bcSrc))) {
-  const code = dotM[1];
+// รวมรหัสประเทศที่เกมอื่นอ้างถึง: คลังพรมแดน (ต่อพรมแดน) และคลังสถานที่ (ทายถนน)
+// ประเทศไหนที่เกมใช้แต่แผนที่ไม่มีรูปร่าง ต้องมีจุดไว้ให้ ไม่งั้นเฉลยแล้วแผนที่ชี้ไม่ถูก
+const lmSrc = fs.readFileSync(__dirname + "/../data/landmarks.js", "utf8");
+const wanted = [];
+const codeRe = /country: "([A-Z]{3})"/g;
+let cm;
+while ((cm = codeRe.exec(bcSrc + "\n" + lmSrc))) wanted.push(cm[1]);
+const bcCodeRe = /code: "([A-Z]{3})"/g;
+while ((cm = bcCodeRe.exec(bcSrc))) wanted.push(cm[1]);
+for (const code of wanted) {
   if (haveShape[code] || seenDot[code]) continue;
   seenDot[code] = true;
   const info = wc.find((c) => c.cca3 === code);
   if (!info) throw new Error("ไม่รู้จักประเทศ " + code + " จึงหาพิกัดกลางประเทศไม่ได้");
   if (!TH[code]) throw new Error("ยังไม่มีชื่อไทยของ " + code);
-  dots.push({ code: code, th: TH[code], en: info.name.common, lat: info.latlng[0], lon: info.latlng[1] });
+  // รัศมีคิดจากพื้นที่จริงของประเทศ (สมมติเป็นวงกลม) แปลงเป็นองศา ~111 กม./องศา
+  // ใช้ตัดสินว่าพิกัดหนึ่ง ๆ นับว่าอยู่ในประเทศจิ๋วนี้ไหม จะได้ไม่ไปกินพื้นที่ประเทศข้าง ๆ
+  const rDeg = Math.sqrt((info.area || 1) / Math.PI) / 111;
+  dots.push({
+    code: code,
+    th: TH[code],
+    en: info.name.common,
+    lat: info.latlng[0],
+    lon: info.latlng[1],
+    r: Number(rDeg.toFixed(4)),
+  });
 }
 dots.sort((a, b) => a.code.localeCompare(b.code));
 console.error("dot countries " + dots.length + ": " + dots.map((d) => d.code).join(" "));
@@ -161,8 +178,9 @@ const header = [
   "// ระบบพิกัด: equirectangular บนผืนผ้าใบ " + W + "x" + H + " หน่วย",
   "//   x = (lon + 180) / 360 * " + W + "   ,   y = (90 - lat) / 180 * " + H,
   "// countries = รัฐสมาชิกสหประชาชาติที่มีชื่อและเลือกตอบได้ เก็บเป็นรูปร่าง path",
-  "// dots      = ประเทศจิ๋วที่เล็กเกินกว่าจะมีรูปร่างในข้อมูล 1:110m (โมนาโก วาติกัน ฯลฯ)",
-  "//             เก็บแค่พิกัดกลางประเทศไว้ ให้วาดเป็นวงกลมเล็ก ๆ แทน",
+  "// dots      = ประเทศจิ๋วที่เล็กเกินกว่าจะมีรูปร่างในข้อมูล 1:110m (โมนาโก สิงคโปร์ ฯลฯ)",
+  "//             เก็บพิกัดกลางประเทศกับรัศมี r (หน่วยองศา คิดจากพื้นที่จริง) ไว้",
+  "//             ใช้วาดเป็นวงกลม และใช้ตัดสินว่าพิกัดหนึ่ง ๆ ตกอยู่ในประเทศนี้ไหม",
   "// filler    = รูปร่างพื้นดินที่ไม่ตั้งชื่อ (แอนตาร์กติกา ดินแดนในปกครอง ดินแดนพิพาท)",
   "//             วาดไว้ไม่ให้แผนที่มีรูโหว่ แต่ไม่นับเป็นคำตอบและไม่แสดงชื่อ",
   "//",
@@ -200,7 +218,7 @@ const tail = [
     .map(
       (d) =>
         "    { code: " + JSON.stringify(d.code) + ", th: " + JSON.stringify(d.th) +
-        ", en: " + JSON.stringify(d.en) + ", lat: " + d.lat + ", lon: " + d.lon + " },"
+        ", en: " + JSON.stringify(d.en) + ", lat: " + d.lat + ", lon: " + d.lon + ", r: " + d.r + " },"
     )
     .join("\n"),
   "  ],",

@@ -16,6 +16,7 @@ const PAGES = [
   { page: "insider.html", unit: "คำ", files: [["insider.js", "INSIDER_WORDS"]] },
   { page: "matchup.html", unit: "คำถาม", files: [["matchup.js", "MATCHUP_LIST"]] },
   { page: "personal-facts.html", unit: "หัวข้อ", files: [["personal-facts.js", "PERSONAL_FACTS"]] },
+  { page: "street-scene.html", unit: "สถานที่", files: [["landmarks.js", "LANDMARKS"]] },
   { page: "psychology.html", unit: "คำถาม", files: [["psychology.js", "PSYCHOLOGY_LIST"]] },
   { page: "tapple.html", unit: "หมวด", files: [["tapple-categories.js", "TAPPLE_CATEGORIES"], ["tapple-categories-en.js", "TAPPLE_CATEGORIES_EN"]] },
   { page: "tenbut.html", unit: "มุก", files: [["shes-a-10-but.js", "TEN_BUT_LIST"]] },

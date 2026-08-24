@@ -9,7 +9,29 @@ document.addEventListener("DOMContentLoaded", () => {
   const LOAD_TIMEOUT_MS = 20000; // ภาพไม่มาเลยภายในเวลานี้ถือว่าฉากเสีย
   const MAX_SCENE_TRIES = 4;
 
+  const MODE_HINT = {
+    landmark: "บอกชื่อสถานที่กับเบาะแสมาให้ แล้วปักหมุดว่าอยู่ตรงไหนของโลก · เล่นได้ไม่ต้องมีเน็ต",
+    street: "โผล่ไปยืนกลางถนนจริง หมุนดูรอบตัวหาเบาะแสเอง ยากกว่าเยอะ · ต้องต่อเน็ต",
+  };
+  const CAT_LABEL = {
+    wonder: "7 สิ่งมหัศจรรย์ยุคใหม่",
+    ancient: "7 สิ่งมหัศจรรย์ยุคโบราณ",
+    landmark: "สิ่งก่อสร้างสำคัญ",
+    nature: "ธรรมชาติ",
+    thai: "ในไทย",
+  };
+  // ตัวเลือกหมวดบนหน้าจอ -> รายการ cat ที่นับรวม
+  const CAT_GROUP = {
+    all: null,
+    wonder7: ["wonder", "ancient"],
+    landmark: ["landmark"],
+    nature: ["nature"],
+    thai: ["thai"],
+  };
+
   const S = {
+    mode: "landmark",
+    cat: "all",
     rounds: 5,
     seconds: 90,
     scenes: [],
@@ -40,14 +62,23 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ---------- แผนที่ ----------
+  // ตอนเห็นทั้งโลกพอดีจอ ประเทศเล็ก ๆ กว้างแค่ไม่กี่พิกเซล แตะให้ตรงแทบเป็นไปไม่ได้
+  // พอแตะครั้งแรกจากมุมกว้าง เลยซูมเข้าไปรอบจุดที่แตะให้เลย แล้วค่อยแตะซ้ำปรับให้ตรงขึ้น
+  // (แตะตอนซูมอยู่แล้วจะไม่ซูมซ้ำ ไม่งั้นจะเด้งจนปรับตำแหน่งไม่ได้)
+  const ZOOM_ON_PICK_ABOVE = 700;
+  const ZOOM_ON_PICK_TO = 420;
+
   S.map = wmCreateMap($("ssMapSvg"), {
     onPick: (lat, lon) => {
       if (S.busy) return;
       S.guess = { lat, lon };
+      const zoomedIn = S.map.width() <= ZOOM_ON_PICK_ABOVE;
+      if (!zoomedIn) S.map.centerOn(lat, lon, ZOOM_ON_PICK_TO);
       S.map.guess(lat, lon);
       const c = ssCountryAt(lat, lon);
       S.map.highlight(c ? c.code : null);
-      $("ssPickLabel").textContent = c ? "ปักไว้ที่ " + c.th : "ปักไว้กลางน้ำ";
+      $("ssPickLabel").textContent =
+        (c ? "ปักไว้ที่ " + c.th : "ปักไว้กลางน้ำ") + (zoomedIn ? "" : " · แตะอีกทีเพื่อปรับให้ตรงขึ้น");
       $("ssConfirmBtn").disabled = false;
     },
   });
@@ -67,6 +98,43 @@ document.addEventListener("DOMContentLoaded", () => {
       onPick(Number(btn.getAttribute(attr)));
     });
   }
+  const modeWrap = $("ssModeSwitch");
+  modeWrap.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-mode]");
+    if (!btn) return;
+    modeWrap.querySelectorAll(".ss-opt-btn").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    S.mode = btn.getAttribute("data-mode");
+    reflectMode();
+  });
+
+  const catWrap = $("ssCatSwitch");
+  catWrap.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-cat]");
+    if (!btn) return;
+    catWrap.querySelectorAll(".ss-opt-btn").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    S.cat = btn.getAttribute("data-cat");
+    reflectMode();
+  });
+
+  function landmarkPool() {
+    const group = CAT_GROUP[S.cat];
+    return LANDMARKS.filter((l) => !group || group.indexOf(l.cat) >= 0);
+  }
+
+  function reflectMode() {
+    $("ssModeHint").textContent = MODE_HINT[S.mode];
+    $("ssCatOpt").classList.toggle("ss-hidden", S.mode !== "landmark");
+    $("ssNetNote").classList.toggle("ss-hidden", S.mode !== "street");
+    if (S.mode === "landmark") {
+      const n = landmarkPool().length;
+      $("ssCatHint").textContent = "หมวดนี้มี " + n + " แห่ง";
+    }
+    reflectOnline();
+    updateMaxNote();
+  }
+
   bindSwitch("ssRoundSwitch", "data-rounds", (v) => {
     S.rounds = v;
     updateMaxNote();
@@ -79,13 +147,21 @@ document.addEventListener("DOMContentLoaded", () => {
   function perRoundMax() {
     return MAX_DIST_POINTS + (S.seconds > 0 ? MAX_TIME_BONUS : 0);
   }
+  // จำนวนฉากจริงที่เล่นได้ อาจน้อยกว่าที่เลือกถ้าหมวดนั้นมีสถานที่ไม่พอ
+  function effectiveRounds() {
+    if (S.mode !== "landmark") return S.rounds;
+    return Math.min(S.rounds, landmarkPool().length);
+  }
+
   function updateMaxNote() {
+    const n = effectiveRounds();
     $("ssMaxNote").textContent =
       "เต็ม " +
-      (perRoundMax() * S.rounds).toLocaleString("th-TH") +
+      (perRoundMax() * n).toLocaleString("th-TH") +
       " คะแนน (รอบละ " +
       perRoundMax().toLocaleString("th-TH") +
       ")" +
+      (n < S.rounds ? " · หมวดนี้มีไม่พอ เล่นได้ " + n + " ฉาก" : "") +
       (S.seconds > 0 ? "" : " · ไม่จับเวลาก็ไม่มีโบนัสเวลา");
   }
   updateMaxNote();
@@ -109,8 +185,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ---------- เริ่มเกม ----------
   function startGame() {
-    if (!navigator.onLine) {
-      warn("เกมนี้ต้องเชื่อมต่ออินเทอร์เน็ตเพื่อโหลดภาพถนน ตอนนี้เครื่องออฟไลน์อยู่");
+    if (S.mode === "street" && !navigator.onLine) {
+      warn("โหมดภาพถนนต้องเชื่อมต่ออินเทอร์เน็ต ตอนนี้เครื่องออฟไลน์อยู่ — ลองโหมดสถานที่สำคัญแทนได้ เล่นได้เลยไม่ต้องมีเน็ต");
       showStage("ssSetup");
       return;
     }
@@ -119,8 +195,18 @@ document.addEventListener("DOMContentLoaded", () => {
     S.score = 0;
     S.history = [];
     S.used = {};
-    S.scenes = (typeof STREET_SCENES !== "undefined" ? STREET_SCENES : []).slice();
-    S.liveMode = S.scenes.length < S.rounds;
+    S.playRounds = effectiveRounds();
+
+    if (S.mode === "landmark") {
+      // สับคลังทีเดียวตอนเริ่ม แล้วหยิบตามลำดับ จะได้ไม่ซ้ำกันแน่นอนในเกมเดียว
+      S.deck = landmarkPool()
+        .slice()
+        .sort(() => Math.random() - 0.5);
+      S.liveMode = false;
+    } else {
+      S.scenes = (typeof STREET_SCENES !== "undefined" ? STREET_SCENES : []).slice();
+      S.liveMode = S.scenes.length < S.playRounds;
+    }
     $("ssLiveNote").classList.toggle("ss-hidden", !S.liveMode);
     showStage("ssPlay");
     nextRound();
@@ -132,7 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function nextRound() {
-    if (S.round >= S.rounds) return endGame();
+    if (S.round >= S.playRounds) return endGame();
     S.round++;
     S.guess = null;
     showStage("ssPlay");
@@ -177,13 +263,22 @@ document.addEventListener("DOMContentLoaded", () => {
     S.map.reset();
     $("ssPickLabel").textContent = "แตะบนแผนที่เพื่อปักหมุด";
     $("ssConfirmBtn").disabled = true;
-    $("ssRoundTag").textContent = "ฉากที่ " + S.round + " / " + S.rounds;
+    $("ssRoundTag").textContent = "ฉากที่ " + S.round + " / " + S.playRounds;
     $("ssScoreTag").textContent = S.score.toLocaleString("th-TH") + " คะแนน";
     $("ssClock").textContent = S.seconds > 0 ? S.seconds : "—";
     $("ssStatus").textContent = note || "กำลังหาฉาก...";
     $("ssStatus").classList.remove("ss-hidden");
     $("ssGuessBtn").disabled = true;
     $("ssCredit").textContent = "";
+    $("ssLandmark").classList.toggle("ss-hidden", S.mode !== "landmark");
+    $("ssViewerBox").classList.toggle("ss-hidden", S.mode === "landmark");
+    $("ssSkipBtn").classList.toggle("ss-hidden", S.mode === "landmark");
+    $("ssPlayHint").textContent =
+      S.mode === "landmark"
+        ? "นึกออกคร่าว ๆ ก็กดทายได้เลย แตะแผนที่ครั้งแรกจะซูมเข้าให้ แล้วแตะซ้ำปรับตำแหน่งได้"
+        : "ลากนิ้วบนภาพเพื่อหมุนดูรอบตัว · แตะลูกศรบนพื้นถนนเพื่อเดินไปข้างหน้า";
+
+    if (S.mode === "landmark") return loadLandmark();
 
     const got = S.liveMode ? pickLive(MAX_SCENE_TRIES) : Promise.resolve(pickFromManifest());
     Promise.resolve(got).then((scene) => {
@@ -201,6 +296,34 @@ document.addEventListener("DOMContentLoaded", () => {
       S.used[scene.pictureId] = true;
       mountViewer(scene);
     });
+  }
+
+  // ---------- โหมดสถานที่สำคัญ ----------
+  // ไม่ต้องโหลดอะไรจากเน็ตเลย หยิบจากคลังที่สับไว้แล้วขึ้นการ์ดได้ทันที
+  function loadLandmark() {
+    const lm = S.deck[S.round - 1];
+    if (!lm) {
+      S.busy = false;
+      warn("สถานที่ในหมวดนี้หมดแล้ว ลองลดจำนวนฉากหรือเปลี่ยนหมวดดู");
+      showStage("ssSetup");
+      return;
+    }
+    S.scene = {
+      kind: "landmark",
+      answer: { lat: lm.lat, lon: lm.lon },
+      country: lm.country,
+      landmark: lm,
+    };
+    $("ssLmCat").textContent = CAT_LABEL[lm.cat] || "";
+    $("ssLmName").textContent = lm.th;
+    $("ssLmEn").textContent = lm.en;
+    $("ssLmClue").textContent = "💡 " + lm.clue;
+    $("ssStatus").classList.add("ss-hidden");
+    $("ssGuessBtn").disabled = false;
+    $("ssCredit").textContent = "";
+    S.busy = false;
+    S.viewerReady = true;
+    startTimer();
   }
 
   // ---------- ตัว viewer ----------
@@ -368,12 +491,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     $("ssRevealIcon").textContent = r.km === null ? "⌛" : r.km < 50 ? "🎯" : r.km < 800 ? "👍" : "🌍";
     $("ssRevealTitle").textContent = r.byTimeout && !S.guess ? "หมดเวลาแบบยังไม่ได้ปักหมุด" : fmtKm(r.km);
-    $("ssRevealWhere").textContent = country ? country.th + " (" + country.en + ")" : "ไม่รู้ประเทศ";
+    $("ssRevealWhere").textContent =
+      (scene.kind === "landmark" ? scene.landmark.th + " · " : "") +
+      (country ? country.th + " (" + country.en + ")" : "ไม่รู้ประเทศ");
 
     $("ssPtDist").textContent = r.distPoints.toLocaleString("th-TH");
     $("ssPtBonus").textContent = r.bonus.toLocaleString("th-TH");
     $("ssPtTotal").textContent = r.total.toLocaleString("th-TH");
     $("ssRunning").textContent = "รวมสะสม " + S.score.toLocaleString("th-TH") + " คะแนน";
+
+    if (scene.kind === "landmark") {
+      const lm = scene.landmark;
+      $("ssFact").textContent = "📖 " + lm.fact;
+      $("ssFact").classList.remove("ss-hidden");
+      $("ssAttrib").innerHTML = "";
+      $("ssNextBtn").textContent = S.round >= S.playRounds ? "ดูสรุปคะแนน 🏁" : "ฉากต่อไป →";
+      S.busy = false;
+      return;
+    }
+    $("ssFact").classList.add("ss-hidden");
 
     // เครดิตเต็มรูปแบบ พร้อมลิงก์ต้นทาง — ตอนนี้เฉลยแล้วจึงโชว์ได้
     const bits = [];
@@ -388,7 +524,7 @@ document.addEventListener("DOMContentLoaded", () => {
       bits.push('<a href="' + esc(scene.sourceUrl) + '" target="_blank" rel="noopener noreferrer">ดูภาพต้นทาง ↗</a>');
     $("ssAttrib").innerHTML = bits.join(" · ");
 
-    $("ssNextBtn").textContent = S.round >= S.rounds ? "ดูสรุปคะแนน 🏁" : "ฉากต่อไป →";
+    $("ssNextBtn").textContent = S.round >= S.playRounds ? "ดูสรุปคะแนน 🏁" : "ฉากต่อไป →";
     S.busy = false;
   }
 
@@ -407,8 +543,9 @@ document.addEventListener("DOMContentLoaded", () => {
   function endGame() {
     clearTimer();
     $("ssViewer").innerHTML = "";
+    $("ssFact").classList.add("ss-hidden");
     showStage("ssEnd");
-    const max = perRoundMax() * S.rounds;
+    const max = perRoundMax() * S.playRounds;
     $("ssEndScore").textContent = S.score.toLocaleString("th-TH");
     $("ssEndMax").textContent = "จากเต็ม " + max.toLocaleString("th-TH");
     const pct = max ? S.score / max : 0;
@@ -418,11 +555,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const rows = S.history.map((h, i) => {
       const c = wmByCode(h.scene.country);
+      const label = h.scene.kind === "landmark" ? h.scene.landmark.th : c ? c.th : "—";
       return (
         '<div class="ss-row"><span class="ss-row-n">' +
         (i + 1) +
         '</span><span class="ss-row-name">' +
-        esc(c ? c.th : "—") +
+        esc(label) +
         '</span><span class="ss-row-km">' +
         esc(fmtKm(h.km)) +
         '</span><span class="ss-row-pt">' +
@@ -457,11 +595,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ---------- ออฟไลน์ ----------
   function reflectOnline() {
-    const off = !navigator.onLine;
-    $("ssOffline").classList.toggle("ss-hidden", !off);
-    $("ssStartBtn").disabled = off;
+    // โหมดสถานที่สำคัญเล่นได้ปกติตอนออฟไลน์ บล็อกเฉพาะโหมดที่ต้องโหลดภาพจริง
+    const blocked = !navigator.onLine && S.mode === "street";
+    $("ssOffline").classList.toggle("ss-hidden", !blocked);
+    $("ssStartBtn").disabled = blocked;
   }
   window.addEventListener("online", reflectOnline);
   window.addEventListener("offline", reflectOnline);
-  reflectOnline();
+  reflectMode();
 });
