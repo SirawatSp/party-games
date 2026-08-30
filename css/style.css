@@ -3668,3 +3668,10 @@ html.hc-fs .hc-topbar{padding-right:150px;}
   background:transparent; border:none; color:var(--text-dim); text-decoration:underline;
 }
 .fl-reset:hover{color:var(--rose);}
+
+/* เหตุผลประกอบคำตอบใน Flash Quiz */
+.fq-why{
+  font-size:13.5px; line-height:1.7; color:var(--text-dim);
+  background:rgba(255,255,255,.04); border:1px solid var(--line);
+  border-radius:12px; padding:11px 14px; margin-top:12px; text-align:left;
+}

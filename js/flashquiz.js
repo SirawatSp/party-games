@@ -61,6 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
       (revealed
         ? '<div class="verdict qa">คำตอบ</div>' +
           '<div class="explain qa-answer">' + current.answer + "</div>" +
+          (current.explain ? '<div class="fq-why">' + current.explain + "</div>" : "") +
           '<div class="fq-judge quiz-judge">' +
             '<button class="btn fq-judge-correct" id="quizCorrectBtn">ตอบถูก ✓</button>' +
             '<button class="btn secondary fq-judge-wrong" id="quizWrongBtn">ตอบผิด ✗</button>' +
@@ -225,7 +226,8 @@ document.addEventListener("DOMContentLoaded", () => {
     answerEls.forEach((el) => {
       el.innerHTML =
         '<div class="fq-answer-label">คำตอบ</div>' +
-        '<div class="fq-answer-num">' + currentBattleQuestion.answer + "</div>";
+        '<div class="fq-answer-num">' + currentBattleQuestion.answer + "</div>" +
+        (currentBattleQuestion.explain ? '<div class="fq-why">' + currentBattleQuestion.explain + "</div>" : "");
       el.style.display = "";
     });
     judgeRowEls.forEach((el) => { el.style.display = ""; });

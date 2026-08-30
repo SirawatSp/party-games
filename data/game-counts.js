@@ -4,7 +4,7 @@ const GAME_COUNTS = {
   "category.html": { count: 358, unit: "หมวด" },
   "charades.html": { count: 739, unit: "คำ" },
   "drinking-games.html": { count: 17, unit: "เกม" },
-  "flashquiz.html": { count: 656, unit: "คำถาม" },
+  "flashquiz.html": { count: 659, unit: "คำถาม" },
   "flirt.html": { count: 199, unit: "สถานการณ์" },
   "guess-number.html": { count: 134, unit: "โจทย์" },
   "insider.html": { count: 446, unit: "คำ" },
