@@ -8,7 +8,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const TAG_LABEL = {
     thai: "ไทย", general: "ทั่วไป", science: "วิทยาศาสตร์", history: "ประวัติศาสตร์",
-    movie: "หนัง/การ์ตูน", music: "เพลง", sport: "กีฬา", game: "เกม"
+    movie: "หนัง/การ์ตูน", music: "เพลง", sport: "กีฬา", game: "เกม",
+    food: "อาหาร", animal: "สัตว์", geo: "ภูมิศาสตร์", tech: "เทคโนโลยี", art: "ศิลปะ/วรรณกรรม"
   };
   const TIME_BANK_SECONDS = 60;
 
