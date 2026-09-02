@@ -15,7 +15,7 @@ const GAME_COUNTS = {
   "tapple.html": { count: 482, unit: "หมวด" },
   "tenbut.html": { count: 355, unit: "มุก" },
   "thisorthat.html": { count: 1382, unit: "คู่" },
-  "trivia.html": { count: 596, unit: "ข้อ" },
+  "trivia.html": { count: 626, unit: "ข้อ" },
   "wavelength.html": { count: 448, unit: "คู่คำ" },
   "who-is-most.html": { count: 494, unit: "โจทย์" },
   "taxi.html": { count: 208, unit: "สถานที่" },
