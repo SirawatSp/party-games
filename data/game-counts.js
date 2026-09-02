@@ -25,5 +25,5 @@ const GAME_COUNTS = {
   "rapidfire.html": { count: 800, unit: "โจทย์" },
   "fake-artist.html": { count: 910, unit: "คำลับ" },
   "borderchain.html": { count: 155, unit: "ประเทศ" },
-  "bluff.html": { count: 388, unit: "คำถาม" },
+  "bluff.html": { count: 418, unit: "คำถาม" },
 };
