@@ -100,7 +100,8 @@ function line(item) {
 
 const file = path.join(DATA_DIR, pool.file);
 const src = fs.readFileSync(file, "utf8");
-const close = src.lastIndexOf("\n];");
+const eol = src.includes("\r\n") ? "\r\n" : "\n";
+const close = src.lastIndexOf(eol + "];");
 if (close < 0) {
   console.error("หาจุดปิด array ในไฟล์ไม่เจอ — ต้องแก้ไฟล์เอง");
   process.exit(1);
@@ -108,7 +109,7 @@ if (close < 0) {
 let head = src.slice(0, close);
 // ข้อสุดท้ายของไฟล์เดิมอาจไม่มีจุลภาคปิดท้าย ต้องเติมก่อน ไม่งั้นต่อข้อใหม่แล้วพัง
 if (!/[,[]\s*$/.test(head)) head += ",";
-const out = head + "\n" + keep.map(line).join("\n") + src.slice(close);
+const out = head + eol + keep.map(line).join(eol) + src.slice(close);
 
 if (DRY) {
   console.log("--dry: จะเพิ่ม " + keep.length + " ข้อเข้า data/" + pool.file + " แบบนี้");
