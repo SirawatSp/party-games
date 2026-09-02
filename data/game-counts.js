@@ -6,7 +6,7 @@ const GAME_COUNTS = {
   "drinking-games.html": { count: 17, unit: "เกม" },
   "flashquiz.html": { count: 689, unit: "คำถาม" },
   "flirt.html": { count: 199, unit: "สถานการณ์" },
-  "guess-number.html": { count: 134, unit: "โจทย์" },
+  "guess-number.html": { count: 164, unit: "โจทย์" },
   "insider.html": { count: 446, unit: "คำ" },
   "matchup.html": { count: 291, unit: "คำถาม" },
   "personal-facts.html": { count: 372, unit: "หัวข้อ" },
