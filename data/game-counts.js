@@ -15,7 +15,7 @@ const GAME_COUNTS = {
   "tapple.html": { count: 482, unit: "หมวด" },
   "tenbut.html": { count: 355, unit: "มุก" },
   "thisorthat.html": { count: 1382, unit: "คู่" },
-  "trivia.html": { count: 686, unit: "ข้อ" },
+  "trivia.html": { count: 716, unit: "ข้อ" },
   "wavelength.html": { count: 448, unit: "คู่คำ" },
   "who-is-most.html": { count: 494, unit: "โจทย์" },
   "taxi.html": { count: 208, unit: "สถานที่" },
@@ -25,5 +25,5 @@ const GAME_COUNTS = {
   "rapidfire.html": { count: 800, unit: "โจทย์" },
   "fake-artist.html": { count: 910, unit: "คำลับ" },
   "borderchain.html": { count: 155, unit: "ประเทศ" },
-  "bluff.html": { count: 418, unit: "คำถาม" },
+  "bluff.html": { count: 430, unit: "คำถาม" },
 };
