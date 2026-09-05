@@ -2776,29 +2776,32 @@ html.hc-fs .hc-topbar{padding-right:150px;}
 }
 
 /* ---- การ์ดเกมเด่นบนหน้าแรก ---- */
+/* การ์ดเกมเด่นบนหน้าแรก — สีตาม --feat ของแต่ละเกม (ค่าเริ่มต้นคือสีของศิลปินตัวปลอม) */
 .feature-card{
+  --feat:var(--fake); --feat-glow:rgba(255,230,0,.16); --feat-ink:#2a2200;
   display:grid; grid-template-columns:1.35fr 1fr; gap:22px; align-items:center;
   margin:18px 0 26px; padding:24px 22px;
   text-decoration:none; color:var(--text);
   background:
-    radial-gradient(ellipse 70% 120% at 12% 0%, rgba(255,230,0,.16), transparent 62%),
+    radial-gradient(ellipse 70% 120% at 12% 0%, var(--feat-glow), transparent 62%),
     var(--bg-card);
-  border:3px solid var(--fake);
+  border:3px solid var(--feat);
   border-radius:10px;
-  box-shadow:var(--hard-lg), 0 0 46px -14px var(--fake);
+  box-shadow:var(--hard-lg), 0 0 46px -14px var(--feat);
   transition:transform .18s, box-shadow .18s;
 }
-.feature-card:hover{transform:translateY(-3px); box-shadow:var(--hard-lg), 0 0 60px -10px var(--fake);}
+.feature-card.feature-flash{--feat:var(--coral); --feat-glow:rgba(255,111,97,.18); --feat-ink:#fff5f3;}
+.feature-card:hover{transform:translateY(-3px); box-shadow:var(--hard-lg), 0 0 60px -10px var(--feat);}
 .feature-badge{
   display:inline-block; margin-bottom:10px;
   font-family:'Press Start 2P','Kanit',sans-serif; font-size:9px; letter-spacing:.08em;
-  color:#2a2200; background:var(--fake);
+  color:var(--feat-ink); background:var(--feat);
   padding:6px 11px; border-radius:3px; border:2px solid var(--edge);
 }
 .feature-card h2{
   font-family:'Bungee','Kanit',sans-serif; font-weight:400;
   font-size:clamp(26px,5.4vw,38px); line-height:1.2; margin:0 0 10px;
-  color:var(--fake); text-shadow:var(--hard-sm);
+  color:var(--feat); text-shadow:var(--hard-sm);
 }
 .feature-card p{
   color:var(--text-dim); font-size:15px; line-height:1.75; margin:0 0 14px;
@@ -2806,7 +2809,7 @@ html.hc-fs .hc-topbar{padding-right:150px;}
 .feature-card p b{color:var(--text);}
 .feature-go{
   display:inline-flex; align-items:center; gap:9px;
-  font-family:'Kanit',sans-serif; font-weight:800; font-size:16px; color:var(--fake);
+  font-family:'Kanit',sans-serif; font-weight:800; font-size:16px; color:var(--feat);
 }
 .feature-art svg{
   display:block; width:100%; height:auto;

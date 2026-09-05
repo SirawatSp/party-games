@@ -25,6 +25,8 @@ const POOLS = [
     label: "Flash Quiz — คำถามความรู้รอบตัว",
     required: ["question", "answer", "explain", "tag"], optional: [],
     dupKey: "question", answerField: "answer", catField: "tag", closedCats: true,
+    // เกมนี้คือ "ตอบไว" คำตอบต้องสั้นพอจะพูดออกมาได้ทันที รายละเอียดไปไว้ใน explain
+    maxAnswerLen: 40,
   },
   {
     key: "guessnumber", file: "guess-number.js", varName: "GUESS_NUMBER_LIST",
