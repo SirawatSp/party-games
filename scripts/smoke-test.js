@@ -62,7 +62,7 @@ const check = (name, ok, extra) => results.push({ name, ok: !!ok, extra: extra =
   check("หน้าแรก: การ์ดเด่นชี้ไป Flash Quiz", h.featHref === "flashquiz.html", h.featHref);
   check("หน้าแรก: ป้ายบอกว่าเป็นเกมหลัก", /เกมหลัก/.test(h.badge), h.badge);
   check("หน้าแรก: การ์ดเด่นใช้สีของ Flash Quiz ไม่ใช่สีเหลืองเดิม", h.featColor === "rgb(255, 111, 97)", h.featColor);
-  check("หน้าแรก: ป้ายจำนวน Flash Quiz ตรงกับ GAME_COUNTS", h.fqBadge.includes(String(h.count)), h.fqBadge + " / " + h.count);
+  check("หน้าแรก: ป้ายจำนวน Flash Quiz ตรงกับ GAME_COUNTS", h.fqBadge.replace(/,/g, "").includes(String(h.count)), h.fqBadge + " / " + h.count);
   if (SHOTS) { await home.screenshot({ path: path.join(SHOTS, "home-feature.png"), clip: { x: 0, y: 0, width: 420, height: 950 } }); }
   await home.close();
 
