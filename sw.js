@@ -1,7 +1,7 @@
 // Service Worker สำหรับเล่นออฟไลน์ได้ทั้งเว็บ (เก็บ cache ทุกหน้า/สคริปต์/คลังโจทย์ไว้ในเครื่อง)
 // เปิดเว็บครั้งแรกตอนมีเน็ต ระบบจะโหลดเก็บไว้ให้อัตโนมัติ ครั้งต่อไปเปิดได้แม้ไม่มีเน็ตเลย
 // อัปเดตเนื้อหาเว็บทีไร ให้เปลี่ยนเลข CACHE_VERSION เพื่อบังคับดาวน์โหลดของใหม่ทับของเก่า
-const CACHE_VERSION = "party-games-v54";
+const CACHE_VERSION = "party-games-v55";
 
 // หมายเหตุ: เกม "ทายถนน" (street-scene) เก็บโครงหน้า แผนที่ และคลังสถานที่ไว้
 // โหมด "สถานที่สำคัญ" จึงเล่นได้เต็มรูปแบบตอนออฟไลน์
@@ -36,6 +36,7 @@ const PRECACHE_URLS = [
   "tapple.html",
   "taxi.html",
   "tenbut.html",
+  "tier-list.html",
   "thisorthat.html",
   "trivia.html",
   "wavelength.html",
@@ -71,6 +72,7 @@ const PRECACHE_URLS = [
   "js/tapple.js",
   "js/taxi.js",
   "js/tenbut.js",
+  "js/tier-list.js",
   "js/thisorthat.js",
   "js/wavelength.js",
   "js/who-is-most.js",
@@ -102,6 +104,7 @@ const PRECACHE_URLS = [
   "data/shes-a-10-but.js",
   "data/tapple-categories-en.js",
   "data/tapple-categories.js",
+  "data/tier-list.js",
   "data/taxi.js",
   "data/thisorthat.js",
   "data/wavelength.js",

@@ -123,6 +123,14 @@ for (const pool of pools) {
       if (new Set(item.choices).size !== item.choices.length)
         err(pool, at + " มีตัวเลือกซ้ำกันเอง");
     }
+    if (pool.arrayRange) {
+      const { field, min, max } = pool.arrayRange;
+      const values = item[field];
+      if (!Array.isArray(values) || values.length < min || values.length > max)
+        err(pool, at + " ฟิลด์ " + field + " ต้องมี " + min + "-" + max + " รายการ");
+      else if (new Set(values).size !== values.length)
+        err(pool, at + " ฟิลด์ " + field + " มีรายการซ้ำกันเอง");
+    }
 
     // ---- คำอธิบาย ----
     if ((pool.required || []).includes("explain")) {

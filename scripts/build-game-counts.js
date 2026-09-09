@@ -26,6 +26,7 @@ const PAGES = [
   { page: "wavelength.html", unit: "คู่คำ", files: [["wavelength.js", "WAVELENGTH_PAIRS"]] },
   { page: "who-is-most.html", unit: "โจทย์", files: [["who-is-most.js", "WHO_IS_MOST"]] },
   { page: "taxi.html", unit: "สถานที่", files: [["taxi.js", "TAXI_PLACES"]] },
+  { page: "tier-list.html", unit: "หัวข้อ", files: [["tier-list.js", "TIER_LIST_PROMPTS"]] },
   { page: "animalrace.html", unit: "ตัว", files: [["race-animals.js", "RACE_ANIMALS"]] },
   { page: "hues-and-cues.html", unit: "เฉดสี", files: [["hues-and-cues.js", "HUES_GRID"]] },
   { page: "favorites.html", unit: "คำถาม", files: [["favorites.js", "FAVORITES_LIST"]] },

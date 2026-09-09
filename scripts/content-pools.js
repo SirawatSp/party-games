@@ -106,6 +106,14 @@ const POOLS = [
     dupKey: "prompt", catField: "tag", closedCats: false,
   },
   {
+    key: "tierlist", file: "tier-list.js", varName: "TIER_LIST_PROMPTS",
+    page: "tier-list.html", script: "js/tier-list.js",
+    label: "Tier Talk — จัดอันดับให้รู้ใจ",
+    required: ["title", "items", "talk", "cat"], optional: [],
+    dupKey: "title", catField: "cat", closedCats: true,
+    arrayRange: { field: "items", min: 6, max: 6 },
+  },
+  {
     key: "favorites", file: "favorites.js", varName: "FAVORITES_LIST",
     page: "favorites.html", script: "js/favorites.js",
     label: "ของโปรดของเธอ",

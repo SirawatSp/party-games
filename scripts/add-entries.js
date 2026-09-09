@@ -71,6 +71,14 @@ incoming.forEach((item, i) => {
   });
   if (cats && cats.size && !cats.has(item[pool.catField]))
     problems.push(at + ' หมวด "' + item[pool.catField] + '" ยังไม่มีปุ่มกรองในหน้า ' + pool.page);
+  if (pool.arrayRange) {
+    const { field, min, max } = pool.arrayRange;
+    const values = item[field];
+    if (!Array.isArray(values) || values.length < min || values.length > max)
+      problems.push(at + " ฟิลด์ " + field + " ต้องมี " + min + "-" + max + " รายการ");
+    else if (new Set(values).size !== values.length)
+      problems.push(at + " ฟิลด์ " + field + " มีรายการซ้ำกันเอง");
+  }
 
   const d = dupValue(pool, item);
   if (seen.has(d)) return problems.push(at + " ซ้ำกับข้อที่มีอยู่แล้ว: " + d.slice(0, 60));
