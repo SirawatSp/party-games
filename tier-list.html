@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tier Talk — จัดเทียร์ให้รู้ใจ</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0c0710">
+</head>
+<body class="tier-page">
+<div class="marquee"><span></span></div>
+<div class="wrap tier-wrap">
+  <div class="topnav">
+    <a class="brand-logo" href="index.html"><img class="brand-img" src="assets/logo.png" width="720" height="416" alt="Party Games — วงกำลังจะเหงา"></a>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head tier-head reveal-up">
+    <span class="kicker">29 · จัดอันดับ · เถียงได้</span>
+    <div class="tier-stamp" aria-hidden="true">S → D</div>
+    <h1>Tier Talk</h1>
+    <p>หยิบเรื่องที่ทุกคนมีความเห็นมาเรียงเป็นเทียร์เดียวกัน วางเสร็จแล้วต้องเล่าว่า “ทำไม” — ความสนุกอยู่ตรงที่อันดับเดียวกัน แต่เหตุผลไม่เคยเหมือนกัน</p>
+  </section>
+
+  <div class="tags tier-tags reveal-up" id="tierCats" aria-label="เลือกหมวด">
+    <button class="tag active" data-cat="all" type="button">🎲 ทั้งหมด</button>
+    <button class="tag" data-cat="date" type="button">💘 เดต</button>
+    <button class="tag" data-cat="food" type="button">🍜 ของกิน</button>
+    <button class="tag" data-cat="travel" type="button">🧳 เที่ยว</button>
+    <button class="tag" data-cat="hangout" type="button">🎉 วงเพื่อน</button>
+    <button class="tag" data-cat="life" type="button">🏠 ชีวิต</button>
+    <button class="tag" data-cat="media" type="button">🎬 บันเทิง</button>
+    <button class="tag" data-cat="values" type="button">🧭 ค่านิยม</button>
+    <button class="tag" data-cat="nostalgia" type="button">📼 ความทรงจำ</button>
+    <button class="tag" data-cat="absurd" type="button">🌀 สมมติเล่น</button>
+    <button class="tag" data-cat="money" type="button">💸 ใช้เงิน</button>
+  </div>
+
+  <main class="tier-game reveal-up">
+    <div class="tier-ticket">
+      <div class="tier-ticket-top">
+        <span id="tierCatLabel"></span>
+        <span id="tierProgress">0 / 6</span>
+      </div>
+      <h2 id="tierTitle"></h2>
+      <p id="tierTalk"></p>
+    </div>
+
+    <section class="tier-tray" aria-labelledby="tierTrayTitle">
+      <div class="tier-section-label" id="tierTrayTitle">แตะสิ่งที่จะจัด แล้วแตะแถวเทียร์</div>
+      <div class="tier-items" id="tierItems"></div>
+    </section>
+
+    <section class="tier-board" id="tierBoard" aria-label="กระดานจัดเทียร์"></section>
+    <p class="tier-live" id="tierLive" aria-live="polite"></p>
+
+    <div class="tier-actions">
+      <button class="btn secondary" id="tierReset" type="button">ล้างกระดาน ↺</button>
+      <button class="btn" id="tierNext" type="button">หัวข้อถัดไป →</button>
+    </div>
+  </main>
+
+  <div class="panel reveal-up tier-how">
+    <h2>วิธีเล่น</h2>
+    <ol>
+      <li>อ่านเกณฑ์กลางให้ชัด เช่น “เหมาะกับเดตแรกแค่ไหน” ไม่ใช่แค่ชอบหรือไม่ชอบ</li>
+      <li>ผลัดกันเลือกของหนึ่งอย่าง แล้วแตะ S, A, B, C หรือ D เพื่อวางลงบอร์ด</li>
+      <li>ทุกครั้งที่วาง ต้องบอกเหตุผลสั้น ๆ คนอื่นขอท้าทายอันดับได้หนึ่งครั้ง</li>
+      <li>เมื่อครบ 6 อย่าง ดูคำถามชวนคุยใต้หัวข้อ แล้วตกลงอันดับสุดท้ายของวง</li>
+    </ol>
+  </div>
+
+  <footer>อันดับเปลี่ยนได้ เหตุผลต่างกันได้ แต่อย่าปล่อยให้วงเงียบ 🏁</footer>
+</div>
+<script src="data/tier-list.js"></script>
+<script src="js/main.js"></script>
+<script src="js/tier-list.js"></script>
+</body>
+</html>
