@@ -221,18 +221,56 @@ document.addEventListener("DOMContentLoaded", () => {
   const tattooChampionName = document.getElementById("tattooChampionName");
   const tattooPathList = document.getElementById("tattooPathList");
   const tattooReplayBtn = document.getElementById("tattooReplayBtn");
+  const tattooSongTotal = document.getElementById("tattooSongTotal");
+  const tattooMatchTotal = document.getElementById("tattooMatchTotal");
+  const tattooPickTotal = document.getElementById("tattooPickTotal");
+
+  const tattooTotalPicks = TATTOO_COLOUR_SONGS.length - 1;
+  tattooSongTotal.textContent = TATTOO_COLOUR_SONGS.length;
+  tattooMatchTotal.textContent = tattooTotalPicks;
+  tattooPickTotal.textContent = tattooTotalPicks;
 
   let tattooRound = [];
   let tattooMatchIdx = 0;
   let tattooWinners = [];
   let tattooLog = [];
   let tattooSnapshots = [];
+  let tattooRoundTitle = "";
+  let tattooByeCount = 0;
 
   function tattooRoundName(entrants) {
     if (entrants === 2) return "รอบชิงชนะเลิศ";
     if (entrants === 4) return "รอบรองชนะเลิศ";
     if (entrants === 8) return "รอบ 8 เพลง";
-    return "รอบ 16 เพลง";
+    return "รอบ " + entrants + " เพลง";
+  }
+
+  function pairTattooSongs(songs) {
+    const pairs = [];
+    for (let i = 0; i < songs.length; i += 2) {
+      pairs.push([songs[i], songs[i + 1]]);
+    }
+    return pairs;
+  }
+
+  function prepareTattooRound(entrants, isFirstRound) {
+    const songs = isFirstRound ? shuffleArr(entrants) : entrants.slice();
+    const targetSize = 2 ** Math.floor(Math.log2(songs.length));
+    const matchesNeeded = songs.length - targetSize;
+
+    if (matchesNeeded > 0) {
+      const playingCount = matchesNeeded * 2;
+      tattooRound = pairTattooSongs(songs.slice(0, playingCount));
+      tattooWinners = songs.slice(playingCount);
+      tattooRoundTitle = "รอบคัดเลือก";
+      tattooByeCount = tattooWinners.length;
+    } else {
+      tattooRound = pairTattooSongs(songs);
+      tattooWinners = [];
+      tattooRoundTitle = tattooRoundName(songs.length);
+      tattooByeCount = 0;
+    }
+    tattooMatchIdx = 0;
   }
 
   function resetTattoo() {
@@ -244,6 +282,9 @@ document.addEventListener("DOMContentLoaded", () => {
     tattooWinners = [];
     tattooLog = [];
     tattooSnapshots = [];
+    tattooRoundTitle = "";
+    tattooByeCount = 0;
+    tattooProgress.style.width = "0%";
   }
 
   function saveTattooSnapshot() {
@@ -251,16 +292,19 @@ document.addEventListener("DOMContentLoaded", () => {
       round: tattooRound.slice(),
       matchIdx: tattooMatchIdx,
       winners: tattooWinners.slice(),
-      log: tattooLog.slice()
+      log: tattooLog.slice(),
+      roundTitle: tattooRoundTitle,
+      byeCount: tattooByeCount
     });
   }
 
   function showTattooMatch() {
     const pair = tattooRound[tattooMatchIdx];
     const pickedCount = tattooLog.length;
-    tattooRoundLabel.textContent = tattooRoundName(tattooRound.length * 2);
-    tattooMatchCount.textContent = "คู่ที่ " + (tattooMatchIdx + 1) + " / " + tattooRound.length + " · เลือกแล้ว " + pickedCount + " / 15";
-    tattooProgress.style.width = ((pickedCount / 15) * 100) + "%";
+    tattooRoundLabel.textContent = tattooRoundTitle;
+    const byeText = tattooByeCount ? " · " + tattooByeCount + " เพลงได้บาย" : "";
+    tattooMatchCount.textContent = "คู่ที่ " + (tattooMatchIdx + 1) + " / " + tattooRound.length + byeText + " · เลือกแล้ว " + pickedCount + " / " + tattooTotalPicks;
+    tattooProgress.style.width = ((pickedCount / tattooTotalPicks) * 100) + "%";
     tattooOptionA.textContent = pair[0];
     tattooOptionB.textContent = pair[1];
     tattooOptionA.onclick = () => pickTattooWinner(pair[0], pair[1]);
@@ -281,9 +325,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (tattooWinners.length === 1) {
       showTattooChampion(tattooWinners[0]);
     } else {
-      tattooRound = buildPairs(tattooWinners);
-      tattooWinners = [];
-      tattooMatchIdx = 0;
+      prepareTattooRound(tattooWinners, false);
       showTattooMatch();
     }
   }
@@ -300,11 +342,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   tattooStartBtn.addEventListener("click", () => {
-    tattooRound = buildPairs(TATTOO_COLOUR_SONGS);
-    tattooMatchIdx = 0;
-    tattooWinners = [];
     tattooLog = [];
     tattooSnapshots = [];
+    prepareTattooRound(TATTOO_COLOUR_SONGS, true);
     showTattooMatch();
   });
 
@@ -315,6 +355,8 @@ document.addEventListener("DOMContentLoaded", () => {
     tattooMatchIdx = previous.matchIdx;
     tattooWinners = previous.winners;
     tattooLog = previous.log;
+    tattooRoundTitle = previous.roundTitle;
+    tattooByeCount = previous.byeCount;
     showTattooMatch();
   });
 
