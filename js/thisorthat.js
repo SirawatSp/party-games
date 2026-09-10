@@ -72,18 +72,26 @@ document.addEventListener("DOMContentLoaded", () => {
   const endlessStage = document.getElementById("endlessStage");
   const endlessControls = document.getElementById("endlessControls");
   const archStage = document.getElementById("archStage");
+  const rulesTattoo = document.getElementById("rulesTattoo");
+  const tattooStage = document.getElementById("tattooStage");
 
   modeSwitch.querySelectorAll(".tp-mode-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       modeSwitch.querySelectorAll(".tp-mode-btn").forEach((b) => b.classList.toggle("active", b === btn));
-      const isBracket = btn.dataset.mode === "bracket";
-      rulesTot.style.display = isBracket ? "none" : "";
-      totTags.style.display = isBracket ? "none" : "";
-      endlessStage.style.display = isBracket ? "none" : "";
-      endlessControls.style.display = isBracket ? "none" : "";
+      const mode = btn.dataset.mode;
+      const isEndless = mode === "endless";
+      const isBracket = mode === "bracket";
+      const isTattoo = mode === "tattoo";
+      rulesTot.style.display = isEndless ? "" : "none";
+      totTags.style.display = isEndless ? "" : "none";
+      endlessStage.style.display = isEndless ? "" : "none";
+      endlessControls.style.display = isEndless ? "" : "none";
       rulesArch.style.display = isBracket ? "" : "none";
       archStage.style.display = isBracket ? "" : "none";
+      rulesTattoo.style.display = isTattoo ? "" : "none";
+      tattooStage.style.display = isTattoo ? "" : "none";
       if (isBracket) resetBracket();
+      if (isTattoo) resetTattoo();
     });
   });
 
@@ -197,4 +205,119 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   archReplayBtn.addEventListener("click", resetBracket);
+
+  // ---------- Tattoo Colour song tournament ----------
+  const tattooSetup = document.getElementById("tattooSetup");
+  const tattooStartBtn = document.getElementById("tattooStartBtn");
+  const tattooMatch = document.getElementById("tattooMatch");
+  const tattooRoundLabel = document.getElementById("tattooRoundLabel");
+  const tattooMatchCount = document.getElementById("tattooMatchCount");
+  const tattooProgress = document.getElementById("tattooProgress");
+  const tattooOptionA = document.getElementById("tattooOptionA");
+  const tattooOptionB = document.getElementById("tattooOptionB");
+  const tattooUndoBtn = document.getElementById("tattooUndoBtn");
+  const tattooResetBtn = document.getElementById("tattooResetBtn");
+  const tattooResult = document.getElementById("tattooResult");
+  const tattooChampionName = document.getElementById("tattooChampionName");
+  const tattooPathList = document.getElementById("tattooPathList");
+  const tattooReplayBtn = document.getElementById("tattooReplayBtn");
+
+  let tattooRound = [];
+  let tattooMatchIdx = 0;
+  let tattooWinners = [];
+  let tattooLog = [];
+  let tattooSnapshots = [];
+
+  function tattooRoundName(entrants) {
+    if (entrants === 2) return "รอบชิงชนะเลิศ";
+    if (entrants === 4) return "รอบรองชนะเลิศ";
+    if (entrants === 8) return "รอบ 8 เพลง";
+    return "รอบ 16 เพลง";
+  }
+
+  function resetTattoo() {
+    tattooSetup.style.display = "";
+    tattooMatch.style.display = "none";
+    tattooResult.style.display = "none";
+    tattooRound = [];
+    tattooMatchIdx = 0;
+    tattooWinners = [];
+    tattooLog = [];
+    tattooSnapshots = [];
+  }
+
+  function saveTattooSnapshot() {
+    tattooSnapshots.push({
+      round: tattooRound.slice(),
+      matchIdx: tattooMatchIdx,
+      winners: tattooWinners.slice(),
+      log: tattooLog.slice()
+    });
+  }
+
+  function showTattooMatch() {
+    const pair = tattooRound[tattooMatchIdx];
+    const pickedCount = tattooLog.length;
+    tattooRoundLabel.textContent = tattooRoundName(tattooRound.length * 2);
+    tattooMatchCount.textContent = "คู่ที่ " + (tattooMatchIdx + 1) + " / " + tattooRound.length + " · เลือกแล้ว " + pickedCount + " / 15";
+    tattooProgress.style.width = ((pickedCount / 15) * 100) + "%";
+    tattooOptionA.textContent = pair[0];
+    tattooOptionB.textContent = pair[1];
+    tattooOptionA.onclick = () => pickTattooWinner(pair[0], pair[1]);
+    tattooOptionB.onclick = () => pickTattooWinner(pair[1], pair[0]);
+    tattooUndoBtn.disabled = tattooSnapshots.length === 0;
+    tattooSetup.style.display = "none";
+    tattooMatch.style.display = "";
+    tattooResult.style.display = "none";
+  }
+
+  function pickTattooWinner(winner, loser) {
+    saveTattooSnapshot();
+    tattooLog.push({ round: tattooRoundLabel.textContent, winner, loser });
+    tattooWinners.push(winner);
+    tattooMatchIdx++;
+    if (tattooMatchIdx < tattooRound.length) {
+      showTattooMatch();
+    } else if (tattooWinners.length === 1) {
+      showTattooChampion(tattooWinners[0]);
+    } else {
+      tattooRound = buildPairs(tattooWinners);
+      tattooWinners = [];
+      tattooMatchIdx = 0;
+      showTattooMatch();
+    }
+  }
+
+  function showTattooChampion(champion) {
+    tattooChampionName.textContent = champion;
+    tattooProgress.style.width = "100%";
+    const path = tattooLog.filter((match) => match.winner === champion);
+    tattooPathList.innerHTML = path.map((match) =>
+      '<div class="cw-recap-item correct"><span>' + match.round + '</span><span class="cw-recap-mark">ชนะ ' + match.loser + "</span></div>"
+    ).join("");
+    tattooMatch.style.display = "none";
+    tattooResult.style.display = "";
+  }
+
+  tattooStartBtn.addEventListener("click", () => {
+    tattooRound = buildPairs(TATTOO_COLOUR_SONGS);
+    tattooMatchIdx = 0;
+    tattooWinners = [];
+    tattooLog = [];
+    tattooSnapshots = [];
+    showTattooMatch();
+  });
+
+  tattooUndoBtn.addEventListener("click", () => {
+    const previous = tattooSnapshots.pop();
+    if (!previous) return;
+    tattooRound = previous.round;
+    tattooMatchIdx = previous.matchIdx;
+    tattooWinners = previous.winners;
+    tattooLog = previous.log;
+    showTattooMatch();
+  });
+
+  tattooResetBtn.addEventListener("click", resetTattoo);
+  tattooReplayBtn.addEventListener("click", resetTattoo);
 });

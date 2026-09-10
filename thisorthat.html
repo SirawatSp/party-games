@@ -19,12 +19,13 @@
   <section class="page-head reveal-up">
     <span class="kicker" style="background:var(--rose); color:#3a0410;">14 · เลือกอย่างใดอย่างหนึ่ง</span>
     <h1>This or That</h1>
-    <p>สุ่มคู่ตัวเลือกออกมา แล้วให้ทุกคนในวงเลือกฝั่งพร้อมกัน ใครเลือกเหมือนกันก็เข้าใจกันไว คนไหนเลือกต่างก็เถียงกันมันส์ ๆ ได้เลย มีคลังกว่า 1,000 คู่หลายหมวดให้สุ่มเล่น รวมหมวด Would You Rather โจทย์กลืนไม่เข้าคายไม่ออกสไตล์สากล หรือสลับไปโหมดทัวร์นาเมนต์สถาปนิกระดับโลก เล่นจนจบบัลลังก์เพื่อโหวตหาอันดับ 1 ก็ได้</p>
+    <p>สุ่มคู่ตัวเลือกออกมา แล้วให้ทุกคนในวงเลือกฝั่งพร้อมกัน ใครเลือกเหมือนกันก็เข้าใจกันไว คนไหนเลือกต่างก็เถียงกันมันส์ ๆ ได้เลย มีคลังกว่า 1,000 คู่หลายหมวด รวม Would You Rather หรือสลับไปเล่นทัวร์นาเมนต์สถาปนิกและเพลง Tattoo Colour เพื่อหาอันดับ 1 ของวงก็ได้</p>
   </section>
 
   <div class="tp-mode-switch reveal-up" id="totModeSwitch" style="margin-bottom:22px;">
     <button type="button" class="tp-mode-btn active" data-mode="endless">สุ่มไม่รู้จบ 🔀</button>
     <button type="button" class="tp-mode-btn" data-mode="bracket">ทัวร์นาเมนต์สถาปนิก 🏛️</button>
+    <button type="button" class="tp-mode-btn" data-mode="tattoo">Tattoo Colour 🎸</button>
   </div>
 
   <div class="panel reveal-up" id="rulesTot">
@@ -111,11 +112,58 @@
     </div>
   </div>
 
+  <div class="panel reveal-up" id="rulesTattoo" style="display:none;">
+    <h2>วิธีเล่น · Tattoo Colour Song Tournament</h2>
+    <ol>
+      <li>ระบบจะสุ่มจับคู่ 16 เพลงฮิตของ Tattoo Colour ให้ดวลกันทีละคู่</li>
+      <li>ฟังเสียงหัวใจแล้วกดเพลงที่ชอบกว่า จะโหวตคนเดียวหรือให้ทั้งวงช่วยกันตัดสินก็ได้</li>
+      <li>เพลงที่ชนะจะผ่านเข้ารอบ 8 เพลง รอบรองชนะเลิศ และรอบชิงชนะเลิศ</li>
+      <li>เลือกครบ 15 คู่จะได้เพลงแชมป์ของวง พร้อมดูเส้นทางที่เพลงนั้นผ่านมา</li>
+    </ol>
+  </div>
+
+  <div class="tot-stage tc-stage reveal-up" id="tattooStage" style="display:none;">
+    <div id="tattooSetup">
+      <div class="tc-sticker">16 เพลง · 15 คู่ · 1 แชมป์</div>
+      <h3 class="tc-title">TATTOO COLOUR<br><em>SONG TOURNAMENT</em></h3>
+      <p class="tp-hint">ทุกครั้งที่เริ่ม ระบบจะสับสายแข่งใหม่ทั้งหมด</p>
+      <div class="controls" style="justify-content:center; display:flex; margin-top:22px;">
+        <button class="btn" id="tattooStartBtn">เริ่มดวลเพลง 🎸</button>
+      </div>
+    </div>
+
+    <div id="tattooMatch" style="display:none;">
+      <div class="tot-cat tc-round" id="tattooRoundLabel">รอบ</div>
+      <div class="tc-progress"><span id="tattooProgress"></span></div>
+      <p class="tc-match-count" id="tattooMatchCount"></p>
+      <div class="tot-options">
+        <button type="button" class="tot-option tc-option" id="tattooOptionA"></button>
+        <div class="tot-vs tc-vs">VS</div>
+        <button type="button" class="tot-option tc-option" id="tattooOptionB"></button>
+      </div>
+      <div class="controls tc-controls">
+        <button class="btn secondary" id="tattooUndoBtn" disabled>← ย้อนคู่ล่าสุด</button>
+        <button class="tc-reset" id="tattooResetBtn">สุ่มสายใหม่</button>
+      </div>
+    </div>
+
+    <div id="tattooResult" style="display:none;">
+      <div class="tc-crown">★ เพลงแชมป์ของวง ★</div>
+      <h3 class="tc-champion" id="tattooChampionName"></h3>
+      <p class="tp-hint">เพลง Tattoo Colour ที่ผ่านทุกคู่และชนะใจวงคืนนี้</p>
+      <div class="cw-recap-list" id="tattooPathList" style="margin-top:20px;"></div>
+      <div class="controls" style="justify-content:center; display:flex; margin-top:22px;">
+        <button class="btn secondary" id="tattooReplayBtn">จัดสายใหม่อีกครั้ง ↻</button>
+      </div>
+    </div>
+  </div>
+
   <footer>เล่นเพื่อความสนุก ไม่มีคำตอบถูกผิด แค่เปิดบทสนทนาในวงเพื่อน 😄</footer>
 </div>
 
 <script src="data/thisorthat.js"></script>
 <script src="data/architects.js"></script>
+<script src="data/tattoo-colour.js"></script>
 <script src="js/main.js"></script>
 <script src="js/thisorthat.js"></script>
 </body>
