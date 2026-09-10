@@ -111,7 +111,9 @@ const POOLS = [
     label: "Tier Talk — จัดอันดับให้รู้ใจ",
     required: ["title", "items", "talk", "cat"], optional: [],
     dupKey: "title", catField: "cat", closedCats: true,
-    arrayRange: { field: "items", min: 6, max: 6 },
+    // หัวข้อรุ่นแรกมีตัวเลือกหลัก 6 รายการและหน้าเกมเติมจากคลังหมวดให้ครบ 20
+    // หัวข้อใหม่บันทึกครบ 20 รายการตั้งแต่ต้น
+    arrayRange: { field: "items", min: 6, max: 20 },
   },
   {
     key: "favorites", file: "favorites.js", varName: "FAVORITES_LIST",
