@@ -130,6 +130,13 @@ const POOLS = [
     dupKey: "q", catField: "cat", closedCats: true,
   },
   {
+    key: "situation", file: "situations.js", varName: "SITUATION_LIST",
+    page: "situation.html", script: "js/situation.js",
+    label: "ถ้าคุณแน่ ต้องแก้สถานการณ์!",
+    required: ["scenario", "cat"], optional: [],
+    dupKey: "scenario", catField: "cat", closedCats: true,
+  },
+  {
     key: "personalfacts", file: "personal-facts.js", varName: "PERSONAL_FACTS",
     page: "personal-facts.html", script: "js/personal-facts.js",
     label: "Fun Facts จัดแถวชีวิต — โจทย์ตัวเลขส่วนตัว",

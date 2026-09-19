@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ถ้าคุณแน่ ต้องแก้สถานการณ์! — เกมสถานการณ์ชวนคุย</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0c0710">
+</head>
+<body class="situation-page">
+<div class="marquee"><span></span></div>
+<div class="wrap">
+  <div class="topnav">
+    <a class="brand-logo" href="index.html"><img class="brand-img" src="assets/logo.png" width="720" height="416" alt="Party Games — วงกำลังจะเหงา"></a>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <section class="page-head situation-head reveal-up">
+    <span class="kicker situation-kicker">30 · ภารกิจชวนถก</span>
+    <p class="situation-eyebrow">แฟ้มลับสำหรับคนแก้เกมเก่ง</p>
+    <h1>ถ้าคุณแน่<br><span>ต้องแก้สถานการณ์!</span></h1>
+    <p>สถานการณ์สมมติที่โยนทุกคนลงกลางเรื่องพร้อมกัน บางข้อให้ตัดสินใจ บางข้อให้เลือกคนในวง และทุกข้อต้องมีเหตุผล ไม่มีคำตอบถูกผิด มีแต่คำตอบที่ทำให้รู้จักกันมากขึ้น</p>
+  </section>
+
+  <div class="panel situation-rules reveal-up">
+    <div class="situation-stamp" aria-hidden="true">HOW TO<br>HANDLE IT?</div>
+    <h2>กติกาแฟ้มสถานการณ์</h2>
+    <ol>
+      <li>เลือกหมวดหรือกด “ทุกสถานการณ์” แล้วให้หนึ่งคนอ่านโจทย์ออกเสียง</li>
+      <li>ทุกคนเลือกคำตอบของตัวเอง ถ้าโจทย์ถามถึงคนในวงให้นับ 1-2-3 แล้วชี้พร้อมกัน</li>
+      <li>เล่าเหตุผลทีละคน คนอื่นมีสิทธิ์ถามต่อหรือแย้งได้คนละหนึ่งครั้ง</li>
+      <li>ถ้าคำตอบเปลี่ยนหลังฟังเพื่อน ให้บอกด้วยว่าเหตุผลไหนทำให้เปลี่ยนใจ</li>
+      <li>เหตุการณ์ทั้งหมดเป็นเรื่องสมมติ ใช้เปิดบทสนทนา ไม่ใช่คำแนะนำสำหรับเหตุฉุกเฉินจริง</li>
+    </ol>
+  </div>
+
+  <div class="tags situation-tags reveal-up" id="situationTags">
+    <span class="tag active" data-cat="all">ทุกสถานการณ์</span>
+    <span class="tag" data-cat="circle">👥 เลือกคนในวง</span>
+    <span class="tag" data-cat="work">💼 ที่ทำงาน</span>
+    <span class="tag" data-cat="event">🎤 ออกงาน</span>
+    <span class="tag" data-cat="travel">🧳 เดินทาง</span>
+    <span class="tag" data-cat="emergency">🚨 เหตุฉุกเฉิน</span>
+    <span class="tag" data-cat="money">💸 เงินและของมีค่า</span>
+    <span class="tag" data-cat="family">🏠 ครอบครัว</span>
+    <span class="tag" data-cat="digital">📱 โลกออนไลน์</span>
+    <span class="tag" data-cat="everyday">🍽️ ชีวิตประจำวัน</span>
+    <span class="tag" data-cat="wild">🛸 เหนือความคาดหมาย</span>
+  </div>
+
+  <main class="situation-stage reveal-up" aria-live="polite">
+    <article class="situation-card" id="situationCard">
+      <div class="situation-tape" aria-hidden="true"></div>
+      <div class="situation-meta">
+        <span id="situationCategory">กำลังเปิดแฟ้ม</span>
+        <span id="situationCase">CASE 000</span>
+      </div>
+      <div class="situation-alert">สถานการณ์ตรงหน้า</div>
+      <p id="situationText"></p>
+      <div class="situation-talkline">เลือกคำตอบ แล้วเล่าให้วงฟังว่า “ทำไม”</div>
+    </article>
+  </main>
+
+  <div class="controls situation-controls">
+    <button class="btn" id="situationNextBtn" type="button">เปิดแฟ้มถัดไป →</button>
+    <button class="btn secondary" id="situationTimerBtn" type="button">คิด 30 วิ ⏱</button>
+  </div>
+
+  <footer>คำตอบเปลี่ยนได้เมื่อได้ฟังมุมของเพื่อน — นั่นแหละคือบทสนทนาที่ดี</footer>
+</div>
+
+<script src="data/situations.js"></script>
+<script src="js/main.js"></script>
+<script src="js/situation.js"></script>
+</body>
+</html>

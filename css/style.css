@@ -24,6 +24,7 @@
   --croc: #4ade80;
   --taxi: #ffe14d;
   --race: #ff5722;
+  --situation: #f4ff52;
   --text: #f6eef9;
   --text-dim: #b6a3c2;
   --line: #3a2245;
@@ -91,7 +92,7 @@ a{color:inherit; text-decoration:none;}
   color:var(--lime);
   text-transform:uppercase;
 }
-.marquee span::after{content:"\00a0 \2726 \00a0 ปาร์ตี้ \00a0 \2726 \00a0 เกมวงเหล้า \00a0 \2726 \00a0 Insider \00a0 \2726 \00a0 เกมหมวดหมู่ \00a0 \2726 \00a0 She's a 10 but \00a0 \2726 \00a0 ทริเวียหลุดโลก \00a0 \2726 \00a0 Wavelength \00a0 \2726 \00a0 ใครแม่นสุด \00a0 \2726 \00a0 จัดแถวชีวิต \00a0 \2726 \00a0 ใครคือที่สุด \00a0 \2726 \00a0 รู้ไหมใครสั่ง \00a0 \2726 \00a0 สปีดตัวอักษร \00a0 \2726 \00a0 Flash Quiz \00a0 \2726 \00a0 ถามให้ลึก \00a0 \2726 \00a0 This or That \00a0 \2726 \00a0 จับคู่ รู้จายยยย \00a0 \2726 \00a0 ใบ้คำ ดวลไว \00a0 \2726 \00a0 จระเข้งับนิ้ว \00a0 \2726 \00a0 แท็กซี่พาไป \00a0 \2726 \00a0 สัตว์ซิ่งชิงแชมป์ \00a0 \2726 \00a0 Hues & Cues ทายเฉดสี \00a0 \2726 \00a0 ของโปรดของเธอ \00a0 \2726 \00a0 ถามไวตอบไว \00a0 \2726 \00a0 ศิลปินตัวปลอม \00a0 \2726 \00a0 ";}
+.marquee span::after{content:"\00a0 \2726 \00a0 ปาร์ตี้ \00a0 \2726 \00a0 เกมวงเหล้า \00a0 \2726 \00a0 Insider \00a0 \2726 \00a0 เกมหมวดหมู่ \00a0 \2726 \00a0 She's a 10 but \00a0 \2726 \00a0 ทริเวียหลุดโลก \00a0 \2726 \00a0 Wavelength \00a0 \2726 \00a0 ใครแม่นสุด \00a0 \2726 \00a0 จัดแถวชีวิต \00a0 \2726 \00a0 ใครคือที่สุด \00a0 \2726 \00a0 รู้ไหมใครสั่ง \00a0 \2726 \00a0 สปีดตัวอักษร \00a0 \2726 \00a0 Flash Quiz \00a0 \2726 \00a0 ถามให้ลึก \00a0 \2726 \00a0 This or That \00a0 \2726 \00a0 จับคู่ รู้จายยยย \00a0 \2726 \00a0 ใบ้คำ ดวลไว \00a0 \2726 \00a0 จระเข้งับนิ้ว \00a0 \2726 \00a0 แท็กซี่พาไป \00a0 \2726 \00a0 สัตว์ซิ่งชิงแชมป์ \00a0 \2726 \00a0 Hues & Cues ทายเฉดสี \00a0 \2726 \00a0 ของโปรดของเธอ \00a0 \2726 \00a0 ถามไวตอบไว \00a0 \2726 \00a0 ศิลปินตัวปลอม \00a0 \2726 \00a0 ถ้าคุณแน่ ต้องแก้สถานการณ์! \00a0 \2726 \00a0 ";}
 @keyframes scroll{ 0%{transform:translateX(0);} 100%{transform:translateX(-100%);} }
 
 /* ---------- top nav ---------- */
@@ -258,6 +259,7 @@ a{color:inherit; text-decoration:none;}
 
 /* accent chip colors per card */
 .chip-pink{--accent:var(--pink);} .chip-pink .glow{color:var(--pink);}
+.chip-situation{--accent:var(--situation);} .chip-situation .glow{color:var(--situation);}
 .chip-cyan{--accent:var(--cyan);} .chip-cyan .glow{color:var(--cyan);}
 .chip-lime{--accent:var(--lime);} .chip-lime .glow{color:var(--lime);}
 .chip-amber{--accent:var(--amber);} .chip-amber .glow{color:var(--amber);}
@@ -3779,3 +3781,83 @@ html.hc-fs .hc-topbar{padding-right:150px;}
   background:rgba(255,255,255,.04); border:1px solid var(--line);
   border-radius:12px; padding:11px 14px; margin-top:12px; text-align:left;
 }
+
+/* ---------- ถ้าคุณแน่ ต้องแก้สถานการณ์! ---------- */
+.situation-page{
+  background:
+    linear-gradient(rgba(244,255,82,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(244,255,82,.025) 1px, transparent 1px),
+    radial-gradient(ellipse 850px 520px at 85% -5%, rgba(255,111,97,.17), transparent 62%),
+    radial-gradient(ellipse 900px 700px at 8% 110%, rgba(244,255,82,.08), transparent 60%),
+    var(--bg);
+  background-size:38px 38px,38px 38px,auto,auto,auto;
+}
+.situation-head{position:relative; padding-bottom:36px;}
+.situation-head::after{
+  content:"?"; position:absolute; right:2%; top:2%; z-index:-1;
+  font-family:'Bungee',sans-serif; font-size:clamp(130px,25vw,260px); line-height:.8;
+  color:transparent; -webkit-text-stroke:2px rgba(244,255,82,.12); transform:rotate(8deg);
+}
+.situation-kicker{background:var(--situation)!important; color:#171900!important; transform:rotate(-2deg);}
+.situation-eyebrow{
+  margin:8px 0 10px!important; color:var(--coral)!important; font-family:'Press Start 2P',monospace;
+  font-size:9px!important; letter-spacing:.04em; text-transform:uppercase;
+}
+.situation-head h1{font-size:clamp(40px,8vw,76px); line-height:.95; max-width:820px;}
+.situation-head h1 span{color:var(--situation); text-shadow:5px 5px 0 #692232;}
+.situation-head>p:last-child{max-width:710px;}
+.situation-rules{position:relative; overflow:hidden; border-color:rgba(244,255,82,.35);}
+.situation-rules h2{padding-right:110px; color:var(--situation);}
+.situation-stamp{
+  position:absolute; right:20px; top:18px; border:3px solid var(--coral); color:var(--coral);
+  font-family:'Bungee',sans-serif; font-size:12px; line-height:1.15; text-align:center;
+  padding:8px 10px; transform:rotate(8deg); opacity:.82;
+}
+.situation-tags{margin-top:26px;}
+.situation-tags .tag.active{background:var(--situation); border-color:var(--situation); color:#171900;}
+.situation-stage{max-width:850px; margin:34px auto 20px; padding:12px;}
+.situation-card{
+  position:relative; min-height:360px; display:flex; flex-direction:column; justify-content:center;
+  background:#eee8d8; color:#171418; border:3px solid #171418; border-radius:8px;
+  padding:66px clamp(24px,6vw,68px) 38px; box-shadow:14px 14px 0 #692232, 18px 18px 0 var(--situation);
+  transform:rotate(-.45deg); overflow:hidden;
+}
+.situation-card::before{
+  content:""; position:absolute; inset:0; pointer-events:none; opacity:.18;
+  background-image:repeating-linear-gradient(0deg, transparent 0 27px, #675e4e 28px);
+}
+.situation-tape{
+  position:absolute; top:18px; left:50%; width:170px; height:34px; transform:translateX(-50%) rotate(1deg);
+  background:rgba(244,255,82,.72); box-shadow:0 1px 4px rgba(0,0,0,.18);
+}
+.situation-meta{position:absolute; top:28px; left:28px; right:28px; display:flex; justify-content:space-between; gap:12px;}
+.situation-meta span{
+  font-family:'Press Start 2P',monospace; font-size:8px; letter-spacing:.03em; text-transform:uppercase;
+}
+.situation-alert{
+  position:relative; align-self:flex-start; font-family:'Kanit',sans-serif; font-weight:800; font-size:13px;
+  letter-spacing:.12em; text-transform:uppercase; background:#171418; color:var(--situation); padding:7px 12px;
+  margin-bottom:22px; transform:rotate(-1deg);
+}
+.situation-card p{
+  position:relative; margin:0; font-family:'Kanit',sans-serif; font-weight:700;
+  font-size:clamp(24px,4.6vw,39px); line-height:1.38; letter-spacing:-.025em;
+}
+.situation-talkline{
+  position:relative; margin-top:30px; padding-top:15px; border-top:2px dashed rgba(23,20,24,.35);
+  font-size:13px; font-weight:700; color:#692232;
+}
+.situation-pop{animation:situationPop .28s cubic-bezier(.2,.85,.3,1.25);}
+@keyframes situationPop{from{opacity:.3; transform:translateY(12px) rotate(1deg) scale(.985)}to{opacity:1; transform:translateY(0) rotate(-.45deg) scale(1)}}
+.situation-controls{justify-content:center; display:flex; gap:12px; flex-wrap:wrap; margin:30px 0 64px;}
+.situation-controls .btn:first-child{background:var(--situation); color:#171900; box-shadow:5px 5px 0 #692232;}
+@media(max-width:600px){
+  .situation-head h1{font-size:42px;}
+  .situation-stamp{display:none;}
+  .situation-rules h2{padding-right:0;}
+  .situation-stage{padding:5px 9px 13px;}
+  .situation-card{min-height:410px; padding:72px 24px 32px; box-shadow:8px 9px 0 #692232, 12px 13px 0 var(--situation);}
+  .situation-meta{left:20px; right:20px;}
+  .situation-card p{font-size:25px;}
+}
+@media(prefers-reduced-motion:reduce){.situation-pop{animation:none;}}
