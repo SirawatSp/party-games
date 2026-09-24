@@ -1,7 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
   const CAT_LABELS = {
     animal: "สัตว์", food: "อาหาร/เครื่องดื่ม", object: "ของใช้", job: "อาชีพ",
-    place: "สถานที่", sport: "กีฬา", movie: "หนัง/การ์ตูน", action: "ท่าทาง", country: "ประเทศ"
+    place: "สถานที่", sport: "กีฬา", movie: "หนัง/การ์ตูน", action: "ท่าทาง", country: "ประเทศ",
+    restaurant: "ร้านอาหารในไทย"
   };
 
   const setupPanel = document.getElementById("setupPanel");
@@ -21,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const playTurn = document.getElementById("playTurn");
   const playTimer = document.getElementById("playTimer");
   const playWord = document.getElementById("playWord");
+  const wordCount = document.getElementById("wordCount");
   const skipBtn = document.getElementById("skipBtn");
   const correctBtn = document.getElementById("correctBtn");
 
@@ -39,8 +41,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let roundsPerPlayer = 2;
   let totalRounds = 4;
 
-  let drawWord = createPicker(CHARADES_WORDS, "pg_charades_all");
+  let wordDeck = [];
   let currentWord = null;
+  let usedCount = 0;
   let roundIdx = 0;
   let roundWords = [];   // [{word, correct}] in play order this round
   let timeLeft = 45;
@@ -57,7 +60,8 @@ document.addEventListener("DOMContentLoaded", () => {
   categories.forEach((cat) => {
     const chip = document.createElement("span");
     chip.className = "tag" + (cat === "all" ? " active" : "");
-    chip.textContent = cat === "all" ? "ทั้งหมด" : CAT_LABELS[cat];
+    const count = cat === "all" ? CHARADES_WORDS.length : CHARADES_WORDS.filter((w) => w.cat === cat).length;
+    chip.textContent = (cat === "all" ? "ทั้งหมด" : CAT_LABELS[cat]) + " (" + count + ")";
     chip.dataset.cat = cat;
     chip.addEventListener("click", () => {
       activeCategory = cat;
@@ -84,6 +88,10 @@ document.addEventListener("DOMContentLoaded", () => {
     return activeCategory === "all" ? CHARADES_WORDS : CHARADES_WORDS.filter((w) => w.cat === activeCategory);
   }
 
+  function updateWordCount() {
+    wordCount.textContent = "ใช้แล้ว " + usedCount + " คำ · เหลือ " + (wordDeck.length + (currentWord ? 1 : 0)) + " คำ";
+  }
+
   // clue-giver for a given round index; guesser (who scores) is the other side
   function clueSideFor(idx) { return idx % 2 === 0 ? 0 : 1; }
   function guesserSideFor(idx) { return 1 - clueSideFor(idx); }
@@ -91,7 +99,13 @@ document.addEventListener("DOMContentLoaded", () => {
   startMatchBtn.addEventListener("click", () => {
     totalRounds = roundsPerPlayer * 2;
     roundIdx = 0;
-    drawWord = createPicker(pool(), "pg_charades_" + activeCategory);
+    wordDeck = pool().slice();
+    for (let i = wordDeck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [wordDeck[i], wordDeck[j]] = [wordDeck[j], wordDeck[i]];
+    }
+    currentWord = null;
+    usedCount = 0;
     score = [0, 0];
     goToPass();
   });
@@ -105,10 +119,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ---------- play round ----------
-  function pickWord() {
-    return drawWord() || null;
-  }
-
   function fmtClock(seconds) {
     const s = Math.max(0, seconds);
     return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
@@ -122,8 +132,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function nextWord() {
-    currentWord = pickWord();
+    currentWord = wordDeck.pop() || null;
     playWord.textContent = currentWord ? currentWord.word : "คลังคำหมดแล้ว!";
+    correctBtn.disabled = !currentWord;
+    skipBtn.disabled = !currentWord;
+    updateWordCount();
   }
 
   function startRound() {
@@ -133,8 +146,17 @@ document.addEventListener("DOMContentLoaded", () => {
     timeLeft = timeBank;
     playTimer.textContent = fmtClock(timeLeft);
     playTimer.classList.remove("low");
+    if (currentWord) {
+      wordDeck.push(currentWord);
+      currentWord = null;
+    }
     nextWord();
     showOnly(playPanel);
+
+    if (!currentWord) {
+      endRound();
+      return;
+    }
 
     stopTimer();
     timerInterval = setInterval(() => {
@@ -152,7 +174,10 @@ document.addEventListener("DOMContentLoaded", () => {
   function judge(correct) {
     if (!currentWord) return;
     roundWords.push({ word: currentWord.word, correct });
+    currentWord = null;
+    usedCount++;
     nextWord();
+    if (!currentWord) endRound();
   }
 
   correctBtn.addEventListener("click", () => judge(true));
@@ -178,6 +203,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function endRound() {
     stopTimer();
+    if (currentWord) {
+      wordDeck.push(currentWord);
+      currentWord = null;
+    }
     renderRecap();
     showOnly(recapPanel);
   }
@@ -197,8 +226,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function endMatch() {
     if (score[0] === score[1]) {
       matchEndTitle.textContent = "🤝 เสมอกัน!";
-      matchEndHint.textContent = "ทายถูกเท่ากันเป๊ะ ต้องตัดสินกันอีกสักรอบ";
-      tiebreakBtn.style.display = "";
+      matchEndHint.textContent = wordDeck.length ? "ทายถูกเท่ากันเป๊ะ ต้องตัดสินกันอีกสักรอบ" : "ทายถูกเท่ากันและคลังคำหมดแล้ว เริ่มแมตช์ใหม่เพื่อเล่นต่อ";
+      tiebreakBtn.style.display = wordDeck.length ? "" : "none";
     } else {
       const winner = score[0] > score[1] ? 0 : 1;
       matchEndTitle.textContent = "🏆 ฝั่ง " + (winner + 1) + " ชนะแมตช์!";

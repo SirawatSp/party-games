@@ -1213,6 +1213,7 @@ html.tp-no-scroll, html.tp-no-scroll body{overflow:hidden; height:100%; overscro
   margin-bottom:18px;
 }
 .cw-timer.low{color:var(--pink);}
+.cw-count{font-family:'Kanit',sans-serif; font-weight:600; color:var(--milktea); margin:0 0 12px;}
 .cw-word{
   font-family:'Kanit',sans-serif; font-weight:800;
   font-size:clamp(30px,7vw,46px);
