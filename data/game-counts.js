@@ -2,7 +2,7 @@
 // รันใหม่ทุกครั้งที่แก้ไขคลังโจทย์: node scripts/build-game-counts.js
 const GAME_COUNTS = {
   "category.html": { count: 358, unit: "หมวด" },
-  "charades.html": { count: 759, unit: "คำ" },
+  "charades.html": { count: 859, unit: "คำ" },
   "drinking-games.html": { count: 17, unit: "เกม" },
   "flashquiz.html": { count: 1330, unit: "คำถาม" },
   "flirt.html": { count: 199, unit: "สถานการณ์" },
