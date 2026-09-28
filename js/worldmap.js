@@ -56,7 +56,7 @@ function wmEnsurePaths() {
   wmCtx = cv.getContext("2d");
   if (!wmCtx) return false;
   wmPaths = WORLD_MAP.countries.map(function (c) {
-    return { country: c, path: new Path2D(c.d) };
+    return { country: c, path: new Path2D(wmCountryPath(c)) };
   });
   return true;
 }
@@ -104,6 +104,70 @@ function wmEscape(s) {
   return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
+// ประเทศที่คร่อมเส้นแบ่งวันสากลมีจุดต่อจาก x=2000 ไป x=0
+// ถ้าวาดเส้นเชื่อมตรง ๆ SVG จะระบายแถบยาวพาดทับทั้งโลก
+var wmSafePaths = {};
+function wmCountryPath(country) {
+  if (wmSafePaths[country.code]) return wmSafePaths[country.code];
+  var width = WORLD_MAP.width;
+  var result = [];
+  country.d.split("Z").forEach(function (ring) {
+    if (!ring) return;
+    var points = [];
+    var matches = ring.matchAll(/[ML](-?[\d.]+) (-?[\d.]+)/g);
+    for (var match of matches) points.push({ x: Number(match[1]), y: Number(match[2]) });
+    if (points.length < 3) return;
+    var crosses = points.some(function (p, i) {
+      return i > 0 && Math.abs(p.x - points[i - 1].x) > width / 2;
+    });
+    if (!crosses) {
+      result.push(ring + "Z");
+      return;
+    }
+
+    var shift = 0;
+    var unwrapped = [points[0]];
+    for (var i = 1; i < points.length; i++) {
+      var dx = points[i].x - points[i - 1].x;
+      if (dx > width / 2) shift -= width;
+      if (dx < -width / 2) shift += width;
+      unwrapped.push({ x: points[i].x + shift, y: points[i].y });
+    }
+
+    // ตัดรูปตามขอบซ้าย/ขวาของแผนที่ แล้วนำชิ้นที่เลยขอบกลับมาอีกด้าน
+    function clip(poly, edge, keepRight) {
+      var clipped = [];
+      var prev = poly[poly.length - 1];
+      var prevIn = keepRight ? prev.x >= edge : prev.x <= edge;
+      poly.forEach(function (point) {
+        var inside = keepRight ? point.x >= edge : point.x <= edge;
+        if (inside !== prevIn) {
+          var fraction = (edge - prev.x) / (point.x - prev.x);
+          clipped.push({ x: edge, y: prev.y + fraction * (point.y - prev.y) });
+        }
+        if (inside) clipped.push(point);
+        prev = point;
+        prevIn = inside;
+      });
+      return clipped;
+    }
+    var xs = unwrapped.map(function (p) { return p.x; });
+    var first = Math.floor(Math.min.apply(null, xs) / width);
+    var last = Math.floor(Math.max.apply(null, xs) / width);
+    for (var side = first; side <= last; side++) {
+      var piece = clip(clip(unwrapped, side * width, true), (side + 1) * width, false);
+      if (piece.length < 3) continue;
+      result.push(piece.map(function (p, j) {
+        var x = Math.round((p.x - side * width) * 10) / 10;
+        var y = Math.round(p.y * 10) / 10;
+        return (j ? "L" : "M") + x + " " + y;
+      }).join("") + "Z");
+    }
+  });
+  wmSafePaths[country.code] = result.join("");
+  return wmSafePaths[country.code];
+}
+
 // คืนสตริง SVG ทั้งก้อน (วาดครั้งเดียวแล้วเก็บไว้ ไม่ต้องสร้างใหม่ทุกรอบ)
 function wmSvgMarkup() {
   var parts = [];
@@ -114,7 +178,7 @@ function wmSvgMarkup() {
   parts.push("</g>");
   parts.push('<g class="wm-countries">');
   WORLD_MAP.countries.forEach(function (c) {
-    parts.push('<path data-code="' + c.code + '" d="' + c.d + '"><title>' + wmEscape(c.th) + "</title></path>");
+    parts.push('<path data-code="' + c.code + '" d="' + wmCountryPath(c) + '"><title>' + wmEscape(c.th) + "</title></path>");
   });
   parts.push("</g>");
   // ประเทศจิ๋วที่ไม่มีรูปร่างในข้อมูล 1:110m วาดเป็นวงกลมแทน จะได้ไฮไลต์ได้เหมือนกัน
