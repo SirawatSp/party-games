@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>วาดสัตว์ซิ่ง — วาดเอง วิ่งเอง ลุ้นกันทั้งวง</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/doodle-race.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0c0710">
+</head>
+<body>
+<div class="marquee"><span>✎ วาดสัตว์ซิ่ง · ขาแบบไหนจะเข้าเส้นชัยก่อน? · วาดเอง วิ่งเอง ลุ้นกันทั้งวง · </span></div>
+<main class="wrap dr-wrap">
+  <div class="topnav">
+    <a class="brand-logo" href="index.html"><img class="brand-img" src="assets/logo.png" width="720" height="416" alt="Party Games — วงกำลังจะเหงา"></a>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+  <header class="dr-heading">
+    <span class="dr-eyebrow">สมุดวาดเล่น × สนามกรีฑา</span>
+    <h1>วาดสัตว์<span>ซิ่ง!</span></h1>
+    <p>ขาสั้น ขายาว ขางอ… ตัวที่ดูไม่น่ารอด อาจเข้าเส้นชัยก่อนเพื่อน</p>
+  </header>
+
+  <section class="dr-paper" id="drSetup">
+    <div class="dr-intro-art" aria-hidden="true">
+      <svg viewBox="0 0 600 185"><path d="M30 155H570" stroke="#b3bbaa" stroke-width="2" stroke-dasharray="6 6"/>
+        <g fill="none" stroke="#283c32" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M133 87Q175 51 238 79L264 35L287 40L297 70L269 79L258 106Q201 126 151 105L122 61L113 70"/><path d="M156 103L139 132L151 151M181 114L199 147L214 150M239 109L244 138L267 148M220 117L208 140L211 151"/><path d="M278 34L281 19L288 38"/></g>
+        <circle cx="282" cy="52" r="3" fill="#283c32"/><g stroke="#ec6b45" stroke-width="6" fill="none" stroke-linecap="round"><path d="M369 98Q377 52 422 67Q463 57 468 98Q448 121 369 98Z"/><path d="M383 104L357 147L346 150M451 107L467 137L494 150M409 108L420 132L405 150M377 69L376 47M453 73L470 56"/></g><circle cx="450" cy="83" r="4" fill="#ec6b45"/>
+        <path d="M65 93H99M50 111H94M315 96H345" stroke="#ec6b45" stroke-width="3"/><text x="487" y="49" fill="#283c32" font-size="25" font-family="sans-serif">?!</text></svg>
+    </div>
+    <div class="dr-intro-grid">
+      <div><span class="dr-step">01</span><h2>วาดนักแข่ง</h2><p>วาดลำตัว แล้วเติมขา 2–6 ขา จะเป็นม้าหรือสัตว์ประหลาดก็ได้</p></div>
+      <div><span class="dr-step">02</span><h2>ส่งต่อให้เพื่อน</h2><p>ผลัดกันวาดบนเครื่องเดียว มือถือ แท็บเล็ต หรือเมาส์ก็เล่นได้</p></div>
+      <div><span class="dr-step">03</span><h2>ปล่อยขาพาวิ่ง</h2><p>ทุกขาสุ่มจังหวะก้าวเอง รูปร่างมีผล แต่ไม่มีใครรู้ผลก่อนเริ่ม</p></div>
+    </div>
+    <div class="dr-settings">
+      <label>นักแข่ง <select id="drCount"><option value="2">2 คน</option><option value="3">3 คน</option><option value="4" selected>4 คน</option><option value="5">5 คน</option><option value="6">6 คน</option></select></label>
+      <label>ระยะทาง <select id="drDistance"><option value="100">100 เมตร</option><option value="200">200 เมตร</option></select></label>
+      <button class="dr-primary" id="drBegin" type="button">เริ่มวาดนักแข่ง →</button>
+    </div>
+    <p class="dr-fine">ภาพจะบันทึกในเบราว์เซอร์เครื่องนี้อัตโนมัติ · ไม่ต้องสมัครสมาชิก</p>
+    <button class="dr-text-btn" id="drRestore" type="button" hidden>เปิดทีมนักแข่งที่วาดไว้</button>
+  </section>
+
+  <section class="dr-paper" id="drEditor" hidden aria-labelledby="drEditorTitle">
+    <div class="dr-section-head"><div><span class="dr-eyebrow" id="drTurn"></span><h2 id="drEditorTitle">สร้างนักแข่งของคุณ</h2></div><span class="dr-number" id="drPlayerNumber" aria-hidden="true"></span></div>
+    <label class="dr-name-label" for="drName">ชื่อนักแข่ง</label><input id="drName" class="dr-name" maxlength="24" placeholder="ตั้งชื่อให้เจ้าตัวนี้…" autocomplete="off">
+    <div class="dr-tabs" role="group" aria-label="ส่วนที่วาด"><button id="drBodyTool" type="button" aria-pressed="true">1. วาดลำตัว</button><button id="drLegTool" type="button" aria-pressed="false">2. เติมขา <span id="drLegCount">0/6</span></button></div>
+    <p class="dr-instruction" id="drDrawHint">วาดลำตัว หัว และหาง หันหน้าไปทางขวา → แล้วค่อยกด “เติมขา”</p>
+    <div class="dr-toolbar">
+      <div id="drColors" class="dr-colors" role="group" aria-label="สีปากกา"></div>
+      <label class="dr-brush">หัวปากกา <select id="drBrush"><option value="5">เล็ก</option><option value="9" selected>กลาง</option><option value="15">ใหญ่</option></select></label>
+      <button id="drUndo" type="button" aria-label="ย้อนเส้นล่าสุด">↶ ย้อน</button><button id="drClear" type="button">ล้างส่วนนี้</button>
+    </div>
+    <div class="dr-canvas-wrap"><canvas id="drDraw" width="600" height="360" aria-label="พื้นที่วาดสัตว์ ใช้นิ้ว ปากกา หรือเมาส์วาด ลำตัวก่อนแล้ววาดขาทีละเส้น">ใช้ปุ่มตัวอย่างม้าเพื่อสร้างนักแข่งโดยไม่ต้องวาดด้วยมือ</canvas><span class="dr-draw-direction" aria-hidden="true">หน้าไปทางนี้ →</span></div>
+    <p class="dr-message" id="drMessage" role="status" aria-live="polite"></p>
+    <div class="dr-editor-actions"><button class="dr-text-btn" id="drExample" type="button">ใส่ตัวอย่างม้า</button><button class="dr-secondary" id="drPreviewBtn" type="button">ลองขยับขา</button><button class="dr-primary" id="drSave" type="button">บันทึกแล้วส่งต่อ →</button></div>
+    <div class="dr-preview" id="drPreview" hidden><canvas id="drPreviewCanvas" width="600" height="260" aria-label="ตัวอย่างท่าวิ่งของสัตว์ที่วาด"></canvas><p>ลองท่าวิ่งเท่านั้น · ลงสนามจริงจะสุ่มจังหวะใหม่</p></div>
+    <button class="dr-text-btn" id="drEditorBack" type="button">← กลับไปดูทีม</button>
+  </section>
+
+  <section class="dr-paper" id="drLineup" hidden aria-labelledby="drLineupTitle">
+    <div class="dr-section-head"><div><span class="dr-eyebrow">เข้าประจำที่</span><h2 id="drLineupTitle">ทีมนี้… วิ่งไหวแน่นะ?</h2></div><span class="dr-distance-badge" id="drLineupDistance"></span></div>
+    <div class="dr-roster" id="drRoster"></div>
+    <p class="dr-fine">ตำแหน่งขาและขนาดตัวมีผลต่อแรงส่ง แต่จังหวะขาจะสุ่มสดระหว่างแข่ง</p>
+    <div class="dr-actions"><button class="dr-primary" id="drStart" type="button">ปล่อยตัว! 🏁</button><button class="dr-secondary" id="drSettings" type="button">เปลี่ยนระยะ / จำนวนคน</button></div>
+  </section>
+
+  <section class="dr-race" id="drRace" hidden aria-labelledby="drRaceTitle">
+    <div class="dr-race-header"><div><span class="dr-eyebrow">สนามวาดสัตว์ซิ่ง</span><h2 id="drRaceTitle">วิ่ง 100 เมตร</h2></div><div class="dr-race-clock" id="drClock">0.00 <small>วิ</small></div></div>
+    <div class="dr-track-wrap"><canvas id="drTrack" width="1000" height="520" aria-label="สนามแข่งสัตว์ที่วาดเอง ดูอันดับและระยะทางในรายการด้านล่าง"></canvas><div id="drCountdown" class="dr-countdown" aria-live="assertive"></div></div>
+    <p class="dr-commentary" id="drRaceCommentary" aria-live="polite">ขาทุกคู่กำลังตั้งหลัก…</p>
+    <div id="drLiveRanks" class="dr-live-ranks" aria-label="อันดับและระยะทางปัจจุบัน"></div>
+    <div class="dr-actions"><button class="dr-secondary" id="drPause" type="button">พักการแข่งขัน</button><button class="dr-text-btn" id="drRaceBack" type="button">กลับไปแก้ตัวนักแข่ง</button></div>
+    <section class="dr-results" id="drResults" hidden aria-labelledby="drWinner"><span class="dr-eyebrow">เข้าเส้นชัยแล้ว</span><h2 id="drWinner"></h2><ol id="drPodium"></ol><div class="dr-actions"><button class="dr-primary" id="drRematch" type="button">ตัวเดิม สุ่มก้าวใหม่ ↻</button><button class="dr-secondary" id="drEditTeam" type="button">แก้ไขทีม</button></div></section>
+  </section>
+  <footer class="dr-footer">วาดไม่สวยก็ซิ่งได้ · <a href="animalrace.html">เล่นสัตว์ซิ่งชิงแชมป์แบบเดิม →</a></footer>
+</main>
+<script src="js/main.js"></script>
+<script src="js/doodle-race-engine.js"></script>
+<script src="js/doodle-race.js"></script>
+</body>
+</html>

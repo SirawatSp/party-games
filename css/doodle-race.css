@@ -1,0 +1,82 @@
+/* สมุดวาดกับสนามแข่ง ใช้ชื่อคลาสเฉพาะเพื่อไม่กระทบเกมเดิม */
+.dr-wrap{--dr-ink:#243d32;--dr-paper:#fbf8ed;--dr-accent:#df5936;max-width:1100px;}
+.dr-wrap [hidden]{display:none!important;}
+.dr-heading{text-align:center;margin:34px 0 30px;}
+.dr-heading h1{font-family:'Kanit',sans-serif;font-size:clamp(42px,8vw,76px);line-height:1.15;margin:8px 0 14px;letter-spacing:-2px;}
+.dr-heading h1 span{display:inline-block;color:#e8f68a;transform:rotate(-7deg);margin-left:8px;}
+.dr-heading p{color:var(--text-dim);font-size:15px;line-height:1.7;}
+.dr-eyebrow{font-family:'Kanit',sans-serif;font-size:12px;font-weight:600;letter-spacing:.07em;}
+.dr-paper{background:var(--dr-paper);color:var(--dr-ink);border-radius:20px;padding:28px;box-shadow:8px 8px 0 #d6ff3d22;}
+.dr-paper h2,.dr-race h2{font-family:'Kanit',sans-serif;font-weight:700;margin:4px 0 10px;line-height:1.35;}
+.dr-intro-art{max-width:660px;margin:0 auto 14px;}
+.dr-intro-art svg{display:block;width:100%;}
+.dr-intro-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;border-block:1px dashed #a8b4a1;padding:24px 0;}
+.dr-intro-grid h2{font-size:20px;}.dr-intro-grid p{font-size:14px;line-height:1.7;margin:0;}
+.dr-step{font-size:12px;font-weight:800;color:var(--dr-accent);}
+.dr-settings{display:flex;gap:18px;align-items:end;flex-wrap:wrap;margin-top:26px;}
+.dr-settings label,.dr-name-label{display:block;font-size:13px;font-weight:700;}
+.dr-wrap select,.dr-name{font:inherit;color:var(--dr-ink);background:#fffef8;border:1px solid #a8b4a1;border-radius:9px;padding:10px 12px;}
+.dr-settings select{display:block;min-width:130px;margin-top:6px;}
+.dr-wrap button{font-family:'Kanit',sans-serif;cursor:pointer;touch-action:manipulation;}
+.dr-primary,.dr-secondary{border:2px solid var(--dr-ink);border-radius:10px;padding:12px 20px;font-size:16px;font-weight:600;min-height:48px;}
+.dr-primary{background:#e2f18a;color:var(--dr-ink);box-shadow:3px 3px 0 var(--dr-ink);}
+.dr-primary:hover{background:#d6ed6a;transform:translateY(-1px);}
+.dr-secondary{background:#fffef4;color:var(--dr-ink);}
+.dr-text-btn{background:transparent;border:0;color:inherit;padding:12px 4px;text-decoration:underline;text-underline-offset:4px;font-size:13px;}
+.dr-wrap button:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.dr-wrap button:focus-visible,.dr-wrap input:focus-visible,.dr-wrap select:focus-visible{outline:3px solid #db603e;outline-offset:3px;}
+.dr-fine{font-size:12px;line-height:1.6;opacity:.78;margin:20px 0 0;}
+.dr-section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;}
+.dr-number{font-family:'Kanit',sans-serif;font-size:42px;line-height:1;color:#d96643;}
+.dr-name{display:block;width:100%;box-sizing:border-box;margin-top:6px;margin-bottom:18px;}
+.dr-tabs{display:flex;border-bottom:2px solid var(--dr-ink);gap:4px;}
+.dr-tabs button{flex:1;background:transparent;border:0;padding:12px;font-size:15px;color:var(--dr-ink);border-radius:10px 10px 0 0;}
+.dr-tabs button[aria-pressed=true]{background:var(--dr-ink);color:#fffef4;}
+.dr-instruction{min-height:2.8em;font-size:14px;line-height:1.6;margin:14px 0;}
+.dr-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0;}
+.dr-colors{display:flex;gap:6px;}
+.dr-colors button{width:32px;height:32px;border-radius:50%;border:3px solid transparent;box-shadow:inset 0 0 0 2px #ffffff90;font-size:0;}
+.dr-colors button[aria-pressed=true]{outline:2px solid var(--dr-ink);outline-offset:2px;}
+.dr-brush{font-size:12px;display:flex;align-items:center;gap:5px;}
+.dr-brush select{font-size:12px;padding:6px;}
+.dr-toolbar>button{background:#eeedde;color:var(--dr-ink);padding:8px 10px;border:1px solid #b3bbaa;border-radius:7px;min-height:36px;}
+.dr-canvas-wrap{position:relative;border:2px solid #b3bbaa;border-radius:12px;background:#fffef8;overflow:hidden;}
+#drDraw{display:block;width:100%;height:auto;aspect-ratio:5/3;touch-action:none;cursor:crosshair;background-image:radial-gradient(#c9d2c5 1px,transparent 1px);background-size:20px 20px;}
+.dr-draw-direction{position:absolute;right:12px;top:9px;pointer-events:none;color:#84947e;font-size:11px;}
+.dr-message{min-height:1.6em;font-size:13px;line-height:1.6;margin:8px 0;color:#a43b20;}
+.dr-editor-actions,.dr-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+.dr-editor-actions .dr-primary{margin-left:auto;}
+.dr-preview{border:1px dashed #9aa88e;background:#edf0df;border-radius:12px;margin-top:20px;overflow:hidden;}
+.dr-preview canvas{display:block;width:100%;height:auto;}
+.dr-preview p{text-align:center;font-size:12px;margin:0 8px 14px;}
+.dr-distance-badge{border:2px solid var(--dr-ink);border-radius:50%;width:78px;height:78px;display:grid;place-content:center;font-weight:700;font-size:16px;transform:rotate(8deg);flex-shrink:0;}
+.dr-roster{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;}
+.dr-racer-card{border:1px solid #bcc7b4;background:#fffef8;border-radius:14px;padding:14px;min-width:0;}
+.dr-racer-card canvas{width:100%;height:auto;display:block;}
+.dr-racer-card h3{font:700 17px 'Kanit',sans-serif;margin:8px 0 3px;overflow-wrap:anywhere;}
+.dr-racer-card p{font-size:12px;margin:4px 0 8px;}
+.dr-racer-card button{font-size:13px;padding:8px 14px;min-height:40px;}
+#drLineup .dr-actions{margin-top:22px;}
+.dr-race{border:1px solid #455948;border-radius:20px;background:#192f26;overflow:hidden;color:#fffdf0;}
+.dr-race-header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:22px 24px;}
+.dr-race-clock{font-variant-numeric:tabular-nums;font:600 28px 'Kanit',sans-serif;white-space:nowrap;color:#e2f18a;}
+.dr-race-clock small{font-size:13px;}
+.dr-track-wrap{position:relative;background:#f0ede0;overflow:hidden;}
+#drTrack{display:block;width:100%;height:auto;}
+.dr-countdown{position:absolute;inset:0;display:grid;place-content:center;pointer-events:none;font:800 clamp(50px,10vw,100px) 'Kanit',sans-serif;color:#243d32;text-shadow:2px 3px #fffef8;}
+.dr-countdown:empty{display:none;}
+.dr-commentary{padding:14px 20px;margin:0;background:#243d32;font-size:14px;min-height:48px;box-sizing:border-box;}
+.dr-live-ranks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:18px 20px;}
+.dr-live-row{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:8px;font-size:12px;align-items:center;}
+.dr-live-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dr-live-progress{grid-column:2/4;width:100%;height:4px;border:0;accent-color:#e2f18a;}
+.dr-race>.dr-actions{padding:0 20px 20px;}
+.dr-results{background:#fbf8ed;color:#243d32;padding:26px;}
+.dr-results h2{font-size:28px;overflow-wrap:anywhere;}
+.dr-results ol{list-style:none;padding:0;margin:20px 0;}
+.dr-results li{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px dashed #b3bbaa;font-size:15px;}
+.dr-results li b{flex:1;overflow-wrap:anywhere;}.dr-results li span:last-child{font-variant-numeric:tabular-nums;white-space:nowrap;}
+.dr-footer{margin:26px 0;text-align:center;font-size:12px;line-height:1.8;}.dr-footer a{color:#e2f18a;}
+@media(min-width:800px){.dr-roster{grid-template-columns:repeat(3,minmax(0,1fr));}.dr-live-ranks{grid-template-columns:repeat(3,minmax(0,1fr));}}
+@media(max-width:600px){.dr-paper{padding:18px 14px;}.dr-heading{margin:22px 0;}.dr-intro-grid{grid-template-columns:1fr;gap:18px;}.dr-intro-grid>div{padding-left:34px;position:relative;}.dr-step{position:absolute;left:0;top:5px;}.dr-intro-grid h2{font-size:18px;margin-top:0;}.dr-settings{gap:14px;}.dr-settings label{flex:1;}.dr-settings select{width:100%;min-width:0;}.dr-settings .dr-primary{width:100%;}.dr-toolbar{gap:8px;}.dr-colors button{width:29px;height:29px;}.dr-editor-actions{gap:8px;}.dr-editor-actions .dr-primary{width:100%;margin:0;}.dr-roster{gap:10px;}.dr-racer-card{padding:10px;}.dr-race-header{padding:18px 14px;}.dr-race-clock{font-size:22px;}.dr-race h2{font-size:22px;}.dr-race>.dr-actions{padding-inline:14px;}.dr-live-ranks{padding:14px;gap:12px;}.dr-results{padding:22px 16px;}.dr-distance-badge{width:64px;height:64px;font-size:14px;}.dr-instruction{font-size:13px;}}
+@media(prefers-reduced-motion:reduce){.dr-primary:hover{transform:none;}}
