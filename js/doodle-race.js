@@ -3,13 +3,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const E = DoodleRace, $ = id => document.getElementById(id);
   const colors = ["#243d32", "#df5936", "#366cba", "#965db0", "#c78c22", "#25977b"];
   const colorNames = ["เขียวเข้ม", "ส้ม", "น้ำเงิน", "ม่วง", "เหลืองเข้ม", "เขียวมิ้นต์"];
-  const KEY = "pg_doodle_race_v1", panels = ["drSetup", "drEditor", "drLineup", "drRace"];
+  const KEY = "pg_doodle_race_v1", panels = ["drSetup", "drEditor", "drLineup", "drRace", "drLobby"];
   const empty = i => ({name:"นักแข่ง " + (i + 1), body:[], legs:[]});
   const clone = obj => JSON.parse(JSON.stringify(obj));
   let team = [], count = 4, distance = 100, editorIndex = 0, draft, tool = "body", color = colors[0];
   let stroke = null, pointer = null, saved = null, previewFrame = 0, raceFrame = 0;
   let racers = [], elapsed = 0, countdown = 3, lastFrame = 0, accumulator = 0, paused = false, finished = false, lastRankPaint = -1;
-  let raceWidth = 1000, raceHeight = 520;
+  let raceWidth = 1000, raceHeight = 520, online = false, onlineRound = 0, onlineSeq = -1;
   const STEP = 1 / 60;
   const dc = $("drDraw").getContext("2d"), pc = $("drPreviewCanvas").getContext("2d"), rc = $("drTrack").getContext("2d");
 
@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
     $(id).scrollIntoView({behavior:"instant", block:"start"});
   }
   function persist() {
+    if (online) return;
     try { localStorage.setItem(KEY, JSON.stringify({v:1, count, distance, team})); }
     catch (e) { $("drMessage").textContent = "เครื่องนี้บันทึกภาพอัตโนมัติไม่ได้ แต่ยังเล่นรอบนี้ต่อได้"; }
   }
@@ -76,10 +77,11 @@ document.addEventListener("DOMContentLoaded", () => {
   $("drLegTool").addEventListener("click", () => setTool("legs"));
   function openEditor(i) {
     editorIndex = i; draft = clone(team[i] || empty(i));
-    $("drTurn").textContent = "ส่งเครื่องให้คนที่ " + (i + 1) + " / " + count;
+    $("drTurn").textContent = online ? "ภาพของคุณเป็นความลับจนปล่อยตัว" : "ส่งเครื่องให้คนที่ " + (i + 1) + " / " + count;
     $("drPlayerNumber").textContent = String(i + 1).padStart(2,"0");
     $("drName").value = draft.name;
     $("drSave").textContent = team.some((d,j) => j !== i && !E.validDrawing(d)) ? "บันทึกแล้วส่งต่อ →" : "บันทึกเข้าทีม →";
+    if (online) $("drSave").textContent = "ส่งภาพและพร้อมแข่ง";
     show("drEditor"); setTool(draft.body.length ? "legs" : "body");
   }
   $("drName").addEventListener("input", storeDraft);
@@ -153,7 +155,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   $("drSave").addEventListener("click", () => {
     if (!validate()) return;
-    storeDraft(); const next=team.findIndex(d => !E.validDrawing(d));
+    storeDraft();
+    if (online) { window.DoodleRaceOnline.submit(clone(draft)); return; }
+    const next=team.findIndex(d => !E.validDrawing(d));
     if(next>=0) openEditor(next); else showLineup();
   });
   $("drEditorBack").addEventListener("click", () => { storeDraft(); showLineup(); });
@@ -179,6 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
     previewFrame=requestAnimationFrame(frame);
   });
   function showLineup() {
+    if (online) { window.DoodleRaceOnline.showLobby(); return; }
     $("drLineupDistance").textContent=distance+" ม."; $("drRoster").replaceChildren();
     team.forEach((d,i) => {
       const card=document.createElement("div");card.className="dr-racer-card";
@@ -242,6 +247,7 @@ document.addEventListener("DOMContentLoaded", () => {
     $("drRaceCommentary").textContent=leader.finish!==null ? leader.drawing.name+" เข้าเส้นชัยแล้ว! เชียร์ตัวที่เหลือกันต่อ" : "นำอยู่: "+leader.drawing.name+" · "+Math.floor(leader.distance)+" / "+distance+" เมตร";
   }
   function startRace() {
+    if (online) { window.DoodleRaceOnline.start(); return; }
     if (!team.every(E.validDrawing)) { showLineup(); return; }
     stopRace(); racers=team.map((d,i)=>E.makeRacer(clone(d),seed(),i));
     elapsed=0;countdown=3;accumulator=0;lastFrame=0;paused=false;finished=false;lastRankPaint=-1;
@@ -267,7 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(finished)return;paused=value;$("drPause").textContent=paused?"แข่งต่อ ▶":"พักการแข่งขัน";$("drCountdown").textContent=paused?"พัก":countdown>0?Math.ceil(countdown):"";lastFrame=0;
   }
   $("drPause").addEventListener("click",()=>setPaused(!paused));
-  document.addEventListener("visibilitychange",()=>{if(document.hidden && !$("drRace").hidden && !finished)setPaused(true);if(document.hidden)stopPreview();});
+  document.addEventListener("visibilitychange",()=>{if(document.hidden && !online && !$("drRace").hidden && !finished)setPaused(true);if(document.hidden)stopPreview();});
   function finishRace() {
     finished=true;$("drPause").hidden=true;$("drCountdown").textContent="";updateRanks();
     const ranked=E.rank(racers);$("drWinner").textContent="🏆 "+ranked[0].drawing.name+" ชนะ!";$("drPodium").replaceChildren();
@@ -276,7 +282,30 @@ document.addEventListener("DOMContentLoaded", () => {
     if(typeof pgTimeUp==="function")pgTimeUp();
   }
   $("drStart").addEventListener("click",startRace);$("drRematch").addEventListener("click",startRace);
-  $("drRaceBack").addEventListener("click",showLineup);$("drEditTeam").addEventListener("click",showLineup);
+  $("drRaceBack").addEventListener("click",showLineup);$("drEditTeam").addEventListener("click",()=>online ? window.DoodleRaceOnline.backToLobby() : showLineup());
+  // โหมดออนไลน์ใช้ภาพของตัวเองในหน้าแก้ไข และรับภาพเพื่อนเฉพาะเมื่อโฮสต์ปล่อยตัว
+  window.DoodleRaceUI = {
+    show,
+    enterOnline(name) { online=true; team=[empty(0)];team[0].name=name;count=1; },
+    leaveOnline() { online=false;team=[];count=Number($("drCount").value);stopRace();$("drRaceBack").hidden=false;$("drRematch").hidden=false;$("drEditTeam").hidden=false;$("drEditTeam").textContent="แก้ไขทีม";show("drSetup"); },
+    editOnline() { openEditor(0); },
+    race(data) {
+      if (!online || data.round<=onlineRound) return;
+      onlineRound=data.round;onlineSeq=-1;distance=data.distance;count=data.team.length;
+      racers=data.team.map((d,i)=>E.makeRacer(d,0,i));finished=false;elapsed=0;countdown=0;
+      $("drRaceTitle").textContent="วิ่ง "+distance+" เมตร · ออนไลน์";$("drResults").hidden=true;
+      $("drPause").hidden=true;$("drRaceBack").hidden=true;$("drCountdown").textContent="ไป!";
+      $("drClock").textContent="0.00 วิ";show("drRace");buildLiveRanks();fitTrack();
+    },
+    frame(data) {
+      if (!online || data.round!==onlineRound || data.seq<=onlineSeq || data.racers.length!==racers.length) return;
+      onlineSeq=data.seq;elapsed=data.elapsed;$("drClock").textContent=elapsed.toFixed(2)+" วิ";$("drCountdown").textContent="";
+      data.racers.forEach((r,i)=>{ const target=racers[i];["distance","speed","time","finish","event","eventUntil"].forEach(k=>{target[k]=r[k];});r.legs.forEach((l,j)=>Object.assign(target.legs[j],l)); });
+      updateRanks();paintRace();if(data.finished&&!finished)finishRace();
+    },
+    hostControls(isHost) { $("drRematch").hidden=!isHost;$("drEditTeam").hidden=!isHost;$("drEditTeam").textContent="กลับห้องรอ"; },
+    resetRound() { onlineRound=0;onlineSeq=-1; }
+  };
   window.addEventListener("pagehide",()=>{stopPreview();stopRace();});
-  window.addEventListener("pageshow",event=>{if(event.persisted && !$("drRace").hidden && !finished){setPaused(true);raceFrame=requestAnimationFrame(raceLoop);}});
+  window.addEventListener("pageshow",event=>{if(event.persisted && !online && !$("drRace").hidden && !finished){setPaused(true);raceFrame=requestAnimationFrame(raceLoop);}});
 });

@@ -34,6 +34,15 @@
       <div><span class="dr-step">02</span><h2>ส่งต่อให้เพื่อน</h2><p>ผลัดกันวาดบนเครื่องเดียว มือถือ แท็บเล็ต หรือเมาส์ก็เล่นได้</p></div>
       <div><span class="dr-step">03</span><h2>ปล่อยขาพาวิ่ง</h2><p>ทุกขาสุ่มจังหวะก้าวเอง รูปร่างมีผล แต่ไม่มีใครรู้ผลก่อนเริ่ม</p></div>
     </div>
+    <div class="dr-online-entry">
+      <h2>เล่นออนไลน์ · คนละเครื่อง</h2>
+      <p>เข้าห้องด้วยรหัส วาดพร้อมกัน ซ่อนภาพจนปล่อยตัว · 2–6 คน</p>
+      <label for="drOnlineName">ชื่อผู้เล่น</label><input class="dr-name" id="drOnlineName" maxlength="24" placeholder="ชื่อที่เพื่อนรู้จัก" autocomplete="nickname">
+      <div class="dr-actions"><button class="dr-primary" id="drHostRoom" type="button">สร้างห้องออนไลน์</button><label for="drRoomInput">รหัสห้อง</label><input id="drRoomInput" class="dr-room-input" maxlength="5" placeholder="ABCDE" autocomplete="off"><button class="dr-secondary" id="drJoinRoom" type="button">เข้าห้อง</button></div>
+      <p class="dr-message" id="drNetMessage" role="status" aria-live="polite"></p>
+      <p class="dr-fine">เจ้าของห้องต้องเปิดเกมไว้ระหว่างแข่ง · ต้องใช้อินเทอร์เน็ต</p>
+    </div>
+    <h2>หรือผลัดกันวาดบนเครื่องเดียว</h2>
     <div class="dr-settings">
       <label>นักแข่ง <select id="drCount"><option value="2">2 คน</option><option value="3">3 คน</option><option value="4" selected>4 คน</option><option value="5">5 คน</option><option value="6">6 คน</option></select></label>
       <label>ระยะทาง <select id="drDistance"><option value="100">100 เมตร</option><option value="200">200 เมตร</option></select></label>
@@ -41,6 +50,15 @@
     </div>
     <p class="dr-fine">ภาพจะบันทึกในเบราว์เซอร์เครื่องนี้อัตโนมัติ · ไม่ต้องสมัครสมาชิก</p>
     <button class="dr-text-btn" id="drRestore" type="button" hidden>เปิดทีมนักแข่งที่วาดไว้</button>
+  </section>
+
+  <section class="dr-paper" id="drLobby" hidden aria-labelledby="drLobbyTitle">
+    <div class="dr-section-head"><div><span class="dr-eyebrow">ห้องออนไลน์ · ซ่อนภาพจนเริ่มแข่ง</span><h2 id="drLobbyTitle">รหัส <span id="drRoomCode"></span></h2></div><button class="dr-secondary" id="drCopyRoom" type="button">คัดลอกลิงก์ชวนเพื่อน</button></div>
+    <p id="drLobbyNotice" class="dr-message" role="status" aria-live="polite"></p>
+    <div id="drRoomPlayers" class="dr-room-players" aria-label="ผู้เล่นในห้อง"></div>
+    <div class="dr-actions"><button class="dr-primary" id="drOnlineDraw" type="button">วาดสัตว์ของฉัน</button><label for="drOnlineDistance">ระยะทาง</label><select id="drOnlineDistance"><option value="100">100 เมตร</option><option value="200">200 เมตร</option></select><button class="dr-primary" id="drOnlineStart" type="button" disabled>เริ่มแข่ง 🏁</button></div>
+    <p id="drRoomHint" class="dr-fine">ในห้องรอจะเห็นเฉพาะชื่อกับสถานะพร้อม ภาพเปิดพร้อมกันตอนปล่อยตัว</p>
+    <button class="dr-text-btn" id="drLeaveRoom" type="button">ออกจากห้อง</button>
   </section>
 
   <section class="dr-paper" id="drEditor" hidden aria-labelledby="drEditorTitle">
@@ -79,6 +97,9 @@
 </main>
 <script src="js/main.js"></script>
 <script src="js/doodle-race-engine.js"></script>
+<script src="js/net-room.js"></script>
+<script src="js/doodle-race-net.js"></script>
 <script src="js/doodle-race.js"></script>
+<script src="js/doodle-race-online.js"></script>
 </body>
 </html>
