@@ -3,23 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>วาดสัตว์ซิ่ง — วาดเอง วิ่งเอง ลุ้นกันทั้งวง</title>
+<title>โอลิมปิก คิ๊กกะปู้ — วาดตัวเดียว ลุ้นทุกกีฬา</title>
 <link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/doodle-race.css?v=80">
+<link rel="stylesheet" href="css/doodle-race.css?v=81">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0c0710">
 </head>
 <body>
-<div class="marquee"><span>✎ วาดสัตว์ซิ่ง · ขาแบบไหนจะเข้าเส้นชัยก่อน? · วาดเอง วิ่งเอง ลุ้นกันทั้งวง · </span></div>
+<div class="marquee"><span>✎ โอลิมปิก คิ๊กกะปู้ · วาดตัวเดียว แข่งหลายกีฬา · ลุ้นแชมป์คะแนนรวม · </span></div>
 <main class="wrap dr-wrap">
   <div class="topnav">
     <a class="brand-logo" href="index.html"><img class="brand-img" src="assets/logo.png" width="720" height="416" alt="Party Games — วงกำลังจะเหงา"></a>
     <a class="back-link" href="index.html">← กลับหน้าแรก</a>
   </div>
   <header class="dr-heading">
-    <span class="dr-eyebrow">สมุดวาดเล่น × สนามกรีฑา</span>
-    <h1>วาดสัตว์<span>ซิ่ง!</span></h1>
-    <p>ขาสั้น ขายาว ขางอ… ตัวที่ดูไม่น่ารอด อาจเข้าเส้นชัยก่อนเพื่อน</p>
+    <span class="dr-eyebrow">วาดสัตว์ × มหกรรมกีฬาของวงเพื่อน</span>
+    <h1>โอลิมปิก<span>คิ๊กกะปู้</span></h1>
+    <p>สัตว์ตัวเดียว แข่งได้หลายกีฬา · แชมป์รายการเดียว ยังไม่แน่ว่าจะเป็นแชมป์คะแนนรวม</p>
   </header>
 
   <section class="dr-paper" id="drSetup">
@@ -30,10 +30,12 @@
         <path d="M65 93H99M50 111H94M315 96H345" stroke="#ec6b45" stroke-width="3"/><text x="487" y="49" fill="#283c32" font-size="25" font-family="sans-serif">?!</text></svg>
     </div>
     <div class="dr-intro-grid">
-      <div><span class="dr-step">01</span><h2>วาดนักแข่ง</h2><p>วาดลำตัว แล้วเติมขา 2–6 ขา จะเป็นม้าหรือสัตว์ประหลาดก็ได้</p></div>
-      <div><span class="dr-step">02</span><h2>ส่งต่อให้เพื่อน</h2><p>ผลัดกันวาดบนเครื่องเดียว มือถือ แท็บเล็ต หรือเมาส์ก็เล่นได้</p></div>
-      <div><span class="dr-step">03</span><h2>ปล่อยขาพาวิ่ง</h2><p>ทุกขาสุ่มจังหวะก้าวเอง รูปร่างมีผล แต่ไม่มีใครรู้ผลก่อนเริ่ม</p></div>
+      <div><span class="dr-step">01</span><h2>เลือกกีฬา</h2><p>เลือกได้ 1–5 รายการ แข่งตามลำดับที่แสดงด้านล่าง</p></div>
+      <div><span class="dr-step">02</span><h2>วาดคนละตัว</h2><p>ใช้ตัวเดิมทุกกีฬา ซ่อนภาพจนเริ่มแข่ง ถ้าเลือกวิ่งต้องเติมขา 2–6 ขา</p></div>
+      <div><span class="dr-step">03</span><h2>สะสมคะแนน</h2><p>อันดับ 1–6 ได้ 10 / 7 / 5 / 3 / 2 / 1 คะแนน เสมอแบ่งคะแนนของอันดับร่วมกัน</p></div>
     </div>
+    <fieldset class="dr-sports"><legend>เลือกกีฬาในชุดการแข่งขันนี้</legend><div id="drSports" class="dr-sport-grid"></div></fieldset>
+    <p class="dr-schedule" id="drSchedule"></p>
     <div class="dr-online-entry">
       <h2>เล่นออนไลน์ · คนละเครื่อง</h2>
       <p>เข้าห้องด้วยรหัส วาดพร้อมกัน ซ่อนภาพจนปล่อยตัว · 2–6 คน</p>
@@ -45,7 +47,7 @@
     <h2>หรือผลัดกันวาดบนเครื่องเดียว</h2>
     <div class="dr-settings">
       <label>นักแข่ง <select id="drCount"><option value="2">2 คน</option><option value="3">3 คน</option><option value="4" selected>4 คน</option><option value="5">5 คน</option><option value="6">6 คน</option></select></label>
-      <label>ระยะทาง <select id="drDistance"><option value="100">100 เมตร</option><option value="200">200 เมตร</option></select></label>
+      <label>ระยะวิ่ง <select id="drDistance"><option value="100">100 เมตร</option><option value="200">200 เมตร</option></select></label>
       <button class="dr-primary" id="drBegin" type="button">เริ่มวาดนักแข่ง →</button>
     </div>
     <p class="dr-fine">ภาพจะบันทึกในเบราว์เซอร์เครื่องนี้อัตโนมัติ · ไม่ต้องสมัครสมาชิก</p>
@@ -56,7 +58,9 @@
     <div class="dr-section-head"><div><span class="dr-eyebrow">ห้องออนไลน์ · ซ่อนภาพจนเริ่มแข่ง</span><h2 id="drLobbyTitle">รหัส <span id="drRoomCode"></span></h2></div><button class="dr-secondary" id="drCopyRoom" type="button">คัดลอกลิงก์ชวนเพื่อน</button></div>
     <p id="drLobbyNotice" class="dr-message" role="status" aria-live="polite"></p>
     <div id="drRoomPlayers" class="dr-room-players" aria-label="ผู้เล่นในห้อง"></div>
-    <div class="dr-actions"><button class="dr-primary" id="drOnlineDraw" type="button">วาดสัตว์ของฉัน</button><label for="drOnlineDistance">ระยะทาง</label><select id="drOnlineDistance"><option value="100">100 เมตร</option><option value="200">200 เมตร</option></select><button class="dr-primary" id="drOnlineStart" type="button" disabled>เริ่มแข่ง 🏁</button></div>
+    <fieldset class="dr-sports"><legend>รายการกีฬา · เจ้าของห้องเลือก</legend><div id="drOnlineSports" class="dr-sport-grid"></div></fieldset>
+    <p class="dr-schedule" id="drOnlineSchedule"></p>
+    <div class="dr-actions"><button class="dr-primary" id="drOnlineDraw" type="button">วาดสัตว์ของฉัน</button><label for="drOnlineDistance">ระยะวิ่ง</label><select id="drOnlineDistance"><option value="100">100 เมตร</option><option value="200">200 เมตร</option></select><button class="dr-primary" id="drOnlineStart" type="button" disabled>เริ่มชุดการแข่งขัน 🏁</button></div>
     <p id="drRoomHint" class="dr-fine">ในห้องรอจะเห็นเฉพาะชื่อกับสถานะพร้อม ภาพเปิดพร้อมกันตอนปล่อยตัว</p>
     <button class="dr-text-btn" id="drLeaveRoom" type="button">ออกจากห้อง</button>
   </section>
@@ -73,33 +77,36 @@
     </div>
     <div class="dr-canvas-wrap"><canvas id="drDraw" width="600" height="360" aria-label="พื้นที่วาดสัตว์ ใช้นิ้ว ปากกา หรือเมาส์วาด ลำตัวก่อนแล้ววาดขาทีละเส้น">ใช้ปุ่มตัวอย่างม้าเพื่อสร้างนักแข่งโดยไม่ต้องวาดด้วยมือ</canvas><span class="dr-draw-direction" aria-hidden="true">หน้าไปทางนี้ →</span></div>
     <p class="dr-message" id="drMessage" role="status" aria-live="polite"></p>
-    <div class="dr-editor-actions"><button class="dr-text-btn" id="drExample" type="button">ใส่ตัวอย่างม้า</button><button class="dr-secondary" id="drPreviewBtn" type="button">ลองขยับขา</button><button class="dr-primary" id="drSave" type="button">บันทึกแล้วส่งต่อ →</button></div>
-    <div class="dr-preview" id="drPreview" hidden><canvas id="drPreviewCanvas" width="600" height="260" aria-label="ตัวอย่างท่าวิ่งของสัตว์ที่วาด"></canvas><p>ลองท่าวิ่งเท่านั้น · ลงสนามจริงจะสุ่มจังหวะใหม่</p></div>
+    <div class="dr-editor-actions"><button class="dr-text-btn" id="drExample" type="button">ใส่ตัวอย่างม้า</button><button class="dr-secondary" id="drPreviewBtn" type="button">ดูสัตว์ของฉัน</button><button class="dr-primary" id="drSave" type="button">บันทึกแล้วส่งต่อ →</button></div>
+    <div class="dr-preview" id="drPreview" hidden><canvas id="drPreviewCanvas" width="600" height="260" aria-label="ตัวอย่างท่าวิ่งของสัตว์ที่วาด"></canvas><p>สัตว์ตัวนี้ใช้แข่งทุกรายการ · ลงสนามจริงจะสุ่มแรงและจังหวะใหม่</p></div>
     <button class="dr-text-btn" id="drEditorBack" type="button">← กลับไปดูทีม</button>
   </section>
 
   <section class="dr-paper" id="drLineup" hidden aria-labelledby="drLineupTitle">
-    <div class="dr-section-head"><div><span class="dr-eyebrow">เข้าประจำที่</span><h2 id="drLineupTitle">ทีมนี้… วิ่งไหวแน่นะ?</h2></div><span class="dr-distance-badge" id="drLineupDistance"></span></div>
+    <div class="dr-section-head"><div><span class="dr-eyebrow">เข้าประจำที่</span><h2 id="drLineupTitle">สัตว์พร้อมแล้ว!</h2></div><span class="dr-distance-badge" id="drLineupDistance"></span></div>
+    <p class="dr-schedule" id="drLineupSchedule"></p>
     <div class="dr-roster" id="drRoster"></div>
-    <p class="dr-fine">ตำแหน่งขาและขนาดตัวมีผลต่อแรงส่ง แต่จังหวะขาจะสุ่มสดระหว่างแข่ง</p>
-    <div class="dr-actions"><button class="dr-primary" id="drStart" type="button">ปล่อยตัว! 🏁</button><button class="dr-secondary" id="drSettings" type="button">เปลี่ยนระยะ / จำนวนคน</button></div>
+    <p class="dr-fine">ภาพของทุกคนจะเปิดตอนเริ่มรายการแรก · ใช้ตัวเดิมทุกรายการ · คะแนนรวมสูงสุดชนะ</p>
+    <div class="dr-actions"><button class="dr-primary" id="drStart" type="button">ปล่อยตัว! 🏁</button><button class="dr-secondary" id="drSettings" type="button">เลือกกีฬา / จำนวนคน</button></div>
   </section>
 
   <section class="dr-race" id="drRace" hidden aria-labelledby="drRaceTitle">
-    <div class="dr-race-header"><div><span class="dr-eyebrow">สนามวาดสัตว์ซิ่ง</span><h2 id="drRaceTitle">วิ่ง 100 เมตร</h2></div><div class="dr-race-clock" id="drClock">0.00 <small>วิ</small></div></div>
+    <div class="dr-race-header"><div><span class="dr-eyebrow">โอลิมปิก คิ๊กกะปู้</span><h2 id="drRaceTitle">วิ่ง 100 เมตร</h2></div><div class="dr-race-clock" id="drClock">0.00 <small>วิ</small></div></div>
     <div class="dr-track-wrap"><canvas id="drTrack" width="1000" height="520" aria-label="สนามแข่งสัตว์ที่วาดเอง ดูอันดับและระยะทางในรายการด้านล่าง"></canvas><div id="drCountdown" class="dr-countdown" aria-live="assertive"></div></div>
     <p class="dr-commentary" id="drRaceCommentary" aria-live="polite">ขาทุกคู่กำลังตั้งหลัก…</p>
     <div id="drLiveRanks" class="dr-live-ranks" aria-label="อันดับและระยะทางปัจจุบัน"></div>
     <div class="dr-actions"><button class="dr-secondary" id="drPause" type="button">พักการแข่งขัน</button><button class="dr-text-btn" id="drRaceBack" type="button">กลับไปแก้ตัวนักแข่ง</button></div>
-    <section class="dr-results" id="drResults" hidden aria-labelledby="drWinner"><span class="dr-eyebrow">เข้าเส้นชัยแล้ว</span><h2 id="drWinner"></h2><ol id="drPodium"></ol><div class="dr-actions"><button class="dr-primary" id="drRematch" type="button">ตัวเดิม สุ่มก้าวใหม่ ↻</button><button class="dr-secondary" id="drEditTeam" type="button">แก้ไขทีม</button></div></section>
+    <section class="dr-results" id="drResults" hidden aria-labelledby="drWinner"><span class="dr-eyebrow" id="drResultLabel">จบรายการ</span><h2 id="drWinner"></h2><ol id="drPodium"></ol><h3 id="drStandingsTitle">คะแนนสะสม</h3><div class="dr-table-wrap"><table class="dr-score-table"><caption class="sr-only">คะแนนสะสมแยกรายกีฬา</caption><thead id="drScoreHead"></thead><tbody id="drScores"></tbody></table></div><div class="dr-actions"><button class="dr-primary" id="drNext" type="button" hidden>รายการถัดไป →</button><button class="dr-primary" id="drRematch" type="button">ตัวเดิม เริ่มชุดใหม่ ↻</button><button class="dr-secondary" id="drEditTeam" type="button">แก้ไขทีม</button></div></section>
   </section>
-  <footer class="dr-footer">วาดไม่สวยก็ซิ่งได้ · <a href="animalrace.html">เล่นสัตว์ซิ่งชิงแชมป์แบบเดิม →</a></footer>
+  <footer class="dr-footer">วาดไม่สวยก็เป็นแชมป์ได้ · <a href="animalrace.html">เล่นสัตว์ซิ่งชิงแชมป์แบบเดิม →</a></footer>
 </main>
 <script src="js/main.js"></script>
-<script src="js/doodle-race-engine.js"></script>
-<script src="js/net-room.js?v=80"></script>
-<script src="js/doodle-race-net.js?v=80"></script>
-<script src="js/doodle-race.js?v=80"></script>
-<script src="js/doodle-race-online.js?v=80"></script>
+<script src="js/doodle-race-engine.js?v=81"></script>
+<script src="js/net-room.js?v=81"></script>
+<script src="js/doodle-olympics-engine.js?v=81"></script>
+<script src="js/doodle-olympics-render.js?v=81"></script>
+<script src="js/doodle-race-net.js?v=81"></script>
+<script src="js/doodle-race.js?v=81"></script>
+<script src="js/doodle-race-online.js?v=81"></script>
 </body>
 </html>

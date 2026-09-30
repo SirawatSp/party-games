@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   "use strict";
-  const E = DoodleRace, $ = id => document.getElementById(id);
+  const E = DoodleRace, O = DoodleOlympics, $ = id => document.getElementById(id);
   const colors = ["#243d32", "#df5936", "#366cba", "#965db0", "#c78c22", "#25977b"];
   const colorNames = ["เขียวเข้ม", "ส้ม", "น้ำเงิน", "ม่วง", "เหลืองเข้ม", "เขียวมิ้นต์"];
   const KEY = "pg_doodle_race_v1", panels = ["drSetup", "drEditor", "drLineup", "drRace", "drLobby"];
@@ -10,7 +10,23 @@ document.addEventListener("DOMContentLoaded", () => {
   let stroke = null, pointer = null, saved = null, previewFrame = 0, raceFrame = 0;
   let racers = [], elapsed = 0, countdown = 3, lastFrame = 0, accumulator = 0, paused = false, finished = false, lastRankPaint = -1;
   let raceWidth = 1000, raceHeight = 520, online = false, onlineRound = 0, onlineSeq = -1;
+  let selected = ["run", "sumo", "roll", "jump", "balance"], tournament = null, session = null, onlineHost = false;
   const STEP = 1 / 60;
+  const valid = d => O.validAthlete(d,selected);
+  function selectedSports(id) { return O.events([...$(id).querySelectorAll("input:checked")].map(x=>x.value)); }
+  function fillSports(id, list, disabled=false) {
+    $(id).replaceChildren();
+    Object.entries(O.sports).forEach(([key,sport])=>{
+      const label=document.createElement("label"),input=document.createElement("input"),body=document.createElement("span"),name=document.createElement("strong"),rule=document.createElement("small");
+      label.className="dr-sport-option";input.type="checkbox";input.value=key;input.checked=list.includes(key);input.disabled=disabled;input.setAttribute("aria-label",sport.name);
+      name.textContent=sport.icon+" "+sport.name;rule.textContent=sport.rule;body.append(name,rule);label.append(input,body);$(id).appendChild(label);
+    });
+  }
+  function schedule(list) { return list.map((k,i)=>(i+1)+". "+O.sports[k].name).join(" → "); }
+  function readSettings() { selected=selectedSports("drSports");distance=Number($("drDistance").value);$("drSchedule").textContent=selected.length?schedule(selected):"เลือกกีฬาอย่างน้อย 1 รายการก่อนเริ่ม";$("drBegin").disabled=!selected.length;$("drHostRoom").disabled=!selected.length;$("drDistance").disabled=!selected.includes("run"); }
+  fillSports("drSports",selected);readSettings();
+  $("drSports").addEventListener("change",readSettings);
+
   const dc = $("drDraw").getContext("2d"), pc = $("drPreviewCanvas").getContext("2d"), rc = $("drTrack").getContext("2d");
 
   function setupCanvas(canvas, width, height) {
@@ -31,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   function persist() {
     if (online) return;
-    try { localStorage.setItem(KEY, JSON.stringify({v:1, count, distance, team})); }
+    try { localStorage.setItem(KEY, JSON.stringify({v:1, count, distance, team, events:selected})); }
     catch (e) { $("drMessage").textContent = "เครื่องนี้บันทึกภาพอัตโนมัติไม่ได้ แต่ยังเล่นรอบนี้ต่อได้"; }
   }
   function storeDraft() {
@@ -50,14 +66,15 @@ document.addEventListener("DOMContentLoaded", () => {
   $("drRestore").hidden = !saved;
   $("drRestore").addEventListener("click", () => {
     ({team, count, distance} = clone(saved));
+    selected=O.events(saved.events);if(!selected.length)selected=["run"];fillSports("drSports",selected);$("drDistance").value=distance;readSettings();
     $("drCount").value = count; $("drDistance").value = distance;
     showLineup();
   });
   $("drBegin").addEventListener("click", () => {
-    count = Number($("drCount").value); distance = Number($("drDistance").value);
+    readSettings();if(!selected.length)return;count = Number($("drCount").value); distance = Number($("drDistance").value);tournament=null;
     team = Array.from({length:count}, (_, i) => team[i] || null);
     persist();
-    const next = team.findIndex(d => !E.validDrawing(d));
+    const next = team.findIndex(d => !valid(d));
     if (next < 0) showLineup(); else openEditor(next);
   });
   colors.forEach((c, i) => {
@@ -70,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
     stopPreview(); tool = next;
     $("drBodyTool").setAttribute("aria-pressed", String(tool === "body"));
     $("drLegTool").setAttribute("aria-pressed", String(tool === "legs"));
-    $("drDrawHint").textContent = tool === "body" ? "วาดลำตัว หัว และหาง หันหน้าไปทางขวา → แล้วค่อยกด “เติมขา”" : "ลากจากลำตัวลงไปถึงปลายเท้า ยกนิ้ว = จบ 1 ขา วาดขางอหรือขายาวได้ 2–6 ขา";
+    $("drDrawHint").textContent = tool === "body" ? (selected.includes("run") ? "วาดลำตัว หัว และหาง หันหน้าไปทางขวา → แล้วเติมขา 2–6 ขาสำหรับวิ่ง" : "วาดสัตว์รูปร่างอะไรก็ได้ ใช้ตัวนี้ทุกรายการ · เติมขาหรือไม่ก็ได้") : "ลากจากลำตัวลงไปถึงปลายเท้า ยกนิ้ว = จบ 1 ขา วาดขางอหรือขายาวได้ 2–6 ขา";
     $("drMessage").textContent = ""; paintEditor();
   }
   $("drBodyTool").addEventListener("click", () => setTool("body"));
@@ -80,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
     $("drTurn").textContent = online ? "ภาพของคุณเป็นความลับจนปล่อยตัว" : "ส่งเครื่องให้คนที่ " + (i + 1) + " / " + count;
     $("drPlayerNumber").textContent = String(i + 1).padStart(2,"0");
     $("drName").value = draft.name;
-    $("drSave").textContent = team.some((d,j) => j !== i && !E.validDrawing(d)) ? "บันทึกแล้วส่งต่อ →" : "บันทึกเข้าทีม →";
+    $("drSave").textContent = team.some((d,j) => j !== i && !valid(d)) ? "บันทึกแล้วส่งต่อ →" : "บันทึกเข้าทีม →";
     if (online) $("drSave").textContent = "ส่งภาพและพร้อมแข่ง";
     show("drEditor"); setTool(draft.body.length ? "legs" : "body");
   }
@@ -100,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (stroke) drawStroke(dc, stroke);
     $("drLegCount").textContent = draft.legs.length + "/6";
     $("drUndo").disabled = !draft[tool].length;
-    $("drPreviewBtn").disabled = !E.validDrawing(draft);
+    $("drPreviewBtn").disabled = !valid(draft);
   }
   function point(event) {
     const r=$("drDraw").getBoundingClientRect();
@@ -149,15 +166,15 @@ document.addEventListener("DOMContentLoaded", () => {
     storeDraft(); setTool("legs");
   });
   function validate() {
-    if (E.validDrawing(draft)) return true;
-    $("drMessage").textContent = draft.body.length ? "ต้องมีลำตัวกว้างอย่างน้อยนิดหนึ่ง และขา 2–6 ขาที่เริ่มจากลำตัวก่อนลงแข่ง" : "วาดลำตัวก่อน แล้วเติมขาอย่างน้อย 2 ขานะ";
+    if (valid(draft)) return true;
+    $("drMessage").textContent = draft.body.length ? (selected.includes("run") ? "ชุดนี้มีวิ่งแข่ง ต้องมีลำตัวและขา 2–6 ขาที่เริ่มจากลำตัว" : "วาดลำตัวให้กว้างอย่างน้อย 20 และสูง 10 หน่วย ขาที่เติมต้องต่อกับลำตัว") : "วาดลำตัวก่อนนะ ใช้ตัวเดียวแข่งทุกรายการ";
     return false;
   }
   $("drSave").addEventListener("click", () => {
     if (!validate()) return;
     storeDraft();
     if (online) { window.DoodleRaceOnline.submit(clone(draft)); return; }
-    const next=team.findIndex(d => !E.validDrawing(d));
+    const next=team.findIndex(d => !valid(d));
     if(next>=0) openEditor(next); else showLineup();
   });
   $("drEditorBack").addEventListener("click", () => { storeDraft(); showLineup(); });
@@ -174,6 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
   $("drPreviewBtn").addEventListener("click", () => {
     if (!validate()) return;
     stopPreview(); $("drPreview").hidden=false;
+    if(!selected.includes("run")){pc.clearRect(0,0,600,260);drawAnimal(pc,draft,null,300,238,.58);return;}
     const r=E.makeRacer(draft,seed(),0); let prev=0;
     function frame(t) {
       const dt=prev ? Math.min(.05,(t-prev)/1000) : 0; prev=t; E.step(r,dt,100000);
@@ -184,18 +202,16 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   function showLineup() {
     if (online) { window.DoodleRaceOnline.showLobby(); return; }
-    $("drLineupDistance").textContent=distance+" ม."; $("drRoster").replaceChildren();
+    $("drLineupDistance").textContent=selected.length+" กีฬา";$("drLineupSchedule").textContent=schedule(selected); $("drRoster").replaceChildren();
     team.forEach((d,i) => {
       const card=document.createElement("div");card.className="dr-racer-card";
-      const canvas=document.createElement("canvas"); setupCanvas(canvas,300,190);
-      if(d && d.body.length) drawAnimal(canvas.getContext("2d"),d,null,150,175,.44);
-      canvas.setAttribute("aria-label",d ? "ภาพของ "+d.name : "ยังไม่มีนักแข่ง");
+      const canvas=document.createElement("div");canvas.className="dr-mystery";canvas.textContent="?";canvas.setAttribute("aria-label","ซ่อนภาพจนเริ่มแข่ง");
       const h=document.createElement("h3"); h.textContent=(i+1)+" · "+(d ? d.name : "รอคนที่ "+(i+1)+" วาด");
-      const p=document.createElement("p");p.textContent=E.validDrawing(d) ? d.legs.length+" ขา · พร้อมซิ่ง" : "ยังวาดไม่ครบ";
+      const p=document.createElement("p");p.textContent=valid(d) ? "พร้อมแข่ง "+selected.length+" กีฬา · ภาพยังเป็นความลับ" : "ยังวาดไม่ครบ";
       const btn=document.createElement("button");btn.className="dr-secondary";btn.type="button";btn.textContent=d ? "แก้ไขภาพ" : "วาดนักแข่ง";btn.setAttribute("aria-label",(d ? "แก้ไข" : "วาด")+"นักแข่งคนที่ "+(i+1));btn.addEventListener("click",()=>openEditor(i));
       card.append(canvas,h,p,btn);$("drRoster").appendChild(card);
     });
-    $("drStart").disabled = !team.every(E.validDrawing);
+    $("drStart").disabled = !team.every(valid);
     show("drLineup");
   }
   $("drSettings").addEventListener("click",()=>{ $("drBegin").textContent="ใช้การตั้งค่านี้ →"; show("drSetup"); });
@@ -203,13 +219,15 @@ document.addEventListener("DOMContentLoaded", () => {
   function fitTrack() {
     if($("drRace").hidden) return;
     raceWidth=$("drTrack").parentElement.clientWidth;
-    raceHeight=55+count*(raceWidth<600 ? 108 : 132);
+    raceHeight=session&&session.mode==="sumo"?Math.max(380,Math.min(600,raceWidth*.7)):55+count*(raceWidth<600 ? 120 : 145);
     setupCanvas($("drTrack"),raceWidth,raceHeight);
     $("drTrack").style.height=raceHeight+"px";
     paintRace();
   }
   window.addEventListener("resize",fitTrack);
   function paintRace() {
+    if(!session)return;
+    if(session.mode!=="run"){DoodleOlympicsRender.paint(rc,session,raceWidth,raceHeight);return;}
     const w=raceWidth, h=raceHeight, lane=(h-55)/count, small=w<600, start=small?48:100, end=w-(small?48:100), scale=small?.13:.23;
     rc.clearRect(0,0,w,h);rc.fillStyle="#e2e9cd";rc.fillRect(0,0,w,55);
     rc.font="12px sans-serif";rc.fillStyle="#415438";rc.textAlign="center";
@@ -233,27 +251,39 @@ document.addEventListener("DOMContentLoaded", () => {
     racers.forEach(r=>{
       const row=document.createElement("div");row.className="dr-live-row";row.dataset.id=r.id;
       const number=document.createElement("b"), name=document.createElement("span"), meter=document.createElement("span"), bar=document.createElement("progress");
-      name.className="dr-live-name";name.textContent=r.drawing.name;bar.className="dr-live-progress";bar.max=distance;bar.value=0;bar.setAttribute("aria-label","ระยะทางของ "+r.drawing.name);
+      name.className="dr-live-name";name.textContent=r.drawing.name;bar.className="dr-live-progress";bar.max=session.mode==="run"?distance:session.mode==="roll"?1000:session.mode==="jump"?200:60;bar.value=0;bar.setAttribute("aria-label","ระยะทางของ "+r.drawing.name);
       row.append(number,name,meter,bar);$("drLiveRanks").appendChild(row);
     });
   }
+  function metric(r) {
+    if(session.mode==="run"||session.mode==="roll")return r.finish!==null?r.finish.toFixed(2)+" วิ":session.mode==="run"?Math.floor(r.distance)+" ม.":Math.floor(r.x/10)+"%";
+    if(session.mode==="jump")return (r.finish!==null?r.distance:r.x).toFixed(2)+" ม.";
+    return r.out?r.finish.toFixed(2)+" วิ · ตกแล้ว":session.done?session.elapsed.toFixed(2)+" วิ":"ยังอยู่ · "+session.elapsed.toFixed(1)+" วิ";
+  }
   function updateRanks() {
-    const ranked=E.rank(racers);
+    if(!session)return;const ranked=O.rank(session);
     ranked.forEach((r,i)=>{
       const row=$("drLiveRanks").querySelector('[data-id="'+r.id+'"]');row.style.order=i;
-      row.children[0].textContent=i+1;row.children[2].textContent=r.finish!==null ? "🏁 "+r.finish.toFixed(2)+" วิ" : Math.floor(r.distance)+" ม.";row.children[3].value=r.distance;
+      row.children[0].textContent=i+1;row.children[2].textContent=metric(r);
+      row.children[3].value=session.mode==="run"||session.mode==="roll"?r.distance:session.mode==="jump"?r.x:r.out?r.finish:session.elapsed;
     });
-    const leader=ranked[0];
-    $("drRaceCommentary").textContent=leader.finish!==null ? leader.drawing.name+" เข้าเส้นชัยแล้ว! เชียร์ตัวที่เหลือกันต่อ" : "นำอยู่: "+leader.drawing.name+" · "+Math.floor(leader.distance)+" / "+distance+" เมตร";
+    $("drRaceCommentary").textContent=O.sports[session.mode].rule;
+  }
+  function prepareRace() {
+    racers=session.racers;elapsed=0;accumulator=0;lastFrame=0;paused=false;finished=false;lastRankPaint=-1;
+    $("drRaceTitle").textContent=(tournament.index+1)+" / "+tournament.events.length+" · "+O.sports[session.mode].name+(session.mode==="run"?" "+distance+" เมตร":"");
+    $("drResults").hidden=true;$("drPause").hidden=online;$("drRaceBack").hidden=online;$("drPause").textContent="พักการแข่งขัน";
+    $("drCountdown").textContent=online?"ไป!":"3";$("drClock").textContent="0.00 วิ";$("drRaceCommentary").textContent=O.sports[session.mode].rule;
+    show("drRace");buildLiveRanks();fitTrack();
   }
   function startRace() {
     if (online) { window.DoodleRaceOnline.start(); return; }
-    if (!team.every(E.validDrawing)) { showLineup(); return; }
-    stopRace(); racers=team.map((d,i)=>E.makeRacer(clone(d),seed(),i));
-    elapsed=0;countdown=3;accumulator=0;lastFrame=0;paused=false;finished=false;lastRankPaint=-1;
-    $("drRaceTitle").textContent="วิ่ง "+distance+" เมตร";$("drResults").hidden=true;$("drPause").hidden=false;$("drPause").textContent="พักการแข่งขัน";
-    $("drCountdown").textContent="3";$("drClock").textContent="0.00 วิ";$("drRaceCommentary").textContent="ขาทุกคู่กำลังตั้งหลัก…";
-    show("drRace");buildLiveRanks();fitTrack();raceFrame=requestAnimationFrame(raceLoop);
+    if (!selected.length||!team.every(valid)) { showLineup(); return; }
+    stopRace();tournament=O.create(team,selected,distance,seed());nextRace();
+  }
+  function nextRace() {
+    if(online){window.DoodleRaceOnline.start();return;}
+    stopRace();session=O.next(tournament);if(!session)return;countdown=3;prepareRace();raceFrame=requestAnimationFrame(raceLoop);
   }
   function raceLoop(now) {
     let dt=lastFrame?Math.min(.1,(now-lastFrame)/1000):0;lastFrame=now;
@@ -261,10 +291,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if(countdown>0){countdown-=dt;$("drCountdown").textContent=countdown>0?Math.ceil(countdown):"ไป!";dt=0;}
       else{
         $("drCountdown").textContent="";accumulator+=dt;
-        while(accumulator>=STEP){racers.forEach(r=>E.step(r,STEP,distance));elapsed+=STEP;accumulator-=STEP;}
+        while(accumulator>=STEP&&!session.done){O.step(session,STEP);elapsed=session.elapsed;accumulator-=STEP;}
         $("drClock").textContent=elapsed.toFixed(2)+" วิ";
         if(elapsed-lastRankPaint>.25){updateRanks();lastRankPaint=elapsed;}
-        if(racers.every(r=>r.finish!==null)) finishRace();
+        if(session.done) finishRace();
       }
     }
     paintRace();if(!finished)raceFrame=requestAnimationFrame(raceLoop);
@@ -274,36 +304,46 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   $("drPause").addEventListener("click",()=>setPaused(!paused));
   document.addEventListener("visibilitychange",()=>{if(document.hidden && !online && !$("drRace").hidden && !finished)setPaused(true);if(document.hidden)stopPreview();});
+  function scoreTable() {
+    const head=document.createElement("tr");["อันดับ","สัตว์",...tournament.results.map(r=>O.sports[r.mode].name),"รวม"].forEach(t=>{const th=document.createElement("th");th.scope="col";th.textContent=t;head.appendChild(th);});$("drScoreHead").replaceChildren(head);$("drScores").replaceChildren();
+    O.standings(tournament).forEach(r=>{const tr=document.createElement("tr");const cells=[r.place,r.name,...tournament.results.map(e=>e.rows.find(x=>x.id===r.id).points),r.points];cells.forEach(v=>{const td=document.createElement("td");td.textContent=typeof v==="number"?Number(v.toFixed(2)):v;tr.appendChild(td);});$("drScores").appendChild(tr);});
+  }
   function finishRace() {
-    finished=true;$("drPause").hidden=true;$("drCountdown").textContent="";updateRanks();
-    const ranked=E.rank(racers);$("drWinner").textContent="🏆 "+ranked[0].drawing.name+" ชนะ!";$("drPodium").replaceChildren();
-    ranked.forEach((r,i)=>{const li=document.createElement("li"),n=document.createElement("span"),name=document.createElement("b"),time=document.createElement("span");n.textContent=i+1;name.textContent=r.drawing.name;time.textContent=r.finish.toFixed(2)+" วิ";li.append(n,name,time);$("drPodium").appendChild(li);});
-    $("drResults").hidden=false;$("drRaceCommentary").textContent="ครบทุกตัวแล้ว! ภาพเดิมแข่งซ้ำได้ จังหวะใหม่อาจพาแชมป์คนใหม่มา";
+    finished=true;$("drPause").hidden=true;$("drCountdown").textContent="";updateRanks();if(!online)O.record(tournament);
+    const result=tournament.results[tournament.index];if(!result)return;
+    const final=tournament.index===tournament.events.length-1,winners=result.rows.filter(r=>r.place===1).map(r=>r.name);
+    $("drResultLabel").textContent="จบ "+O.sports[session.mode].name;$("drWinner").textContent="🏅 "+winners.join(" / ")+(winners.length>1?" ชนะร่วมกัน":" ชนะรายการนี้!");$("drPodium").replaceChildren();
+    result.rows.forEach(r=>{const li=document.createElement("li"),n=document.createElement("span"),name=document.createElement("b"),value=document.createElement("span");n.textContent=r.place;name.textContent=r.name;value.textContent=(session.mode==="sumo"?session.racers[r.id].finish:r.value).toFixed(2)+" "+O.sports[session.mode].unit+" · +"+Number(r.points.toFixed(2))+" คะแนน";li.append(n,name,value);$("drPodium").appendChild(li);});
+    const leaders=O.standings(tournament).filter(r=>r.place===1);$("drStandingsTitle").textContent=final?"🏆 แชมป์คะแนนรวม: "+leaders.map(r=>r.name).join(" / "):"คะแนนสะสม · แข่งแล้ว "+tournament.results.length+" / "+tournament.events.length+" รายการ";scoreTable();
+    $("drNext").hidden=final||(online&&!onlineHost);$("drNext").textContent=final?"": "ต่อ: "+O.sports[tournament.events[tournament.index+1]].name+" →";
+    $("drRematch").hidden=!final||(online&&!onlineHost);$("drEditTeam").hidden=online&&!onlineHost;
+    $("drResults").hidden=false;$("drRaceCommentary").textContent=final?"ครบทุกกีฬาแล้ว! เริ่มชุดใหม่ได้ด้วยสัตว์ตัวเดิม":"คะแนนถูกบันทึกแล้ว กดไปรายการถัดไปโดยใช้สัตว์ตัวเดิม";
     if(typeof pgTimeUp==="function")pgTimeUp();
   }
-  $("drStart").addEventListener("click",startRace);$("drRematch").addEventListener("click",startRace);
-  $("drRaceBack").addEventListener("click",showLineup);$("drEditTeam").addEventListener("click",()=>online ? window.DoodleRaceOnline.backToLobby() : showLineup());
+  $("drStart").addEventListener("click",startRace);$("drRematch").addEventListener("click",startRace);$("drNext").addEventListener("click",nextRace);
+  function abandon() {if(tournament&&tournament.results.length<tournament.events.length&&!window.confirm("ออกจากชุดการแข่งขันนี้? คะแนนชุดที่ยังไม่จบจะไม่ถูกเก็บ"))return;tournament=null;session=null;showLineup();}
+  $("drRaceBack").addEventListener("click",abandon);$("drEditTeam").addEventListener("click",()=>online ? window.DoodleRaceOnline.backToLobby() : abandon());
   // โหมดออนไลน์ใช้ภาพของตัวเองในหน้าแก้ไข และรับภาพเพื่อนเฉพาะเมื่อโฮสต์ปล่อยตัว
   window.DoodleRaceUI = {
     show,
     enterOnline(name) { online=true; team=[empty(0)];team[0].name=name;count=1; },
-    leaveOnline() { online=false;team=[];count=Number($("drCount").value);stopRace();$("drRaceBack").hidden=false;$("drRematch").hidden=false;$("drEditTeam").hidden=false;$("drEditTeam").textContent="แก้ไขทีม";show("drSetup"); },
+    leaveOnline() { online=false;onlineHost=false;tournament=null;session=null;readSettings();team=[];count=Number($("drCount").value);stopRace();$("drRaceBack").hidden=false;$("drRematch").hidden=false;$("drEditTeam").hidden=false;$("drEditTeam").textContent="แก้ไขทีม";show("drSetup"); },
     editOnline() { openEditor(0); },
+    settings(list, meters) { selected=O.events(list);distance=meters;if(!$("drEditor").hidden)setTool(tool); },
+    selection() { return {events:selectedSports("drSports"),distance:Number($("drDistance").value)}; },
     race(data) {
       if (!online || data.round<=onlineRound) return;
-      onlineRound=data.round;onlineSeq=-1;distance=data.distance;count=data.team.length;
-      racers=data.team.map((d,i)=>E.makeRacer(d,0,i));finished=false;elapsed=0;countdown=0;
-      $("drRaceTitle").textContent="วิ่ง "+distance+" เมตร · ออนไลน์";$("drResults").hidden=true;
-      $("drPause").hidden=true;$("drRaceBack").hidden=true;$("drCountdown").textContent="ไป!";
-      $("drClock").textContent="0.00 วิ";show("drRace");buildLiveRanks();fitTrack();
+      onlineRound=data.round;onlineSeq=-1;distance=data.distance;count=data.team.length;selected=O.events(data.events);
+      tournament={team:data.team,events:selected,index:data.index,totals:data.totals,results:data.results};
+      session=O.makeSession(selected[data.index],data.team,data.team.map(()=>0),distance);countdown=0;prepareRace();
     },
     frame(data) {
       if (!online || data.round!==onlineRound || data.seq<=onlineSeq || data.racers.length!==racers.length) return;
-      onlineSeq=data.seq;elapsed=data.elapsed;$("drClock").textContent=elapsed.toFixed(2)+" วิ";$("drCountdown").textContent="";
-      data.racers.forEach((r,i)=>{ const target=racers[i];["distance","speed","time","finish","event","eventUntil"].forEach(k=>{target[k]=r[k];});r.legs.forEach((l,j)=>Object.assign(target.legs[j],l)); });
+      onlineSeq=data.seq;O.apply(session,data);elapsed=data.elapsed;tournament.totals=data.totals;tournament.results=data.results;
+      $("drClock").textContent=elapsed.toFixed(2)+" วิ";$("drCountdown").textContent="";
       updateRanks();paintRace();if(data.finished&&!finished)finishRace();
     },
-    hostControls(isHost) { $("drRematch").hidden=!isHost;$("drEditTeam").hidden=!isHost;$("drEditTeam").textContent="กลับห้องรอ"; },
+    hostControls(isHost) { onlineHost=isHost;$("drNext").hidden=!isHost||!finished||!tournament||tournament.index+1>=tournament.events.length;$("drRematch").hidden=!isHost||!finished||!tournament||tournament.index+1<tournament.events.length;$("drEditTeam").hidden=!isHost;$("drEditTeam").textContent="กลับห้องรอ"; },
     resetRound() { onlineRound=0;onlineSeq=-1; }
   };
   window.addEventListener("pagehide",()=>{stopPreview();stopRace();});

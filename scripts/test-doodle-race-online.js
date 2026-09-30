@@ -26,7 +26,7 @@ assert.deepEqual(E.rank(final.racers).map(r=>r.id),E.rank(host.racers).map(r=>r.
 const first=host.racers.map(r=>r.finish);assert.ok(host.start(100));time=host.startsAt+1000;host.tick();assert.equal(host.phase,'race');
 host.leave('g2');assert.equal(host.players.find(p=>p.id==='g2').connected,false);
 for(;time<300000&&host.phase!=='result';time+=100)host.tick();assert.equal(host.phase,'result');assert.notDeepEqual(host.racers.map(r=>r.finish),first);
-assert.ok(host.lobby());assert.equal(host.players.length,2);assert.ok(host.players.every(p=>!p.ready));noImages();
+assert.ok(host.lobby());assert.equal(host.players.length,2);assert.ok(host.players.every(p=>p.ready),"กลับห้องแล้วยังใช้สัตว์ตัวเดิมได้");noImages();
 host.ready('host',animal);host.ready('g1',animal);host.start(100);host.leave('g1');assert.equal(host.phase,'lobby');assert.equal(host.players.length,1);
 for(let i=0;i<5;i++)host.join('player'+i,{name:'คน'+i});assert.equal(host.players.length,6);assert.ok(!host.join('overflow',{name:'ล้น'}));
 const before=JSON.stringify(host.players[0].drawing);const input=JSON.parse(JSON.stringify(animal));host.ready('host',input);input.body[0].points[0][0]=0;assert.equal(JSON.stringify(host.players[0].drawing),before);

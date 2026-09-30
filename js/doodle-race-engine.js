@@ -24,9 +24,9 @@
     }));
     return { point: best, distance };
   }
-  function validDrawing(d) {
+  function validDrawing(d, legsOptional = false) {
     const strokeOK = s => s && /^#[0-9a-f]{6}$/i.test(s.color) && Number.isFinite(s.width) && s.width >= 1 && s.width <= 20 && Array.isArray(s.points) && s.points.length >= 2 && s.points.length <= 700 && s.points.every(p => Array.isArray(p) && p.length === 2 && p.every(Number.isFinite) && p[0] >= 0 && p[0] <= 600 && p[1] >= 0 && p[1] <= 360);
-    if (!d || !Array.isArray(d.body) || !d.body.length || d.body.length > 120 || !d.body.every(strokeOK) || !Array.isArray(d.legs) || d.legs.length < 2 || d.legs.length > 6 || !d.legs.every(strokeOK)) return false;
+    if (!d || !Array.isArray(d.body) || !d.body.length || d.body.length > 120 || !d.body.every(strokeOK) || !Array.isArray(d.legs) || d.legs.length < (legsOptional ? 0 : 2) || d.legs.length > 6 || !d.legs.every(strokeOK)) return false;
     const b = bounds(d.body);
     return b.w >= 20 && b.h >= 10 && d.legs.every(s => Math.hypot(s.points.at(-1)[0] - s.points[0][0], s.points.at(-1)[1] - s.points[0][1]) >= 18 && nearest(d.body, s.points[0]).distance <= 42);
   }

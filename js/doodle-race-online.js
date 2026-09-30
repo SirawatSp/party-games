@@ -18,10 +18,11 @@ document.addEventListener("DOMContentLoaded",()=>{
     if(old)old.close();ui.leaveOnline();setBusy(false);$("drSave").disabled=false;warn(message);
   }
   function render(s){
-    state=s;lastHeard=performance.now();
+    state=s;lastHeard=performance.now();ui.settings(s.events,s.distance);
+    renderSports(s.events);$("drOnlineSchedule").textContent=s.events.map((k,i)=>(i+1)+". "+DoodleOlympics.sports[k].name).join(" → ");
     const me=s.players.find(p=>p.id===myId());if(!me)return;
     clearTimeout(joinTimeout);connected=true;
-    $("drRoomCode").textContent=room.code;$("drOnlineDistance").value=s.distance;$("drOnlineDistance").disabled=!isHost||s.phase!=="lobby";
+    $("drRoomCode").textContent=room.code;$("drOnlineDistance").value=s.distance;$("drOnlineDistance").disabled=!isHost||s.phase!=="lobby"||!s.events.includes("run");
     $("drOnlineStart").hidden=!isHost;$("drOnlineStart").disabled=!s.canStart;$("drOnlineDraw").disabled=s.phase!=="lobby";
     $("drOnlineDraw").textContent=me.ready?"แก้ไขสัตว์ของฉัน":"วาดสัตว์ของฉัน";
     $("drRoomPlayers").replaceChildren();
@@ -33,6 +34,12 @@ document.addEventListener("DOMContentLoaded",()=>{
     else if(s.phase==="lobby"&&$("drEditor").hidden)ui.show("drLobby");
     ui.hostControls(isHost);
   }
+  function renderSports(list){
+    $("drOnlineSports").replaceChildren();Object.entries(DoodleOlympics.sports).forEach(([key,s])=>{
+      const label=document.createElement("label"),input=document.createElement("input"),name=document.createElement("strong");label.className="dr-sport-option";input.type="checkbox";input.value=key;input.checked=list.includes(key);input.disabled=!isHost||state.phase!=="lobby";input.setAttribute("aria-label",s.name);name.textContent=s.icon+" "+s.name;label.append(input,name);$("drOnlineSports").appendChild(label);
+    });
+  }
+  $("drOnlineSports").addEventListener("change",()=>{if(!game||game.phase!=="lobby")return;const list=[...$("drOnlineSports").querySelectorAll("input:checked")].map(x=>x.value);if(!list.length){renderSports(state.events);$("drLobbyNotice").textContent="ต้องเลือกอย่างน้อย 1 กีฬา";return;}game.settings(list,Number($("drOnlineDistance").value));});
   function ack(data){
     clearTimeout(saveTimeout);pending=false;$("drSave").disabled=false;
     if(!data.ok){if(!connected){cleanup(data.message);return;}$("drMessage").textContent=data.message;return;}
@@ -56,16 +63,16 @@ document.addEventListener("DOMContentLoaded",()=>{
       if(host)await room.host();else await room.join(code);
       if(room!==current)return;
       ui.resetRound();ui.enterOnline(name);lastHeard=performance.now();warn("");setBusy(false);
-      if(host){connected=true;game=new DoodleRaceHost(room,{name,distance:Number($("drDistance").value),onState:render,onRace:d=>ui.race(d),onFrame:d=>ui.frame(d),onAck:ack});game.publish();ticker=setInterval(()=>game&&game.tick(),50);}
+      if(host){connected=true;game=new DoodleRaceHost(room,{name,...ui.selection(),onState:render,onRace:d=>ui.race(d),onFrame:d=>ui.frame(d),onAck:ack});game.publish();ticker=setInterval(()=>game&&game.tick(),50);}
       else{room.send("dr:join",{name});joinTimeout=setTimeout(()=>{if(room===current&&!connected)cleanup("ห้องไม่ตอบรับ อาจเป็นรหัสของเกมอื่นหรือเจ้าของห้องหลุดแล้ว");},12000);}
       heartbeat=setInterval(()=>{if(room!==current)return;if(!isHost){room.send("dr:ping",{});if(performance.now()-lastHeard>15000)cleanup("ติดต่อเจ้าของห้องไม่ได้ ห้องปิดแล้ว ลองเข้าห้องใหม่");}},2000);
-    }catch(e){console.warn("เชื่อมต่อห้องวาดสัตว์ซิ่งไม่สำเร็จ",e.type||"timeout",e.message||"");if(room===current)cleanup(host?"สร้างห้องไม่สำเร็จ บริการเชื่อมต่ออาจไม่พร้อม ลองใหม่อีกครั้ง":"เข้าห้องไม่สำเร็จ เช็กรหัสและให้เจ้าของห้องเปิดหน้าเกมไว้ หากเครือข่ายบล็อกการเชื่อมต่อ ลองเปลี่ยนเครือข่าย");}
+    }catch(e){console.warn("เชื่อมต่อห้องโอลิมปิก คิ๊กกะปู้ไม่สำเร็จ",e.type||"timeout",e.message||"");if(room===current)cleanup(host?"สร้างห้องไม่สำเร็จ บริการเชื่อมต่ออาจไม่พร้อม ลองใหม่อีกครั้ง":"เข้าห้องไม่สำเร็จ เช็กรหัสและให้เจ้าของห้องเปิดหน้าเกมไว้ หากเครือข่ายบล็อกการเชื่อมต่อ ลองเปลี่ยนเครือข่าย");}
   }
   $("drHostRoom").addEventListener("click",()=>connect(true));$("drJoinRoom").addEventListener("click",()=>connect(false));
   $("drRoomInput").addEventListener("input",e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,"");});
   $("drOnlineDraw").addEventListener("click",()=>{if(!state||state.phase!=="lobby")return;if(isHost)game.edit("host");else room.send("dr:edit",{});ui.editOnline();});
   $("drOnlineStart").addEventListener("click",()=>window.DoodleRaceOnline.start());
-  $("drOnlineDistance").addEventListener("change",()=>{if(game&&game.phase==="lobby"){game.distance=Number($("drOnlineDistance").value);game.publish();}});
+  $("drOnlineDistance").addEventListener("change",()=>{if(game&&game.phase==="lobby"){game.settings(state.events,Number($("drOnlineDistance").value));}});
   $("drLeaveRoom").addEventListener("click",()=>cleanup("ออกจากห้องแล้ว"));
   $("drCopyRoom").addEventListener("click",async()=>{
     if(!room)return;const url=new URL(location.href);url.searchParams.set("room",room.code);
@@ -79,6 +86,6 @@ document.addEventListener("DOMContentLoaded",()=>{
       if(isHost)game.ready("host",d);else room.send("dr:ready",d);},
     showLobby(){ui.show("drLobby");if(state)render(state);},
     start(){if(game)game.start(Number($("drOnlineDistance").value));},
-    backToLobby(){if(game)game.lobby();}
+    backToLobby(){if(game){if(game.tournament&&game.tournament.index+1<game.tournament.events.length&&!window.confirm("จบชุดการแข่งขันก่อนครบกีฬาและกลับห้องรอ?"))return;game.lobby();}}
   };
 });
