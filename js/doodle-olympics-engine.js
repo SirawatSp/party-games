@@ -72,10 +72,10 @@
         if(r.y>=0&&r.vy>0){const fraction=clamp(r.y/(r.vy*dt),0,1);r.x-=r.vx*dt*fraction;r.y=0;r.distance=r.score=r.x;r.finish=s.elapsed-dt*fraction;}
       });s.done=s.racers.every(r=>r.finish!==null);
     }else if(s.mode==="balance"){
-      if(s.elapsed>=s.nextWind){s.wind=(s.rng()-.5)*(1+s.elapsed/12);s.nextWind=s.elapsed+.4+s.rng();}
-      s.tilt=Math.sin(s.elapsed*1.8)*(.08+s.elapsed*.011)+Math.sin(s.elapsed*.8)*.13;
-      s.racers.forEach(r=>{if(r.out)return;r.time=s.elapsed;if(s.elapsed>=r.nextForce){r.forceX=(r.rng()-.5)*.5;r.nextForce=s.elapsed+.3+r.rng()*.6;}const stability=r.g.base/(.7+r.g.height);
-        r.omega+=(Math.sin(r.angle-s.tilt)*(3+s.elapsed*.03)/Math.max(.3,stability)+(s.wind+r.forceX)/r.g.mass-r.omega*.8)*dt;
+      if(s.elapsed>=s.nextWind){s.wind=(s.rng()-.5)*(.025+s.elapsed/120);s.nextWind=s.elapsed+.4+s.rng();}
+      s.tilt=Math.sin(s.elapsed*.9)*(.008+s.elapsed*.002)+Math.sin(s.elapsed*.4)*.012;
+      s.racers.forEach(r=>{if(r.out)return;r.time=s.elapsed;if(s.elapsed>=r.nextForce){r.forceX=(r.rng()-.5)*(.015+s.elapsed*.001);r.nextForce=s.elapsed+.3+r.rng()*.6;}const stability=r.g.base/(.7+r.g.height);
+        r.omega+=(Math.sin(r.angle-s.tilt)*(.18+s.elapsed*.012)/Math.max(.3,stability)+(s.wind+r.forceX)/r.g.mass-r.omega*1.1)*dt;
         r.angle+=r.omega*dt;r.vx+=(Math.sin(s.tilt)*25+s.wind*5/r.g.mass-r.vx*.5)*dt;r.x+=r.vx*dt;
         if(Math.abs(r.angle-s.tilt)>.85||Math.abs(r.x)>85)eliminate(r,s);
       });const alive=s.racers.filter(r=>!r.out);if(!alive.length||s.elapsed>=60){alive.forEach(r=>{r.finish=60;r.score=60;});s.done=true;}

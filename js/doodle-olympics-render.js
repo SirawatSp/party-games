@@ -19,17 +19,18 @@
       const top=40+i*lane,ground=top+lane-20;c.save();c.beginPath();c.rect(0,top,w,lane);c.clip();c.fillStyle=i%2?"#f2edda":"#fbf8ed";c.fillRect(0,top,w,lane);
       text(c,(i+1)+" · "+r.drawing.name,12,top+20,colors[i],12);
       if(s.mode==="roll"){
-        c.strokeStyle="#b7c8a3";c.lineWidth=8;c.beginPath();c.moveTo(left,ground);c.lineTo(right,ground);c.stroke();
-        [250,530,780].forEach(n=>{const x=left+(right-left)*n/1000;c.fillStyle="#c1ceab";c.beginPath();c.moveTo(x-9,ground);c.lineTo(x,ground-14);c.lineTo(x+9,ground);c.fill();});
+        c.strokeStyle="#b7c8a3";c.lineWidth=8;c.beginPath();c.moveTo(left,ground-38);c.lineTo(right,ground);c.stroke();
+        [250,530,780].forEach(n=>{const x=left+(right-left)*n/1000,y=ground-38*(1-n/1000);c.fillStyle="#c1ceab";c.beginPath();c.moveTo(x-9,y);c.lineTo(x,y-14);c.lineTo(x+9,y);c.fill();});
         const x=left+(right-left)*r.x/1000;
         const support=Math.max(8,...r.g.points.map(p=>p[0]*Math.sin(r.angle)+p[1]*Math.cos(r.angle)))*scale/.25;
-        animal(c,r,x,ground-support+r.y*.45,scale,r.angle);text(c,r.finish===null?Math.floor(r.x/10)+"%":r.finish.toFixed(2)+" วิ",w-12,top+20,colors[i],12,"right");
+        animal(c,r,x,ground-38*(1-r.x/1000)-support+r.y*.45,scale,r.angle);text(c,r.finish===null?Math.floor(r.x/10)+"%":r.finish.toFixed(2)+" วิ",w-12,top+20,colors[i],12,"right");
         c.fillStyle="#df5936";c.fillRect(right,ground-35,3,35);
       }else if(s.mode==="jump"){
         c.fillStyle="#ead8a9";c.fillRect(left,ground,right-left,20);c.strokeStyle="#b59d69";c.lineWidth=1;
         [0,40,80,120,160,200].forEach(n=>{const x=left+(right-left)*n/200;c.beginPath();c.moveTo(x,ground);c.lineTo(x,ground+8);c.stroke();});
         const x=left+(right-left)*r.x/200;
-        if(r.launched)animal(c,r,x,ground-r.g.h*scale*.5+r.y*2.4,scale,r.angle);else animal(c,r,left,ground,scale,0,true);
+        const support=Math.max(8,...r.g.points.map(p=>p[0]*Math.sin(r.angle)+p[1]*Math.cos(r.angle)))*scale/.25;
+        if(r.launched)animal(c,r,x,ground-support+r.y*2.4,scale,r.angle);else animal(c,r,left,ground,scale,0,true);
         if(r.finish!==null){c.strokeStyle=colors[i];c.setLineDash([3,3]);c.beginPath();c.moveTo(x,top+34);c.lineTo(x,ground);c.stroke();c.setLineDash([]);}
         text(c,r.finish!==null?r.distance.toFixed(2)+" ม.":r.launched?"กำลังลอย…":"เตรียมปล่อยตัว",w-12,top+20,colors[i],12,"right");
       }else{
