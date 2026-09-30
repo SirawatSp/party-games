@@ -227,6 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("resize",fitTrack);
   function paintRace() {
     if(!session)return;
+    if(!online&&countdown>0){rc.clearRect(0,0,raceWidth,raceHeight);rc.fillStyle="#edf0df";rc.fillRect(0,0,raceWidth,raceHeight);return;}
     if(session.mode!=="run"){DoodleOlympicsRender.paint(rc,session,raceWidth,raceHeight);return;}
     const w=raceWidth, h=raceHeight, lane=(h-55)/count, small=w<600, start=small?48:100, end=w-(small?48:100), scale=small?.13:.23;
     rc.clearRect(0,0,w,h);rc.fillStyle="#e2e9cd";rc.fillRect(0,0,w,55);
@@ -286,10 +287,11 @@ document.addEventListener("DOMContentLoaded", () => {
     stopRace();session=O.next(tournament);if(!session)return;countdown=3;prepareRace();raceFrame=requestAnimationFrame(raceLoop);
   }
   function raceLoop(now) {
-    let dt=lastFrame?Math.min(.1,(now-lastFrame)/1000):0;lastFrame=now;
+    // ตามเวลาจริงเมื่อเฟรมเรตต่ำ ส่วนการย้ายไปแท็บอื่นใช้ปุ่มพักอัตโนมัติ
+    let dt=lastFrame?Math.min(10,(now-lastFrame)/1000):0;lastFrame=now;
     if(!paused && !finished){
-      if(countdown>0){countdown-=dt;$("drCountdown").textContent=countdown>0?Math.ceil(countdown):"ไป!";dt=0;}
-      else{
+      if(countdown>0){const left=countdown;countdown-=dt;dt=Math.max(0,dt-left);$("drCountdown").textContent=countdown>0?Math.ceil(countdown):"ไป!";}
+      if(countdown<=0){
         $("drCountdown").textContent="";accumulator+=dt;
         while(accumulator>=STEP&&!session.done){O.step(session,STEP);elapsed=session.elapsed;accumulator-=STEP;}
         $("drClock").textContent=elapsed.toFixed(2)+" วิ";
