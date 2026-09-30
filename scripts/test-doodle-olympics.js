@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // ตรวจการแข่งขันจริง คะแนนเสมอ การใช้ภาพเดิม และข้อความที่เครื่องอื่นได้รับ
 const assert=require('node:assert/strict'),O=require('../js/doodle-olympics-engine.js'),Host=require('../js/doodle-race-net.js');
-const vm=require('node:vm'),fs=require('node:fs'),renderScope={};vm.runInNewContext(fs.readFileSync(require.resolve('../js/doodle-olympics-render.js'),'utf8'),renderScope);
+const vm=require('node:vm'),fs=require('node:fs'),renderScope={DoodleOlympics:O};vm.runInNewContext(fs.readFileSync(require.resolve('../js/doodle-olympics-render.js'),'utf8'),renderScope);
 // บันทึกคำสั่งวาดจริง ทั้งเส้นสัตว์ การหมุน และสนาม ไม่ตรวจเพียงอันดับหรือคะแนน
 function paintTrace(s,w){const trace=[],context=new Proxy({}, {get:(_,key)=>(...args)=>{args.forEach(a=>{if(typeof a==='number')assert.ok(Number.isFinite(a),'พิกัดภาพต้องไม่เป็น NaN');});trace.push([key,...args]);},set:(_,key,value)=>{trace.push([key,value]);return true;}});renderScope.DoodleOlympicsRender.paint(context,s,w,s.mode==='sumo'?520:55+s.racers.length*120);return JSON.stringify(trace);}
 const stroke=points=>({color:'#243d32',width:9,points});

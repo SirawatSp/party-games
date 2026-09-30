@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>โอลิมปิก คิ๊กกะปู้ — วาดตัวเดียว ลุ้นทุกกีฬา</title>
 <link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/doodle-race.css?v=84">
+<link rel="stylesheet" href="css/doodle-race.css?v=85">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0c0710">
 </head>
@@ -36,6 +36,7 @@
     </div>
     <fieldset class="dr-sports"><legend>เลือกกีฬาในชุดการแข่งขันนี้</legend><div id="drSports" class="dr-sport-grid"></div></fieldset>
     <p class="dr-schedule" id="drSchedule"></p>
+    <details class="dr-drawing-guide"><summary>วาดแบบไหนได้เปรียบในแต่ละกีฬา?</summary><p>ใช้ปุ่ม “เติมแขน/ขา” แล้วเริ่มเส้นจากลำตัว ขาลงด้านล่างใช้ถีบพื้น ส่วนที่ยื่นด้านข้างหรือด้านบนใช้ช่วยดันและทรงตัว ความหนาเส้นแขนขามีผลต่อแรงด้วย</p><ul><li>วิ่ง: ขายาวและปลายขาลงถึงพื้นช่วยก้าว ตัวหนักเร่งช้า</li><li>ซูโม่: ตัวหนัก ขาสั้นหนา และเท้ากางช่วยยัน แขนยื่นช่วยชน แต่ฐานแคบเสียหลักง่าย</li><li>กลิ้งลงเขา: ตัวกลมและแขนขาสั้นกลิ้งลื่น ส่วนยื่นและเหลี่ยมทำให้สะดุด</li><li>กระโดดไกล: ขายาวที่มีข้องอเก็บแรงถีบ แขนช่วยลดการหมุน ตัวหนักเสียเปรียบ</li><li>ทรงตัว: ตัวเตี้ย เท้ากาง และแขนช่วยรักษาสมดุล ตัวสูงฐานแคบล้มง่าย</li></ul><p>วาดตัวเดียวใช้ทุกกีฬา จึงต้องเลือกข้อแลกเปลี่ยน จังหวะสุ่มยังมีผลและไม่รับประกันผู้ชนะ</p></details>
     <div class="dr-online-entry">
       <h2>เล่นออนไลน์ · คนละเครื่อง</h2>
       <p>เข้าห้องด้วยรหัส วาดพร้อมกัน ซ่อนภาพจนปล่อยตัว · 2–6 คน</p>
@@ -69,7 +70,7 @@
   <section class="dr-paper" id="drEditor" hidden aria-labelledby="drEditorTitle">
     <div class="dr-section-head"><div><span class="dr-eyebrow" id="drTurn"></span><h2 id="drEditorTitle">สร้างนักแข่งของคุณ</h2></div><span class="dr-number" id="drPlayerNumber" aria-hidden="true"></span></div>
     <label class="dr-name-label" for="drName">ชื่อนักแข่ง</label><input id="drName" class="dr-name" maxlength="24" placeholder="ตั้งชื่อให้เจ้าตัวนี้…" autocomplete="off">
-    <div class="dr-tabs" role="group" aria-label="ส่วนที่วาด"><button id="drBodyTool" type="button" aria-pressed="true">1. วาดลำตัว</button><button id="drLegTool" type="button" aria-pressed="false">2. เติมขา <span id="drLegCount">0/6</span></button></div>
+    <div class="dr-tabs" role="group" aria-label="ส่วนที่วาด"><button id="drBodyTool" type="button" aria-pressed="true">1. วาดลำตัว</button><button id="drLegTool" type="button" aria-pressed="false">2. เติมแขน/ขา <span id="drLegCount">0/6</span></button></div>
     <p class="dr-instruction" id="drDrawHint">วาดลำตัว หัว และหาง หันหน้าไปทางขวา → แล้วค่อยกด “เติมขา”</p>
     <div class="dr-toolbar">
       <div id="drColors" class="dr-colors" role="group" aria-label="สีปากกา"></div>
@@ -78,8 +79,9 @@
     </div>
     <div class="dr-canvas-wrap"><canvas id="drDraw" width="600" height="360" aria-label="พื้นที่วาดสัตว์ ใช้นิ้ว ปากกา หรือเมาส์วาด ลำตัวก่อนแล้ววาดขาทีละเส้น">ใช้ปุ่มตัวอย่างม้าเพื่อสร้างนักแข่งโดยไม่ต้องวาดด้วยมือ</canvas><span class="dr-draw-direction" aria-hidden="true">หน้าไปทางนี้ →</span></div>
     <p class="dr-message" id="drMessage" role="status" aria-live="polite"></p>
+    <ul class="dr-shape-profile" id="drShapeProfile" aria-label="ลักษณะสัตว์ของคุณในแต่ละกีฬา"></ul>
     <div class="dr-editor-actions"><button class="dr-text-btn" id="drExample" type="button">ใส่ตัวอย่างม้า</button><button class="dr-secondary" id="drPreviewBtn" type="button">ดูสัตว์ของฉัน</button><button class="dr-primary" id="drSave" type="button">บันทึกแล้วส่งต่อ →</button></div>
-    <div class="dr-preview" id="drPreview" hidden><canvas id="drPreviewCanvas" width="600" height="260" aria-label="ตัวอย่างท่าวิ่งของสัตว์ที่วาด"></canvas><p>สัตว์ตัวนี้ใช้แข่งทุกรายการ · ลงสนามจริงจะสุ่มแรงและจังหวะใหม่</p></div>
+    <div class="dr-preview" id="drPreview" hidden><label class="dr-preview-choice">ลองกีฬา <select id="drPreviewSport"><option value="run">วิ่งแข่ง</option><option value="sumo">ซูโม่</option><option value="roll">กลิ้งลงเขา</option><option value="jump">กระโดดไกล</option><option value="balance">ทรงตัว</option></select></label><canvas id="drPreviewCanvas" width="600" height="260" aria-label="ตัวอย่างการขยับสัตว์ในกีฬาที่เลือก"></canvas><p>ซูโม่ซ้อมกับสำเนาของตัวเอง · ไม่เปิดภาพเพื่อน · ลงสนามจริงจะสุ่มจังหวะใหม่</p></div>
     <button class="dr-text-btn" id="drEditorBack" type="button">← กลับไปดูทีม</button>
   </section>
 
@@ -102,12 +104,12 @@
   <footer class="dr-footer">วาดไม่สวยก็เป็นแชมป์ได้ · <a href="animalrace.html">เล่นสัตว์ซิ่งชิงแชมป์แบบเดิม →</a></footer>
 </main>
 <script src="js/main.js"></script>
-<script src="js/doodle-race-engine.js?v=84"></script>
-<script src="js/net-room.js?v=84"></script>
-<script src="js/doodle-olympics-engine.js?v=84"></script>
-<script src="js/doodle-olympics-render.js?v=84"></script>
-<script src="js/doodle-race-net.js?v=84"></script>
-<script src="js/doodle-race.js?v=84"></script>
-<script src="js/doodle-race-online.js?v=84"></script>
+<script src="js/doodle-race-engine.js?v=85"></script>
+<script src="js/net-room.js?v=85"></script>
+<script src="js/doodle-olympics-engine.js?v=85"></script>
+<script src="js/doodle-olympics-render.js?v=85"></script>
+<script src="js/doodle-race-net.js?v=85"></script>
+<script src="js/doodle-race.js?v=85"></script>
+<script src="js/doodle-race-online.js?v=85"></script>
 </body>
 </html>

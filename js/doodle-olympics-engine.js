@@ -4,83 +4,129 @@
   const E=typeof module!=="undefined"&&module.exports?require("./doodle-race-engine.js"):root.DoodleRace;
   const clamp=(n,a,b)=>Math.max(a,Math.min(b,n)),copy=x=>JSON.parse(JSON.stringify(x));
   const sports={
-    run:{name:"วิ่งแข่ง",icon:"🏃",rule:"ขาที่วาดสุ่มก้าว ใครเข้าเส้นชัยก่อนชนะ",unit:"วิ"},
-    sumo:{name:"ซูโม่",icon:"💥",rule:"ชนกันบนวงที่ค่อย ๆ หด ใครอยู่ในสนามเป็นตัวสุดท้ายชนะ",unit:"วิ"},
-    roll:{name:"กลิ้งลงเขา",icon:"🌀",rule:"กลิ้งผ่านเนินและสิ่งกีดขวาง ใครถึงปลายทางก่อนชนะ",unit:"วิ"},
-    jump:{name:"กระโดดไกล",icon:"🚀",rule:"สุ่มแรงปล่อยตัว หมุนกลางอากาศ วัดระยะที่แตะพื้นครั้งแรก",unit:"ม."},
-    balance:{name:"ทรงตัว",icon:"⚖️",rule:"แท่นโยกแรงขึ้นเรื่อย ๆ ใครยืนอยู่ได้นานที่สุดชนะ",unit:"วิ"}
+    run:{name:"วิ่งแข่ง",icon:"🏃",rule:"ปลายขาสัมผัสพื้นถีบจริง ขายาวช่วยก้าว ตัวหนักเร่งช้า",unit:"วิ"},
+    sumo:{name:"ซูโม่",icon:"💥",rule:"ยันขาดัน ชนตามส่วนที่วาด ตัวหนักฐานกว้างเสียหลักยาก",unit:"วิ"},
+    roll:{name:"กลิ้งลงเขา",icon:"🌀",rule:"ตัวกลมกลิ้งลื่น เหลี่ยมและแขนขายื่นเสียพลังเมื่อหมุน",unit:"วิ"},
+    jump:{name:"กระโดดไกล",icon:"🚀",rule:"ขางอเก็บแรงถีบ ขายาวช่วยส่ง ตัวหนักและส่วนยื่นต้านลม",unit:"ม."},
+    balance:{name:"ทรงตัว",icon:"⚖️",rule:"ฐานเท้ากว้างและตัวเตี้ยล้มยาก แขนช่วยต้านการเอียง",unit:"วิ"}
   };
   function events(list){return Array.isArray(list)?Object.keys(sports).filter(k=>list.includes(k)):[];}
   function validAthlete(d,list){return E.validDrawing(d,!events(list).includes("run"));}
-  function geometry(d){
-    const strokes=[...d.body,...d.legs],b=E.bounds(strokes);let total=0,sx=0,sy=0;
-    // ถ่วงศูนย์มวลด้วยความยาวและความหนาเส้น ป้องกันการเพิ่มจุดถี่แล้วเปลี่ยนน้ำหนัก
-    strokes.forEach(s=>s.points.slice(1).forEach((p,i)=>{const a=s.points[i],m=Math.hypot(p[0]-a[0],p[1]-a[1])*s.width;total+=m;sx+=(a[0]+p[0])*.5*m;sy+=(a[1]+p[1])*.5*m;}));
-    const cx=total?sx/total:b.x+b.w/2,cy=total?sy/total:b.y+b.h/2;
-    const all=strokes.flatMap(s=>s.points),stride=Math.max(1,Math.ceil(all.length/200));
-    const points=all.filter((_,i)=>i%stride===0).map(p=>[(p[0]-cx)*.25,(p[1]-cy)*.25]);
-    const feet=all.filter(p=>p[1]>b.y+b.h*.82),base=feet.length?feet.reduce((n,p)=>Math.max(n,p[0]),-Infinity)-feet.reduce((n,p)=>Math.min(n,p[0]),Infinity):b.w*.2;
-    return {cx,cy,w:b.w,h:b.h,bottom:b.y+b.h,points,mass:clamp(Math.sqrt(b.w*b.h/28000),.5,1.8),radius:clamp(Math.hypot(b.w,b.h)*.095,18,55),base:clamp(base/Math.max(20,b.h),.12,2),height:clamp((cy-b.y)/Math.max(10,b.h),.1,.9),roundness:Math.min(b.w,b.h)/Math.max(b.w,b.h)};
+  function hull(points){
+    const a=points.map(p=>[p[0],p[1]]).sort((p,q)=>p[0]-q[0]||p[1]-q[1]),cross=(o,p,q)=>(p[0]-o[0])*(q[1]-o[1])-(p[1]-o[1])*(q[0]-o[0]);
+    const half=list=>{const h=[];list.forEach(p=>{while(h.length>1&&cross(h.at(-2),h.at(-1),p)<=0)h.pop();h.push(p);});h.pop();return h;};return [...half(a),...half(a.slice().reverse())];
   }
+  function sample(stroke,n=24){
+    const p=stroke.points,lengths=p.slice(1).map((b,i)=>Math.hypot(b[0]-p[i][0],b[1]-p[i][1])),length=lengths.reduce((a,b)=>a+b,0);let seg=0,start=0;
+    return Array.from({length:n},(_,i)=>{const target=length*i/(n-1);while(seg<lengths.length-1&&start+lengths[seg]<target){start+=lengths[seg++];}const a=p[seg],b=p[seg+1],t=clamp((target-start)/(lengths[seg]||1),0,1);return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];});
+  }
+  function geometry(d){
+    const all=[...d.body,...d.legs],b=E.bounds(all),body=E.bounds(d.body);let total=0,sx=0,sy=0,ink=0;
+    all.forEach(s=>s.points.slice(1).forEach((p,i)=>{const a=s.points[i],m=Math.hypot(p[0]-a[0],p[1]-a[1])*s.width;total+=m;sx+=(a[0]+p[0])*.5*m;sy+=(a[1]+p[1])*.5*m;ink+=m;}));
+    const cx=total?sx/total:b.x+b.w/2,cy=total?sy/total:b.y+b.h/2;
+    // เก็บจุดตามความยาวเส้น ไม่ใช้ความถี่จุดจากเมาส์เป็นความแข็งแรง
+    const bodyExact=hull(d.body.flatMap(s=>hull(s.points).flatMap(p=>[[p[0]-s.width/2,p[1]-s.width/2],[p[0]+s.width/2,p[1]-s.width/2],[p[0]+s.width/2,p[1]+s.width/2],[p[0]-s.width/2,p[1]+s.width/2]]))),bodyPoints=bodyExact.filter((_,i)=>i%Math.max(1,Math.ceil(bodyExact.length/96))===0),limbs=d.legs.map(s=>{const p=sample(s),a=p[0],z=p.at(-1);let length=0;p.slice(1).forEach((q,i)=>{length+=Math.hypot(q[0]-p[i][0],q[1]-p[i][1]);});const chord=Math.hypot(z[0]-a[0],z[1]-a[1]),foot=z[1]>body.y+body.h+8;let travel=0;const progress=s.points.map((q,i)=>{if(i)travel+=Math.hypot(q[0]-s.points[i-1][0],q[1]-s.points[i-1][1]);return travel;}).map(v=>v/Math.max(1,travel));return {points:p,progress,length,chord,width:s.width,foot,flex:clamp(1-chord/(length||1),0,.65),strength:clamp(s.width/9*100/Math.max(35,length),.2,2.8)};});
+    const polygon=hull([...bodyPoints,...limbs.flatMap(l=>l.points)]),bodyHull=bodyExact;let area=0,perimeter=0;
+    bodyHull.forEach((p,i)=>{const q=bodyHull[(i+1)%bodyHull.length];area+=p[0]*q[1]-q[0]*p[1];perimeter+=Math.hypot(q[0]-p[0],q[1]-p[1]);});area=Math.abs(area)/2;
+    const feet=limbs.filter(l=>l.foot),arms=limbs.filter(l=>!l.foot),tips=feet.map(l=>l.points.at(-1)),low=tips.length?Math.max(...tips.map(p=>p[1])):b.y+b.h;
+    const contacts=tips.filter(p=>low-p[1]<22);if(!contacts.length)contacts.push(...bodyHull.filter(p=>low-p[1]<Math.max(8,body.h*.08)));
+    const minX=Math.min(...contacts.map(p=>p[0])),maxX=Math.max(...contacts.map(p=>p[0])),footWidth=feet.length?Math.max(...feet.map(l=>l.width)):5;
+    const halfBase=Math.max(5,(maxX-minX+footWidth)*.125),footMid=(minX+maxX)/2,comHeight=Math.max(6,(low-cy)*.25);
+    const mass=clamp(Math.sqrt(Math.max(500,area)/14000)*( .75+.25*clamp(ink/Math.max(1,perimeter*9),.5,2)),.35,3.2);
+    const points=polygon.map(p=>[(p[0]-cx)*.25,(p[1]-cy)*.25]),radius=Math.max(5,...points.map(p=>Math.hypot(...p))),collisionRadius=Math.max(radius,...limbs.map(l=>Math.hypot(l.points[0][0]-cx,l.points[0][1]-cy)*.25+Math.max(...l.points.map(p=>Math.hypot(p[0]-l.points[0][0],p[1]-l.points[0][1])))*.28+5+l.width*.25));
+    const circularity=clamp(4*Math.PI*area/(perimeter*perimeter||1),.08,1),protrusion=Math.max(0,(b.w*b.h)/(Math.max(1,body.w*body.h))-1);
+    const roundness=clamp(circularity/(1+protrusion*.8),.08,1),base=clamp(halfBase/comHeight,.08,2.5),height=clamp(comHeight/40,.2,2.5);
+    const avg=a=>a.length?a.reduce((n,v)=>n+v,0)/a.length:0,strength=avg(feet.map(l=>l.strength)),spring=clamp(Math.sqrt(feet.length)*avg(feet.map(l=>l.length/110*Math.sqrt(l.width/9)*(1+l.flex*3))),.12,3.6);
+    const reach=avg(arms.map(l=>l.chord/100*Math.sqrt(l.width/9))),airControl=clamp(reach*.7,.0,1.2),inertia=clamp(mass*(b.w*b.w+b.h*b.h)/45000,.2,6);
+    return {cx,cy,w:b.w,h:b.h,bottom:low,points,bodyPoints,limbs,mass,radius,collisionRadius,base,height,roundness,area,protrusion,halfBase,footMid,comHeight,inertia,spring,airControl,push:clamp((.3+strength*.8)*Math.sqrt(Math.max(1,feet.length))*(.65+base*.35)+reach*.35,.25,3.8),balanceControl:clamp(.3+base*.5+strength*.2+airControl*.3,.3,2.2),launchAngle:clamp(.72+avg(feet.map(l=>(l.points.at(-1)[0]-l.points[0][0])/Math.max(20,l.chord)))*.3,.48,1.03)};
+  }
+  function pose(r,mode,sampled=false){
+    const limbs=r.g.limbs.map((l,i)=>{const state=r.legs[i],a=l.points[0],sn=Math.sin(state.phase),swing=sn*state.swing,cs=Math.cos(swing),ss=Math.sin(swing),extension=state.extension;
+      const source=sampled?l.points:r.drawing.legs[i].points;return source.map((p,j)=>{const t=sampled?j/(source.length-1):l.progress[j],dx=(p[0]-a[0])*extension,dy=(p[1]-a[1])*extension;return [a[0]+dx*cs-dy*ss+Math.sin(state.phase*2)*state.bend*t*t*18,a[1]+dx*ss+dy*cs];});
+    });return {body:r.drawing.body.map(s=>s.points),limbs};
+  }
+  function outline(r,mode){const p=pose(r,mode,true);return hull([...r.g.bodyPoints,...p.limbs.flatMap((l,j)=>l.filter((_,i)=>i%3===0||i===l.length-1).flatMap(p=>{const w=r.drawing.legs[j].width/2;return [[p[0]-w,p[1]-w],[p[0]+w,p[1]-w],[p[0]+w,p[1]+w],[p[0]-w,p[1]+w]];}))]).map(p=>[(p[0]-r.g.cx)*.25,(p[1]-r.g.cy)*.25]);}
+  function support(r,angle,mode){const sn=Math.sin(angle),cs=Math.cos(angle);return Math.max(2,...outline(r,mode).map(p=>p[0]*sn+p[1]*cs));}
+  function articulation(r,mode,dt){
+    r.legs.forEach((l,i)=>{const g=r.g.limbs[i];l.phase+=dt*Math.PI*2*l.cadence;
+      if(mode==='sumo'){l.swing=g.foot?.28:.65;l.bend=.35;l.extension=g.foot?1:.9+Math.sin(l.phase)*.18;}
+      else if(mode==='roll'){l.swing=.12;l.bend=.2;l.extension=.72+Math.sin(l.phase)*.08;}
+      else if(mode==='jump'){l.swing=r.launched?(g.foot?.3:.65):.12;l.bend=r.launched?.5:1.2;l.extension=r.launched?1:.65+.35*Math.abs(Math.cos(r.time*Math.PI/3));}
+      else{l.swing=g.foot?clamp(-r.angle*.25,-.15,.15):.7;l.bend=g.foot?.4:.6;l.extension=1;}
+    });
+  }
+  function stance(r){const p=pose(r,'sumo',true),feet=p.limbs.filter((_,i)=>r.g.limbs[i].foot).map(p=>p.at(-1));if(!feet.length)return .18;const low=Math.max(...feet.map(p=>p[1]));return .25+.75*feet.reduce((n,p)=>n+clamp(1-(low-p[1])/30,0,1),0)/feet.length;}
   function makeSession(mode,team,seeds,distance){
-    const rng=E.random(seeds[0]^0x9e3779b9),s={mode,distance,elapsed:0,done:false,rng,arena:220,tilt:0,wind:0,nextWind:0};
+    const rng=E.random(seeds[0]^0x9e3779b9),s={mode,distance,elapsed:0,done:false,rng,arena:240,tilt:0,wind:0,nextWind:0};
     s.racers=team.map((d,i)=>{
-      if(mode==="run")return E.makeRacer(copy(d),seeds[i],i);
-      const g=geometry(d),rand=E.random(seeds[i]),a=i/team.length*Math.PI*2;
-      return {id:i,drawing:copy(d),g,rng:rand,x:mode==="sumo"?Math.cos(a)*125:0,y:mode==="sumo"?Math.sin(a)*125:0,vx:0,vy:0,angle:0,omega:0,distance:0,speed:0,time:0,finish:null,score:0,out:false,nextForce:0,forceX:0,forceY:0,event:"",eventUntil:0,launched:false,legs:[]};
+      const g=geometry(d);if(mode==='run'){const r=E.makeRacer(copy(d),seeds[i],i);r.g=g;r.mass=g.mass;r.balance=clamp(.65+g.base*.35,.65,1.3);return r;}
+      const rand=E.random(seeds[i]),a=i/team.length*Math.PI*2,start=Math.max(0,Math.min(145,s.arena-g.radius-20));
+      return {id:i,drawing:copy(d),g,rng:rand,x:mode==='sumo'?Math.cos(a)*start:0,y:mode==='sumo'?Math.sin(a)*start:0,vx:0,vy:0,angle:mode==='sumo'?a+Math.PI:0,omega:0,distance:0,speed:0,time:0,finish:null,score:0,out:false,nextForce:0,forceX:0,forceY:0,event:'',eventUntil:0,launched:false,hit:0,stagger:0,drive:0,legs:d.legs.map(stroke=>({stroke,phase:rand()*Math.PI*2,cadence:1.1+rand()*.5,swing:0,bend:0,extension:1}))};
     });return s;
   }
-  function support(r,angle){const sn=Math.sin(angle),cs=Math.cos(angle);return Math.max(8,...r.g.points.map(p=>p[0]*sn+p[1]*cs));}
-  function eliminate(r,s){r.out=true;r.finish=s.elapsed;r.score=s.elapsed;r.event="หลุดสนาม";}
+  function eliminate(r,s){r.out=true;r.finish=s.elapsed;r.score=s.elapsed;r.event='หลุดสนาม';r.eventUntil=s.elapsed+2;}
+  function collision(a,b){
+    const world=r=>{const sn=Math.sin(r.angle),cs=Math.cos(r.angle);return outline(r,'sumo').map(p=>[r.x+p[0]*cs-p[1]*sn,r.y+p[0]*sn+p[1]*cs]);},pa=world(a),pb=world(b);let depth=Infinity,axis=null;
+    for(const poly of [pa,pb])for(let i=0;i<poly.length;i++){const p=poly[i],q=poly[(i+1)%poly.length],len=Math.hypot(q[0]-p[0],q[1]-p[1]);if(len<.001)continue;const n=[-(q[1]-p[1])/len,(q[0]-p[0])/len],project=list=>list.map(p=>p[0]*n[0]+p[1]*n[1]),aa=project(pa),bb=project(pb),over=Math.min(Math.max(...aa),Math.max(...bb))-Math.max(Math.min(...aa),Math.min(...bb));if(over<=0)return null;if(over<depth){depth=over;axis=n;}}
+    if(!axis)return null;if((b.x-a.x)*axis[0]+(b.y-a.y)*axis[1]<0)axis=axis.map(v=>-v);return {depth,nx:axis[0],ny:axis[1]};
+  }
   function step(s,dt){
     if(s.done)return;s.elapsed+=dt;
-    if(s.mode==="run"){
-      s.racers.forEach(r=>E.step(r,dt,s.distance));s.done=s.racers.every(r=>r.finish!==null);return;
-    }
-    if(s.mode==="sumo"){
-      s.arena=Math.max(65,220-Math.max(0,s.elapsed-6)*3.4);
-      s.racers.forEach(r=>{if(r.out)return;r.time=s.elapsed;
-        if(s.elapsed>=r.nextForce){const others=s.racers.filter(o=>o!==r&&!o.out),o=others.sort((a,b)=>Math.hypot(a.x-r.x,a.y-r.y)-Math.hypot(b.x-r.x,b.y-r.y))[0];const angle=o?Math.atan2(o.y-r.y,o.x-r.x):(r.rng()*Math.PI*2);const kick=100+r.rng()*260;r.forceX=Math.cos(angle)*kick-r.x*.35;r.forceY=Math.sin(angle)*kick-r.y*.35;r.nextForce=s.elapsed+.35+r.rng()*.8;r.omega=(r.rng()-.5)*2;}
-        r.vx=(r.vx+r.forceX/r.g.mass*dt)*Math.exp(-1.3*dt);r.vy=(r.vy+r.forceY/r.g.mass*dt)*Math.exp(-1.3*dt);r.x+=r.vx*dt;r.y+=r.vy*dt;r.angle+=r.omega*dt;
+    if(s.mode==='run'){s.racers.forEach(r=>E.step(r,dt,s.distance));s.done=s.racers.every(r=>r.finish!==null);return;}
+    s.racers.forEach(r=>{r.time=s.elapsed;r.hit=Math.max(0,r.hit-dt*3);articulation(r,s.mode,dt);});
+    if(s.mode==='sumo'){
+      s.arena=Math.max(75,240-Math.max(0,s.elapsed-8)*4);
+      s.racers.forEach(r=>{if(r.out)return;const others=s.racers.filter(o=>o!==r&&!o.out),o=others.sort((a,b)=>Math.hypot(a.x-r.x,a.y-r.y)-Math.hypot(b.x-r.x,b.y-r.y))[0];
+        if(s.elapsed>=r.nextForce){r.forceX=.7+r.rng()*.6;r.forceY=(r.rng()-.5)*.8;r.nextForce=s.elapsed+.6+r.rng();}
+        const target=o?Math.atan2(o.y-r.y,o.x-r.x)+r.forceY:r.angle,turn=Math.atan2(Math.sin(target-r.angle),Math.cos(target-r.angle));r.omega+=(turn*6-r.omega*3)*dt/r.g.inertia;r.angle+=r.omega*dt;
+        r.stagger=Math.max(0,r.stagger-dt*(.3+r.g.base*.4));r.drive=50*r.g.push*stance(r)*r.forceX*(r.stagger>.7?.35:1);
+        const grip=.8+r.g.base*.6;r.vx=(r.vx+Math.cos(r.angle)*r.drive/r.g.mass*dt)*Math.exp(-grip*dt);r.vy=(r.vy+Math.sin(r.angle)*r.drive/r.g.mass*dt)*Math.exp(-grip*dt);r.x+=r.vx*dt;r.y+=r.vy*dt;
       });
       for(let i=0;i<s.racers.length;i++)for(let j=i+1;j<s.racers.length;j++){
-        const a=s.racers[i],b=s.racers[j];if(a.out||b.out)continue;let dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy);if(len<.001){dx=.001;dy=0;len=.001;}
-        const limit=a.g.radius+b.g.radius;if(len>=limit)continue;const nx=dx/len,ny=dy/len,inv=1/a.g.mass+1/b.g.mass,over=(limit-len)/inv;
-        a.x-=nx*over/a.g.mass;a.y-=ny*over/a.g.mass;b.x+=nx*over/b.g.mass;b.y+=ny*over/b.g.mass;
-        const rel=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny;
-        if(rel<0){const impulse=-(1.35)*rel/inv;a.vx-=impulse*nx/a.g.mass;a.vy-=impulse*ny/a.g.mass;b.vx+=impulse*nx/b.g.mass;b.vy+=impulse*ny/b.g.mass;}
+        const a=s.racers[i],b=s.racers[j];if(a.out||b.out||Math.hypot(a.x-b.x,a.y-b.y)>a.g.collisionRadius+b.g.collisionRadius)continue;const hit=collision(a,b);if(!hit)continue;const {depth,nx,ny}=hit,inv=1/a.g.mass+1/b.g.mass;
+        a.x-=nx*depth/inv/a.g.mass;b.x+=nx*depth/inv/b.g.mass;a.y-=ny*depth/inv/a.g.mass;b.y+=ny*depth/inv/b.g.mass;
+        const rel=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny,impulse=Math.max(0,-rel)*1.1/inv+(a.drive+b.drive)*dt*.08;
+        a.vx-=impulse*nx/a.g.mass;a.vy-=impulse*ny/a.g.mass;b.vx+=impulse*nx/b.g.mass;b.vy+=impulse*ny/b.g.mass;
+        [a,b].forEach((r,k)=>{r.hit=1;r.stagger+=impulse*.006*r.g.height/Math.max(.3,r.g.base*r.g.mass);r.omega+=(k?1:-1)*(nx*Math.sin(r.angle)-ny*Math.cos(r.angle))*impulse*.012/r.g.inertia;r.event=r.stagger>.7?'เสียหลัก!':'ยันขาแล้วดัน!';r.eventUntil=s.elapsed+.5;});
       }
-      s.racers.forEach(r=>{if(!r.out&&Math.hypot(r.x,r.y)+r.g.radius*.55>s.arena)eliminate(r,s);});
+      s.racers.forEach(r=>{if(!r.out&&outline(r,'sumo').some(p=>{const cs=Math.cos(r.angle),sn=Math.sin(r.angle);return Math.hypot(r.x+p[0]*cs-p[1]*sn,r.y+p[0]*sn+p[1]*cs)>s.arena;}))eliminate(r,s);});
       const alive=s.racers.filter(r=>!r.out);if(alive.length<=1||s.elapsed>=60){alive.forEach(r=>{r.finish=s.elapsed;r.score=s.elapsed+1;});s.done=true;}
-    }else if(s.mode==="roll"){
-      s.racers.forEach(r=>{if(r.finish!==null)return;r.time=s.elapsed;
-        if(s.elapsed>=r.nextForce){r.forceX=14+r.rng()*35;r.nextForce=s.elapsed+.6+r.rng()*1.5;}
-        const rough=Math.abs(support(r,r.angle)-support(r,r.angle+.08));
-        r.vx=clamp(r.vx+(r.forceX/Math.sqrt(r.g.mass)+12-r.vx*(.08+rough*.045))*dt,3,100);r.x+=r.vx*dt;r.angle+=r.vx/(r.g.radius+rough)*dt;
+    }else if(s.mode==='roll'){
+      s.racers.forEach(r=>{if(r.finish!==null)return;
+        if(s.elapsed>=r.nextForce){r.forceX=.9+r.rng()*.2;r.nextForce=s.elapsed+.6+r.rng()*1.5;}
+        const radius=support(r,r.angle,'roll'),next=support(r,r.angle+.08,'roll'),climb=Math.max(0,next-radius)/Math.max(5,radius),drag=.12+(1-r.g.roundness)*.65+r.g.protrusion*.08;
+        r.vx=clamp(r.vx+(30*(.2+r.g.roundness)*r.forceX-r.vx*drag-climb*220)*dt,1.5,110);r.x+=r.vx*dt;r.omega=r.vx/Math.max(5,radius);r.angle+=r.omega*dt;
         const bump=[250,530,780].find(x=>r.x>=x&&r.x-r.vx*dt<x);
-        if(bump){r.vx*=.45+r.rng()*.35;r.vy=-40-r.rng()*70;r.event="เด้งผ่านเนิน!";r.eventUntil=s.elapsed+1;}
+        if(bump){r.vx*=clamp(.35+r.g.mass*.14+r.g.roundness*.3,.4,.9);r.vy=-35-35/Math.sqrt(r.g.mass);r.hit=1;r.event=r.g.roundness>.75?'กลิ้งข้ามเนิน!':'เหลี่ยมสะดุดเนิน!';r.eventUntil=s.elapsed+1;}
         r.vy+=200*dt;r.y=Math.min(0,r.y+r.vy*dt);if(r.y===0)r.vy=0;r.distance=r.x;
         if(r.x>=1000){r.finish=s.elapsed-(r.x-1000)/r.vx;r.x=r.distance=1000;}
-      });
-      if(s.elapsed>=90)s.racers.forEach(r=>{if(r.finish===null)r.finish=90+(1000-r.x)/3;});s.done=s.racers.every(r=>r.finish!==null);
-    }else if(s.mode==="jump"){
-      s.racers.forEach(r=>{if(r.finish!==null)return;r.time=s.elapsed;
-        if(s.elapsed<1.5)return;
-        if(!r.launched){r.launched=true;r.vx=(18+r.rng()*14)/Math.pow(r.g.mass,.25);r.vy=-(13+r.rng()*7);r.omega=(r.rng()-.5)*9;}
-        r.angle+=r.omega*dt;const drag=.015+.035*Math.abs(Math.sin(r.angle))*(1-r.g.roundness);
+      });if(s.elapsed>=90)s.racers.forEach(r=>{if(r.finish===null)r.finish=90+(1000-r.x)/1.5;});s.done=s.racers.every(r=>r.finish!==null);
+    }else if(s.mode==='jump'){
+      s.racers.forEach(r=>{if(r.finish!==null)return;if(s.elapsed<1.5)return;
+        if(!r.launched){r.launched=true;const speed=clamp((12+17*Math.sqrt(r.g.spring/r.g.mass))*(.92+r.rng()*.16),12,48),angle=r.g.launchAngle+(r.rng()-.5)*.16;r.vx=Math.cos(angle)*speed;r.vy=-Math.sin(angle)*speed;r.omega=(r.rng()-.5)*3/(1+r.g.airControl);r.hit=1;r.event='ย่อขาแล้วถีบ!';r.eventUntil=s.elapsed+.8;}
+        r.omega*=Math.exp(-r.g.airControl*.9*dt);r.angle+=r.omega*dt;const drag=.018+r.g.area/1600000+r.g.protrusion*.015+Math.abs(Math.sin(r.angle))*.04;
         r.vx*=Math.exp(-drag*dt);r.x+=r.vx*dt;r.vy+=9.8*dt;r.y+=r.vy*dt;
-        if(r.y>=0&&r.vy>0){const fraction=clamp(r.y/(r.vy*dt),0,1);r.x-=r.vx*dt*fraction;r.y=0;r.distance=r.score=r.x;r.finish=s.elapsed-dt*fraction;}
+        if(r.y>=0&&r.vy>0){const fraction=clamp(r.y/(r.vy*dt),0,1);r.x-=r.vx*dt*fraction;r.y=0;r.distance=r.score=r.x;r.finish=s.elapsed-dt*fraction;r.hit=1;r.event='แตะพื้นแล้ว';}
       });s.done=s.racers.every(r=>r.finish!==null);
-    }else if(s.mode==="balance"){
-      if(s.elapsed>=s.nextWind){s.wind=(s.rng()-.5)*(.025+s.elapsed/120);s.nextWind=s.elapsed+.4+s.rng();}
-      s.tilt=Math.sin(s.elapsed*.9)*(.008+s.elapsed*.002)+Math.sin(s.elapsed*.4)*.012;
-      s.racers.forEach(r=>{if(r.out)return;r.time=s.elapsed;if(s.elapsed>=r.nextForce){r.forceX=(r.rng()-.5)*(.015+s.elapsed*.001);r.nextForce=s.elapsed+.3+r.rng()*.6;}const stability=r.g.base/(.7+r.g.height);
-        r.omega+=(Math.sin(r.angle-s.tilt)*(.18+s.elapsed*.012)/Math.max(.3,stability)+(s.wind+r.forceX)/r.g.mass-r.omega*1.1)*dt;
-        r.angle+=r.omega*dt;r.vx+=(Math.sin(s.tilt)*25+s.wind*5/r.g.mass-r.vx*.5)*dt;r.x+=r.vx*dt;
-        if(Math.abs(r.angle-s.tilt)>.85||Math.abs(r.x)>85)eliminate(r,s);
+    }else if(s.mode==='balance'){
+      if(s.elapsed>=s.nextWind){s.wind=(s.rng()-.5)*(.15+s.elapsed*.025);s.nextWind=s.elapsed+.4+s.rng();}
+      s.tilt=Math.sin(s.elapsed*.9)*(.03+s.elapsed*.006)+Math.sin(s.elapsed*.4)*.025;
+      s.racers.forEach(r=>{if(r.out){r.angle+=r.omega*dt;return;}if(s.elapsed>=r.nextForce){r.forceX=(r.rng()-.5)*(.05+s.elapsed*.002);r.nextForce=s.elapsed+.3+r.rng()*.6;}
+        const error=r.angle-s.tilt,gravity=Math.sin(error)*(1.5+s.elapsed*.07)*r.g.height,correction=-error*r.g.balanceControl*2.2/(1+s.elapsed*.025),gust=(s.wind+r.forceX)/Math.sqrt(r.g.mass);
+        r.omega+=(gravity+correction+gust-r.omega*.8)*dt/Math.sqrt(r.g.inertia);r.angle+=r.omega*dt;
+        r.vx+=(Math.sin(s.tilt)*12/(.4+r.g.base)-r.vx*.7)*dt;r.x+=r.vx*dt;
+        const projected=(r.g.cx-r.g.footMid)*.25+Math.sin(error)*r.g.comHeight;
+        if(Math.abs(projected)>r.g.halfBase+2||Math.abs(error)>1.05||Math.abs(r.x)>95)eliminate(r,s);
       });const alive=s.racers.filter(r=>!r.out);if(!alive.length||s.elapsed>=60){alive.forEach(r=>{r.finish=60;r.score=60;});s.done=true;}
     }
   }
+  function traits(d){const g=geometry(d),feet=g.limbs.filter(l=>l.foot),length=feet.length?feet.reduce((n,l)=>n+l.length,0)/feet.length:0;return {
+    run:(length>110?'ช่วงก้าวยาว':length>60?'ช่วงก้าวกลาง':'ช่วงก้าวสั้น')+' · '+(g.mass>1.5?'ตัวหนัก เร่งช้า':'ตัวเบา เร่งง่าย'),
+    sumo:(g.push>1.8?'แรงดันสูง':g.push>1?'แรงดันกลาง':'แรงดันน้อย')+' · '+(g.base>.7?'ฐานมั่นคง':'ฐานแคบ เสียหลักง่าย'),
+    roll:(g.roundness>.85?'กลิ้งลื่น':g.roundness>.6?'มีเหลี่ยมบ้าง':'เหลี่ยม/ส่วนยื่นมาก')+' · ความกลม '+Math.round(g.roundness*100)+'%',
+    jump:(g.spring/g.mass>2?'แรงส่งสูง':g.spring/g.mass>.8?'แรงส่งกลาง':'แรงส่งน้อย')+' · '+(g.airControl>.4?'แขนช่วยลดหมุน':'หมุนกลางอากาศง่าย'),
+    balance:(g.base>.8?'ฐานกว้าง':g.base>.4?'ฐานปานกลาง':'ฐานแคบ')+' · '+(g.height>1?'ศูนย์มวลสูง':'ศูนย์มวลต่ำ')
+  };}
   function resultValue(s,r){return s.mode==="run"||s.mode==="roll"?r.finish===null?Infinity:r.finish:r.score;}
   function rank(s){const low=["run","roll"].includes(s.mode);return s.racers.slice().sort((a,b)=>{if(!s.done){if(s.mode==="sumo"||s.mode==="balance")return Number(a.out)-Number(b.out)||b.score-a.score||a.id-b.id;if(s.mode==="jump")return b.x-a.x||a.id-b.id;return (a.finish===null?Infinity:a.finish)-(b.finish===null?Infinity:b.finish)||b.distance-a.distance||a.id-b.id;}return (low?1:-1)*(resultValue(s,a)-resultValue(s,b))||a.id-b.id;});}
   function create(team,list,distance=100,seed=1){const chosen=events(list);if(!chosen.length||team.length<2||team.length>6||!team.every(d=>validAthlete(d,chosen)))throw Error("เลือกกีฬาและวาดสัตว์ให้ครบก่อนแข่ง");return {team:copy(team),events:chosen,distance:distance===200?200:100,rng:E.random(seed),index:-1,session:null,results:[],totals:team.map((d,id)=>({id,name:d.name,points:0}))};}
@@ -93,8 +139,8 @@
     }t.results.push({mode:s.mode,rows});return true;
   }
   function standings(t){const a=t.totals.slice().sort((a,b)=>Math.abs(b.points-a.points)<1e-7?a.id-b.id:b.points-a.points);return a.map((r,i)=>({...r,place:i&&Math.abs(r.points-a[i-1].points)<1e-7?a.findIndex(x=>Math.abs(x.points-r.points)<1e-7)+1:i+1}));}
-  function snapshot(s){return {mode:s.mode,distance:s.distance,elapsed:s.elapsed,done:s.done,arena:s.arena,tilt:s.tilt,racers:s.racers.map(r=>{const o={id:r.id};["distance","speed","time","finish","event","eventUntil","x","y","vx","vy","angle","omega","score","out","launched"].forEach(k=>{if(r[k]!==undefined)o[k]=r[k];});o.legs=r.legs.map(l=>({phase:l.phase,cadence:l.cadence,swing:l.swing,bend:l.bend}));return o;})};}
+  function snapshot(s){return {mode:s.mode,distance:s.distance,elapsed:s.elapsed,done:s.done,arena:s.arena,tilt:s.tilt,racers:s.racers.map(r=>{const o={id:r.id};["distance","speed","time","finish","event","eventUntil","x","y","vx","vy","angle","omega","score","out","launched","hit","stagger","drive"].forEach(k=>{if(r[k]!==undefined)o[k]=r[k];});o.legs=r.legs.map(l=>({phase:l.phase,cadence:l.cadence,swing:l.swing,bend:l.bend,extension:l.extension}));return o;})};}
   function apply(s,data){["elapsed","done","arena","tilt"].forEach(k=>{s[k]=data[k];});data.racers.forEach((r,i)=>{Object.keys(r).forEach(k=>{if(k!=="legs"&&k!=="id")s.racers[i][k]=r[k];});r.legs.forEach((l,j)=>Object.assign(s.racers[i].legs[j],l));});}
   // รุ่นข้อความออนไลน์ต้องตรงกัน ป้องกันหน้าวิ่งรุ่นเก่าอ่านสถานะของกีฬาอื่น
-  const api={protocol:2,sports,events,validAthlete,geometry,create,next,step,rank,record,standings,snapshot,apply,makeSession,resultValue};if(typeof module!=="undefined"&&module.exports)module.exports=api;else root.DoodleOlympics=api;
+  const api={protocol:3,sports,events,validAthlete,geometry,pose,outline,support,traits,collision,create,next,step,rank,record,standings,snapshot,apply,makeSession,resultValue};if(typeof module!=="undefined"&&module.exports)module.exports=api;else root.DoodleOlympics=api;
 })(typeof window!=="undefined"?window:this);

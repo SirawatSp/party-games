@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
     stopPreview(); tool = next;
     $("drBodyTool").setAttribute("aria-pressed", String(tool === "body"));
     $("drLegTool").setAttribute("aria-pressed", String(tool === "legs"));
-    $("drDrawHint").textContent = tool === "body" ? (selected.includes("run") ? "วาดลำตัว หัว และหาง หันหน้าไปทางขวา → แล้วเติมขา 2–6 ขาสำหรับวิ่ง" : "วาดสัตว์รูปร่างอะไรก็ได้ ใช้ตัวนี้ทุกรายการ · เติมขาหรือไม่ก็ได้") : "ลากจากลำตัวลงไปถึงปลายเท้า ยกนิ้ว = จบ 1 ขา วาดขางอหรือขายาวได้ 2–6 ขา";
+    $("drDrawHint").textContent = tool === "body" ? "วาดลำตัว หัว และหาง หันหน้าไปทางขวา → ขนาด ความกลม และความสูงมีผลต่อแต่ละกีฬา" : "ลากจากลำตัว: ลงล่างเป็นขาถีบพื้น ด้านข้าง/บนเป็นแขน · รวมได้ 6 เส้น ถ้าเลือกวิ่งควรมีขาลงพื้นอย่างน้อย 2 ขา";
     $("drMessage").textContent = ""; paintEditor();
   }
   $("drBodyTool").addEventListener("click", () => setTool("body"));
@@ -118,6 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
     $("drLegCount").textContent = draft.legs.length + "/6";
     $("drUndo").disabled = !draft[tool].length;
     $("drPreviewBtn").disabled = !valid(draft);
+    if(!stroke){$("drShapeProfile").replaceChildren();if(E.validDrawing(draft,true))Object.entries(O.traits(draft)).forEach(([k,v])=>{const li=document.createElement("li"),b=document.createElement("b");b.textContent=O.sports[k].name+": ";li.append(b,document.createTextNode(v));$("drShapeProfile").appendChild(li);});}
   }
   function point(event) {
     const r=$("drDraw").getBoundingClientRect();
@@ -130,7 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let p=point(e);
     if (tool === "legs") {
       const hit=E.nearest(draft.body,p);
-      if (!hit.point || hit.distance>42) { $("drMessage").textContent="เริ่มลากขาจากเส้นลำตัวก่อนนะ จุดแรกจะเป็นข้อที่ขยับ"; return; }
+      if (!hit.point || hit.distance>42) { $("drMessage").textContent="เริ่มลากแขนหรือขาจากเส้นลำตัวก่อนนะ จุดแรกจะเป็นข้อที่ขยับ"; return; }
       p=hit.point;
     }
     pointer=e.pointerId; $("drDraw").setPointerCapture(pointer);
@@ -188,18 +189,24 @@ document.addEventListener("DOMContentLoaded", () => {
     drawing.legs.forEach((s,i)=>drawStroke(ctx,s,p.legs[i]));
     drawing.body.forEach(s=>drawStroke(ctx,s)); ctx.restore();
   }
-  $("drPreviewBtn").addEventListener("click", () => {
+  function previewSport() {
     if (!validate()) return;
     stopPreview(); $("drPreview").hidden=false;
-    if(!selected.includes("run")){pc.clearRect(0,0,600,260);drawAnimal(pc,draft,null,300,238,.58);return;}
-    const r=E.makeRacer(draft,seed(),0); let prev=0;
+    const mode=$("drPreviewSport").value;
+    if(mode==="run"&&!E.validDrawing(draft)){ $("drPreviewSport").value=selected.find(k=>k!=="run")||"sumo";return previewSport(); }
+    const rival=clone(draft);rival.name="คู่ซ้อม";[...rival.body,...rival.legs].forEach(s=>{s.color="#965db0";});
+    const practice=O.makeSession(mode,mode==="sumo"?[clone(draft),rival]:[clone(draft)],mode==="sumo"?[seed(),seed()]:[seed()],100);let prev=0,carry=0;
+    const height=mode==="run"?260:mode==="sumo"?420:320;setupCanvas($("drPreviewCanvas"),600,height);
     function frame(t) {
-      const dt=prev ? Math.min(.05,(t-prev)/1000) : 0; prev=t; E.step(r,dt,100000);
-      pc.clearRect(0,0,600,260); pc.strokeStyle="#a4b08d"; pc.lineWidth=2; pc.beginPath();pc.moveTo(20,222);pc.lineTo(580,222);pc.stroke();
-      drawAnimal(pc,draft,r,300,218,.58); previewFrame=requestAnimationFrame(frame);
+      carry+=prev?Math.min(1,(t-prev)/1000):0;prev=t;while(carry>=STEP&&!practice.done){O.step(practice,STEP);carry-=STEP;}
+      if(mode==="run"){pc.clearRect(0,0,600,260);pc.strokeStyle="#a4b08d";pc.lineWidth=2;pc.beginPath();pc.moveTo(20,222);pc.lineTo(580,222);pc.stroke();drawAnimal(pc,draft,practice.racers[0],300,218,.58);}
+      else DoodleOlympicsRender.paint(pc,practice,600,height);
+      if(!practice.done)previewFrame=requestAnimationFrame(frame);
     }
     previewFrame=requestAnimationFrame(frame);
-  });
+  }
+  $("drPreviewBtn").addEventListener("click",()=>{$("drPreviewSport").value=selected[0]||"sumo";previewSport();});
+  $("drPreviewSport").addEventListener("change",previewSport);
   function showLineup() {
     if (online) { window.DoodleRaceOnline.showLobby(); return; }
     $("drLineupDistance").textContent=selected.length+" กีฬา";$("drLineupSchedule").textContent=schedule(selected); $("drRoster").replaceChildren();
@@ -219,7 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function fitTrack() {
     if($("drRace").hidden) return;
     raceWidth=$("drTrack").parentElement.clientWidth;
-    raceHeight=session&&session.mode==="sumo"?Math.max(380,Math.min(600,raceWidth*.7)):55+count*(raceWidth<600 ? 120 : 145);
+    raceHeight=session&&session.mode==="sumo"?Math.max(380,Math.min(600,raceWidth*.7)):session&&session.mode==="jump"?55+count*(raceWidth<600?210:240):55+count*(raceWidth<600 ? 120 : 145);
     setupCanvas($("drTrack"),raceWidth,raceHeight);
     $("drTrack").style.height=raceHeight+"px";
     paintRace();
@@ -253,6 +260,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const row=document.createElement("div");row.className="dr-live-row";row.dataset.id=r.id;
       const number=document.createElement("b"), name=document.createElement("span"), meter=document.createElement("span"), bar=document.createElement("progress");
       name.className="dr-live-name";name.textContent=r.drawing.name;bar.className="dr-live-progress";bar.max=session.mode==="run"?distance:session.mode==="roll"?1000:session.mode==="jump"?200:60;bar.value=0;bar.setAttribute("aria-label","ระยะทางของ "+r.drawing.name);
+      const trait=document.createElement("small");trait.textContent=O.traits(r.drawing)[session.mode];name.appendChild(trait);if(session.mode==="jump")bar.max=300;
       row.append(number,name,meter,bar);$("drLiveRanks").appendChild(row);
     });
   }

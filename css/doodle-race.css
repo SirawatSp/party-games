@@ -49,6 +49,7 @@
 .dr-preview{border:1px dashed #9aa88e;background:#edf0df;border-radius:12px;margin-top:20px;overflow:hidden;}
 .dr-preview canvas{display:block;width:100%;height:auto;}
 .dr-preview p{text-align:center;font-size:12px;margin:0 8px 14px;}
+.dr-preview-choice{display:flex;gap:12px;align-items:center;padding:14px}.dr-preview-choice select{padding:8px;font-size:16px}.dr-shape-profile{padding-left:20px;font-size:12px;line-height:1.8;color:#415438}.dr-shape-profile:empty{display:none}.dr-live-name small{display:block;white-space:normal;font-size:10px;line-height:1.5;color:#d2dfb2}.dr-drawing-guide{font-size:13px;line-height:1.8;margin:12px 0 20px}.dr-drawing-guide summary{cursor:pointer;font-weight:700}.dr-drawing-guide ul{padding-left:20px}
 .dr-distance-badge{border:2px solid var(--dr-ink);border-radius:50%;width:78px;height:78px;display:grid;place-content:center;font-weight:700;font-size:16px;transform:rotate(8deg);flex-shrink:0;}
 .dr-roster{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;}
 .dr-racer-card{border:1px solid #bcc7b4;background:#fffef8;border-radius:14px;padding:14px;min-width:0;}
