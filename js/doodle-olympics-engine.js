@@ -95,5 +95,6 @@
   function standings(t){const a=t.totals.slice().sort((a,b)=>Math.abs(b.points-a.points)<1e-7?a.id-b.id:b.points-a.points);return a.map((r,i)=>({...r,place:i&&Math.abs(r.points-a[i-1].points)<1e-7?a.findIndex(x=>Math.abs(x.points-r.points)<1e-7)+1:i+1}));}
   function snapshot(s){return {mode:s.mode,distance:s.distance,elapsed:s.elapsed,done:s.done,arena:s.arena,tilt:s.tilt,racers:s.racers.map(r=>{const o={id:r.id};["distance","speed","time","finish","event","eventUntil","x","y","vx","vy","angle","omega","score","out","launched"].forEach(k=>{if(r[k]!==undefined)o[k]=r[k];});o.legs=r.legs.map(l=>({phase:l.phase,cadence:l.cadence,swing:l.swing,bend:l.bend}));return o;})};}
   function apply(s,data){["elapsed","done","arena","tilt"].forEach(k=>{s[k]=data[k];});data.racers.forEach((r,i)=>{Object.keys(r).forEach(k=>{if(k!=="legs"&&k!=="id")s.racers[i][k]=r[k];});r.legs.forEach((l,j)=>Object.assign(s.racers[i].legs[j],l));});}
-  const api={sports,events,validAthlete,geometry,create,next,step,rank,record,standings,snapshot,apply,makeSession,resultValue};if(typeof module!=="undefined"&&module.exports)module.exports=api;else root.DoodleOlympics=api;
+  // รุ่นข้อความออนไลน์ต้องตรงกัน ป้องกันหน้าวิ่งรุ่นเก่าอ่านสถานะของกีฬาอื่น
+  const api={protocol:2,sports,events,validAthlete,geometry,create,next,step,rank,record,standings,snapshot,apply,makeSession,resultValue};if(typeof module!=="undefined"&&module.exports)module.exports=api;else root.DoodleOlympics=api;
 })(typeof window!=="undefined"?window:this);

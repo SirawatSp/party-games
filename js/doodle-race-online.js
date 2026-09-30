@@ -11,6 +11,8 @@ document.addEventListener("DOMContentLoaded",()=>{
   if(param&&/^[A-Z0-9]{5}$/i.test(param))$("drRoomInput").value=param.toUpperCase();
   const myId=()=>isHost?"host":room&&room.t.id;
   function warn(text){$("drNetMessage").textContent=text;}
+  function wrongVersion(){cleanup("เกมของคุณกับเจ้าของห้องเป็นคนละรุ่น ให้ทุกคนเปิดเกมรุ่นล่าสุดแล้วสร้างห้องใหม่");$("drRefreshGame").hidden=false;}
+  $("drRefreshGame").addEventListener("click",()=>{const url=new URL(location.href);url.searchParams.set("update",Date.now());location.replace(url.href);});
   function setBusy(value){busy=value;$("drHostRoom").disabled=value;$("drJoinRoom").disabled=value;}
   function cleanup(message=""){
     clearInterval(ticker);clearInterval(heartbeat);clearTimeout(joinTimeout);clearTimeout(saveTimeout);
@@ -18,6 +20,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     if(old)old.close();ui.leaveOnline();setBusy(false);$("drSave").disabled=false;warn(message);
   }
   function render(s){
+    if(s.protocol!==DoodleOlympics.protocol){wrongVersion();return;}
     state=s;lastHeard=performance.now();ui.settings(s.events,s.distance);
     renderSports(s.events);$("drOnlineSchedule").textContent=s.events.map((k,i)=>(i+1)+". "+DoodleOlympics.sports[k].name).join(" → ");
     const me=s.players.find(p=>p.id===myId());if(!me)return;
@@ -50,21 +53,22 @@ document.addEventListener("DOMContentLoaded",()=>{
     const name=$("drOnlineName").value.trim();const code=$("drRoomInput").value.trim().toUpperCase();
     if(!name){warn("ใส่ชื่อผู้เล่นก่อนนะ");return;}
     if(!host&&!/^[A-Z0-9]{5}$/.test(code)){warn("รหัสห้องมี 5 ตัวอักษร เช็กรหัสจากเพื่อนอีกครั้ง");return;}
-    setBusy(true);warn(host?"กำลังสร้างห้อง…":"กำลังเข้าห้อง…");isHost=host;
+    setBusy(true);$("drRefreshGame").hidden=true;warn(host?"กำลังสร้างห้อง…":"กำลังเข้าห้อง…");isHost=host;
     room=new PGRoom(testMode?new PGChannelTransport():new PGPeerTransport());const current=room;
     room.on("host:leave",()=>{if(room===current)cleanup("เจ้าของห้องออกหรือหลุดจากการเชื่อมต่อ ห้องนี้ปิดแล้ว กรุณาสร้างหรือเข้าห้องใหม่");});
     room.on("net:error",()=>{if(room===current)warn("การเชื่อมต่อสะดุด ถ้ายังไม่เข้าห้องให้ลองใหม่อีกครั้ง");});
     if(!host){
       room.on("dr:state",s=>{if(room===current)render(s);});room.on("dr:ack",d=>{if(room===current)ack(d);});
       room.on("dr:pong",()=>{if(room===current)lastHeard=performance.now();});
-      room.on("dr:race",d=>{if(room===current)ui.race(d);});room.on("dr:frame",d=>{if(room===current){lastHeard=performance.now();ui.frame(d);}});
+      room.on("dr:race",d=>{if(room===current){if(d.protocol!==DoodleOlympics.protocol){wrongVersion();return;}ui.race(d);}});room.on("dr:frame",d=>{if(room===current){if(d.protocol!==DoodleOlympics.protocol){wrongVersion();return;}lastHeard=performance.now();ui.frame(d);}});
     }
     try{
       if(host)await room.host();else await room.join(code);
       if(room!==current)return;
       ui.resetRound();ui.enterOnline(name);lastHeard=performance.now();warn("");setBusy(false);
       if(host){connected=true;game=new DoodleRaceHost(room,{name,...ui.selection(),onState:render,onRace:d=>ui.race(d),onFrame:d=>ui.frame(d),onAck:ack});game.publish();ticker=setInterval(()=>game&&game.tick(),50);}
-      else{room.send("dr:join",{name});joinTimeout=setTimeout(()=>{if(room===current&&!connected)cleanup("ห้องไม่ตอบรับ อาจเป็นรหัสของเกมอื่นหรือเจ้าของห้องหลุดแล้ว");},12000);}
+      else{room.send("dr:join",{name,protocol:DoodleOlympics.protocol});if(room===current&&!connected)joinTimeout=setTimeout(()=>{if(room===current&&!connected)cleanup("ห้องไม่ตอบรับ อาจเป็นรหัสของเกมอื่นหรือเจ้าของห้องหลุดแล้ว");},12000);}
+      if(room!==current)return;
       heartbeat=setInterval(()=>{if(room!==current)return;if(!isHost){room.send("dr:ping",{});if(performance.now()-lastHeard>15000)cleanup("ติดต่อเจ้าของห้องไม่ได้ ห้องปิดแล้ว ลองเข้าห้องใหม่");}},2000);
     }catch(e){console.warn("เชื่อมต่อห้องโอลิมปิก คิ๊กกะปู้ไม่สำเร็จ",e.type||"timeout",e.message||"");if(room===current)cleanup(host?"สร้างห้องไม่สำเร็จ บริการเชื่อมต่ออาจไม่พร้อม ลองใหม่อีกครั้ง":"เข้าห้องไม่สำเร็จ เช็กรหัสและให้เจ้าของห้องเปิดหน้าเกมไว้ หากเครือข่ายบล็อกการเชื่อมต่อ ลองเปลี่ยนเครือข่าย");}
   }
@@ -75,7 +79,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   $("drOnlineDistance").addEventListener("change",()=>{if(game&&game.phase==="lobby"){game.settings(state.events,Number($("drOnlineDistance").value));}});
   $("drLeaveRoom").addEventListener("click",()=>cleanup("ออกจากห้องแล้ว"));
   $("drCopyRoom").addEventListener("click",async()=>{
-    if(!room)return;const url=new URL(location.href);url.searchParams.set("room",room.code);
+    if(!room)return;const url=new URL(location.href);url.searchParams.set("room",room.code);url.searchParams.set("update",Date.now());
     try{await navigator.clipboard.writeText(url.href);$("drLobbyNotice").textContent="คัดลอกลิงก์แล้ว ส่งให้เพื่อนเปิดและใส่ชื่อเข้าห้องได้เลย";}
     catch(e){$("drLobbyNotice").textContent="ส่งรหัส "+room.code+" ให้เพื่อนกรอกเข้าห้อง";}
   });

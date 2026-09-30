@@ -334,13 +334,13 @@ document.addEventListener("DOMContentLoaded", () => {
     settings(list, meters) { selected=O.events(list);distance=meters;if(!$("drEditor").hidden)setTool(tool); },
     selection() { return {events:selectedSports("drSports"),distance:Number($("drDistance").value)}; },
     race(data) {
-      if (!online || data.round<=onlineRound) return;
+      if (!online || data.protocol!==O.protocol || !O.sports[data.mode] || data.events[data.index]!==data.mode || data.round<=onlineRound) return;
       onlineRound=data.round;onlineSeq=-1;distance=data.distance;count=data.team.length;selected=O.events(data.events);
       tournament={team:data.team,events:selected,index:data.index,totals:data.totals,results:data.results};
-      session=O.makeSession(selected[data.index],data.team,data.team.map(()=>0),distance);countdown=0;prepareRace();
+      session=O.makeSession(data.mode,data.team,data.team.map(()=>0),distance);countdown=0;prepareRace();
     },
     frame(data) {
-      if (!online || data.round!==onlineRound || data.seq<=onlineSeq || data.racers.length!==racers.length) return;
+      if (!online || !session || data.protocol!==O.protocol || data.mode!==session.mode || data.round!==onlineRound || data.seq<=onlineSeq || data.racers.length!==racers.length) return;
       onlineSeq=data.seq;O.apply(session,data);elapsed=data.elapsed;tournament.totals=data.totals;tournament.results=data.results;
       $("drClock").textContent=elapsed.toFixed(2)+" วิ";$("drCountdown").textContent="";
       updateRanks();paintRace();if(data.finished&&!finished)finishRace();

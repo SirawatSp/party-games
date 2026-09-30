@@ -1,7 +1,7 @@
 // Service Worker สำหรับเล่นออฟไลน์ได้ทั้งเว็บ (เก็บ cache ทุกหน้า/สคริปต์/คลังโจทย์ไว้ในเครื่อง)
 // เปิดเว็บครั้งแรกตอนมีเน็ต ระบบจะโหลดเก็บไว้ให้อัตโนมัติ ครั้งต่อไปเปิดได้แม้ไม่มีเน็ตเลย
 // อัปเดตเนื้อหาเว็บทีไร ให้เปลี่ยนเลข CACHE_VERSION เพื่อบังคับดาวน์โหลดของใหม่ทับของเก่า
-const CACHE_VERSION = "party-games-v83";
+const CACHE_VERSION = "party-games-v84";
 
 // หมายเหตุ: เกม "ทายถนน" (street-scene) เก็บโครงหน้า แผนที่ และคลังสถานที่ไว้
 // โหมด "สถานที่สำคัญ" จึงเล่นได้เต็มรูปแบบตอนออฟไลน์
@@ -45,14 +45,14 @@ const PRECACHE_URLS = [
   "who-is-most.html",
   "who-ordered.html",
   "css/style.css",
-  "css/doodle-race.css?v=83",
+  "css/doodle-race.css?v=84",
   "js/animalrace.js",
-  "js/doodle-race-engine.js?v=83",
-  "js/doodle-olympics-engine.js?v=83",
-  "js/doodle-olympics-render.js?v=83",
-  "js/doodle-race.js?v=83",
-  "js/doodle-race-net.js?v=83",
-  "js/doodle-race-online.js?v=83",
+  "js/doodle-race-engine.js?v=84",
+  "js/doodle-olympics-engine.js?v=84",
+  "js/doodle-olympics-render.js?v=84",
+  "js/doodle-race.js?v=84",
+  "js/doodle-race-net.js?v=84",
+  "js/doodle-race-online.js?v=84",
   "js/bluff.js",
   "js/borderchain.js",
   "js/category.js",
@@ -64,7 +64,7 @@ const PRECACHE_URLS = [
   "js/fake-artist-net.js",
   "js/fake-artist-online.js",
   "js/net-room.js",
-  "js/net-room.js?v=83",
+  "js/net-room.js?v=84",
   "js/flashquiz.js",
   "js/flirt.js",
   "js/guess-number.js",
@@ -152,6 +152,19 @@ self.addEventListener("fetch", (event) => {
   // ข้ามคำขอข้ามโดเมน (เช่นฟอนต์จาก Google Fonts) ให้เบราว์เซอร์จัดการตามปกติ
   // ตอนออฟไลน์ฟอนต์จะโหลดไม่ได้ก็แค่ fallback ไปฟอนต์ระบบ ไม่กระทบการเล่น
   if (new URL(req.url).origin !== self.location.origin) return;
+
+  // หน้าโอลิมปิกต้องสดก่อนเข้าห้อง ป้องกันเพื่อนโหลดหน้าวิ่งเก่าจาก cache
+  // ไฟล์เกมระบุรุ่นใน URL แล้ว จึงยังเปิดออฟไลน์ได้ด้วยชุดไฟล์รุ่นเดียวกัน
+  if (req.mode === "navigate" && new URL(req.url).pathname.endsWith("/doodle-race.html")) {
+    event.respondWith(fetch(req, { cache: "no-store" }).then((res) => {
+      if (res.status === 200) {
+        const clone = res.clone();
+        return caches.open(CACHE_VERSION).then((cache) => cache.put(req, clone)).catch(() => {}).then(() => res);
+      }
+      return caches.match(req).then((cached) => cached || res);
+    }).catch(() => caches.match(req).then((cached) => cached || caches.match("doodle-race.html"))));
+    return;
+  }
 
   event.respondWith(
     caches.match(req).then((cached) => {
