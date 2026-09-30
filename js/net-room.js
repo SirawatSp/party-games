@@ -94,7 +94,8 @@
     return loadScript(PEERJS_SRC).then(function () {
       return new Promise(function (resolve, reject) {
         self.isHost = false;
-        self.peer = new global.Peer({ debug: 0 });
+        // สร้างรหัสเครื่องเองเหมือนฝั่งโฮสต์ ลดการรอคำขอรหัสอัตโนมัติจาก broker
+        self.peer = new global.Peer(ROOM_PREFIX + "guest-" + randomCode() + "-" + randomCode(), { debug: 0 });
         var settled = false;
         var giveUp = setTimeout(function () {
           if (!settled) { settled = true; reject(new Error("หาห้องไม่เจอ ลองเช็ครหัสห้องอีกที")); }
