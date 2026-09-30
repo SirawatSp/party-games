@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded",()=>{
       if(host){connected=true;game=new DoodleRaceHost(room,{name,distance:Number($("drDistance").value),onState:render,onRace:d=>ui.race(d),onFrame:d=>ui.frame(d),onAck:ack});game.publish();ticker=setInterval(()=>game&&game.tick(),50);}
       else{room.send("dr:join",{name});joinTimeout=setTimeout(()=>{if(room===current&&!connected)cleanup("ห้องไม่ตอบรับ อาจเป็นรหัสของเกมอื่นหรือเจ้าของห้องหลุดแล้ว");},12000);}
       heartbeat=setInterval(()=>{if(room!==current)return;if(!isHost){room.send("dr:ping",{});if(performance.now()-lastHeard>15000)cleanup("ติดต่อเจ้าของห้องไม่ได้ ห้องปิดแล้ว ลองเข้าห้องใหม่");}},2000);
-    }catch(e){if(room===current)cleanup(host?"สร้างห้องไม่สำเร็จ บริการเชื่อมต่ออาจไม่พร้อม ลองใหม่อีกครั้ง":"เข้าห้องไม่สำเร็จ เช็กรหัสและให้เจ้าของห้องเปิดหน้าเกมไว้ หากเครือข่ายบล็อกการเชื่อมต่อ ลองเปลี่ยนเครือข่าย");}
+    }catch(e){console.warn("เชื่อมต่อห้องวาดสัตว์ซิ่งไม่สำเร็จ",e.type||"timeout",e.message||"");if(room===current)cleanup(host?"สร้างห้องไม่สำเร็จ บริการเชื่อมต่ออาจไม่พร้อม ลองใหม่อีกครั้ง":"เข้าห้องไม่สำเร็จ เช็กรหัสและให้เจ้าของห้องเปิดหน้าเกมไว้ หากเครือข่ายบล็อกการเชื่อมต่อ ลองเปลี่ยนเครือข่าย");}
   }
   $("drHostRoom").addEventListener("click",()=>connect(true));$("drJoinRoom").addEventListener("click",()=>connect(false));
   $("drRoomInput").addEventListener("input",e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,"");});
