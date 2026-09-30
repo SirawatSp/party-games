@@ -251,7 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
       drawAnimal(rc,r.drawing,r,x,ground-3,scale);
       rc.fillStyle=colors[i];rc.beginPath();rc.moveTo(x,ground+3);rc.lineTo(x-4,ground+9);rc.lineTo(x+4,ground+9);rc.closePath();rc.fill();
       if(r.eventUntil>r.time && r.finish===null && countdown<=0){rc.font="11px sans-serif";rc.textAlign="right";rc.fillStyle="#aa452a";rc.fillText(r.event,w-12,top+22);}
-      if(r.finish!==null){rc.font="bold 12px sans-serif";rc.textAlign="right";rc.fillStyle="#243d32";rc.fillText(r.finish.toFixed(2)+" วิ",w-8,top+20);}
+      if(r.finish!==null){rc.font="bold 12px sans-serif";rc.textAlign="right";rc.fillStyle="#243d32";rc.fillText(r.stopped?r.distance.toFixed(1)+" ม. · ตัดจบ":r.finish.toFixed(2)+" วิ",w-8,top+20);}
     });
   }
   function buildLiveRanks() {
@@ -265,6 +265,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
   function metric(r) {
+    if(r.stopped&&["run","roll"].includes(session.mode))return (session.mode==="run"?r.distance.toFixed(1)+" ม.":Math.floor(r.distance/10)+"%")+" · ตัดจบ";
     if(session.mode==="run"||session.mode==="roll")return r.finish!==null?r.finish.toFixed(2)+" วิ":session.mode==="run"?Math.floor(r.distance)+" ม.":Math.floor(r.x/10)+"%";
     if(session.mode==="jump")return (r.finish!==null?r.distance:r.x).toFixed(2)+" ม.";
     return r.out?r.finish.toFixed(2)+" วิ · ตกแล้ว":session.done?session.elapsed.toFixed(2)+" วิ":"ยังอยู่ · "+session.elapsed.toFixed(1)+" วิ";
@@ -281,6 +282,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function prepareRace() {
     racers=session.racers;elapsed=0;accumulator=0;lastFrame=0;paused=false;finished=false;lastRankPaint=-1;
     $("drRaceTitle").textContent=(tournament.index+1)+" / "+tournament.events.length+" · "+O.sports[session.mode].name+(session.mode==="run"?" "+distance+" เมตร":"");
+    $("drStop").hidden=online&&!onlineHost;$("drStopHint").hidden=online&&!onlineHost;$("drStop").disabled=!online&&countdown>0;
     $("drResults").hidden=true;$("drPause").hidden=online;$("drRaceBack").hidden=online;$("drPause").textContent="พักการแข่งขัน";
     $("drCountdown").textContent=online?"ไป!":"3";$("drClock").textContent="0.00 วิ";$("drRaceCommentary").textContent=O.sports[session.mode].rule;
     show("drRace");buildLiveRanks();fitTrack();
@@ -300,7 +302,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(!paused && !finished){
       if(countdown>0){const left=countdown;countdown-=dt;dt=Math.max(0,dt-left);$("drCountdown").textContent=countdown>0?Math.ceil(countdown):"ไป!";}
       if(countdown<=0){
-        $("drCountdown").textContent="";accumulator+=dt;
+        $("drStop").disabled=false;$("drCountdown").textContent="";accumulator+=dt;
         while(accumulator>=STEP&&!session.done){O.step(session,STEP);elapsed=session.elapsed;accumulator-=STEP;}
         $("drClock").textContent=elapsed.toFixed(2)+" วิ";
         if(elapsed-lastRankPaint>.25){updateRanks();lastRankPaint=elapsed;}
@@ -313,17 +315,24 @@ document.addEventListener("DOMContentLoaded", () => {
     if(finished)return;paused=value;$("drPause").textContent=paused?"แข่งต่อ ▶":"พักการแข่งขัน";$("drCountdown").textContent=paused?"พัก":countdown>0?Math.ceil(countdown):"";lastFrame=0;
   }
   $("drPause").addEventListener("click",()=>setPaused(!paused));
+  $("drStop").addEventListener("click",()=>{
+    if(!session||finished||countdown>0)return;
+    if(online){if(onlineHost)window.DoodleRaceOnline.stop();return;}
+    if(O.stop(session)){elapsed=session.elapsed;stopRace();finishRace();paintRace();}
+  });
   document.addEventListener("visibilitychange",()=>{if(document.hidden && !online && !$("drRace").hidden && !finished)setPaused(true);if(document.hidden)stopPreview();});
   function scoreTable() {
     const head=document.createElement("tr");["อันดับ","สัตว์",...tournament.results.map(r=>O.sports[r.mode].name),"รวม"].forEach(t=>{const th=document.createElement("th");th.scope="col";th.textContent=t;head.appendChild(th);});$("drScoreHead").replaceChildren(head);$("drScores").replaceChildren();
     O.standings(tournament).forEach(r=>{const tr=document.createElement("tr");const cells=[r.place,r.name,...tournament.results.map(e=>e.rows.find(x=>x.id===r.id).points),r.points];cells.forEach(v=>{const td=document.createElement("td");td.textContent=typeof v==="number"?Number(v.toFixed(2)):v;tr.appendChild(td);});$("drScores").appendChild(tr);});
   }
   function finishRace() {
-    finished=true;$("drPause").hidden=true;$("drCountdown").textContent="";updateRanks();if(!online)O.record(tournament);
+    finished=true;$("drStop").hidden=true;$("drStopHint").hidden=true;$("drPause").hidden=true;$("drCountdown").textContent="";updateRanks();if(!online)O.record(tournament);
     const result=tournament.results[tournament.index];if(!result)return;
     const final=tournament.index===tournament.events.length-1,winners=result.rows.filter(r=>r.place===1).map(r=>r.name);
-    $("drResultLabel").textContent="จบ "+O.sports[session.mode].name;$("drWinner").textContent="🏅 "+winners.join(" / ")+(winners.length>1?" ชนะร่วมกัน":" ชนะรายการนี้!");$("drPodium").replaceChildren();
-    result.rows.forEach(r=>{const li=document.createElement("li"),n=document.createElement("span"),name=document.createElement("b"),value=document.createElement("span");n.textContent=r.place;name.textContent=r.name;value.textContent=(session.mode==="sumo"?session.racers[r.id].finish:r.value).toFixed(2)+" "+O.sports[session.mode].unit+" · +"+Number(r.points.toFixed(2))+" คะแนน";li.append(n,name,value);$("drPodium").appendChild(li);});
+    $("drResultLabel").textContent=(session.stopped?"ตัดจบ ":"จบ ")+O.sports[session.mode].name;$("drWinner").textContent="🏅 "+winners.join(" / ")+(winners.length>1?" ชนะร่วมกัน":" ชนะรายการนี้!");$("drPodium").replaceChildren();
+    result.rows.forEach(r=>{const li=document.createElement("li"),n=document.createElement("span"),name=document.createElement("b"),value=document.createElement("span");n.textContent=r.place;name.textContent=r.name;const unit=r.stopped&&session.mode==='run'?'ม.':O.sports[session.mode].unit;
+      const label=r.stopped&&session.mode==='roll'?Math.floor(r.value/10)+'%':(session.mode==='sumo'?session.racers[r.id].finish:r.value).toFixed(2)+' '+unit;
+      value.textContent=label+(r.stopped?' · ตัดจบ':'')+' · +'+Number(r.points.toFixed(2))+' คะแนน';li.append(n,name,value);$("drPodium").appendChild(li);});
     const leaders=O.standings(tournament).filter(r=>r.place===1);$("drStandingsTitle").textContent=final?"🏆 แชมป์คะแนนรวม: "+leaders.map(r=>r.name).join(" / "):"คะแนนสะสม · แข่งแล้ว "+tournament.results.length+" / "+tournament.events.length+" รายการ";scoreTable();
     $("drNext").hidden=final||(online&&!onlineHost);$("drNext").textContent=final?"": "ต่อ: "+O.sports[tournament.events[tournament.index+1]].name+" →";
     $("drRematch").hidden=!final||(online&&!onlineHost);$("drEditTeam").hidden=online&&!onlineHost;
@@ -353,7 +362,7 @@ document.addEventListener("DOMContentLoaded", () => {
       $("drClock").textContent=elapsed.toFixed(2)+" วิ";$("drCountdown").textContent="";
       updateRanks();paintRace();if(data.finished&&!finished)finishRace();
     },
-    hostControls(isHost) { onlineHost=isHost;$("drNext").hidden=!isHost||!finished||!tournament||tournament.index+1>=tournament.events.length;$("drRematch").hidden=!isHost||!finished||!tournament||tournament.index+1<tournament.events.length;$("drEditTeam").hidden=!isHost;$("drEditTeam").textContent="กลับห้องรอ"; },
+    hostControls(isHost) { onlineHost=isHost;$("drStop").hidden=$("drStopHint").hidden=!isHost||!session||finished;$("drNext").hidden=!isHost||!finished||!tournament||tournament.index+1>=tournament.events.length;$("drRematch").hidden=!isHost||!finished||!tournament||tournament.index+1<tournament.events.length;$("drEditTeam").hidden=!isHost;$("drEditTeam").textContent="กลับห้องรอ"; },
     resetRound() { onlineRound=0;onlineSeq=-1; }
   };
   window.addEventListener("pagehide",()=>{stopPreview();stopRace();});

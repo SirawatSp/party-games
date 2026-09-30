@@ -63,6 +63,11 @@
     while(this.elapsed+1/60<=target+1e-9&&steps++<600){O.step(this.session,1/60);this.elapsed=this.session.elapsed;if(this.session.done){O.record(this.tournament);this.phase="result";break;}}
     const frame=this.snapshot();this.room.broadcast("dr:frame",frame);this.onFrame(frame);if(this.phase==="result")this.publish();
   };
+  // คำสั่งนี้มาจากปุ่มฝั่งเจ้าของห้องเท่านั้น ไม่รับคำขอตัดจบจากผู้เล่น
+  Host.prototype.stop=function(id='host',round=this.round){
+    if(id!=='host'||round!==this.round||this.phase!=='race'||!O.stop(this.session))return false;
+    O.record(this.tournament);this.phase='result';const frame=this.snapshot();this.room.broadcast('dr:frame',frame);this.onFrame(frame);this.publish();return true;
+  };
   Host.prototype.lobby=function(){if(this.phase!=="result")return false;this.phase="lobby";this.tournament=null;this.session=null;this.players=this.players.filter(p=>p.connected);this.players.forEach(p=>{p.ready=!!p.drawing&&O.validAthlete(p.drawing,this.events);});this.publish();return true;};
   if(typeof module!=="undefined"&&module.exports)module.exports=Host;else root.DoodleRaceHost=Host;
 })(typeof window!=="undefined"?window:this);

@@ -90,6 +90,7 @@ document.addEventListener("DOMContentLoaded",()=>{
       if(isHost)game.ready("host",d);else room.send("dr:ready",d);},
     showLobby(){ui.show("drLobby");if(state)render(state);},
     start(){if(game)game.start(Number($("drOnlineDistance").value));},
+    stop(){if(isHost&&game)game.stop();},
     backToLobby(){if(game){if(game.tournament&&game.tournament.index+1<game.tournament.events.length&&!window.confirm("จบชุดการแข่งขันก่อนครบกีฬาและกลับห้องรอ?"))return;game.lobby();}}
   };
 });

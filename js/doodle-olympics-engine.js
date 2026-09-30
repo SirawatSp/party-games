@@ -127,20 +127,34 @@
     jump:(g.spring/g.mass>2?'แรงส่งสูง':g.spring/g.mass>.8?'แรงส่งกลาง':'แรงส่งน้อย')+' · '+(g.airControl>.4?'แขนช่วยลดหมุน':'หมุนกลางอากาศง่าย'),
     balance:(g.base>.8?'ฐานกว้าง':g.base>.4?'ฐานปานกลาง':'ฐานแคบ')+' · '+(g.height>1?'ศูนย์มวลสูง':'ศูนย์มวลต่ำ')
   };}
-  function resultValue(s,r){return s.mode==="run"||s.mode==="roll"?r.finish===null?Infinity:r.finish:r.score;}
-  function rank(s){const low=["run","roll"].includes(s.mode);return s.racers.slice().sort((a,b)=>{if(!s.done){if(s.mode==="sumo"||s.mode==="balance")return Number(a.out)-Number(b.out)||b.score-a.score||a.id-b.id;if(s.mode==="jump")return b.x-a.x||a.id-b.id;return (a.finish===null?Infinity:a.finish)-(b.finish===null?Infinity:b.finish)||b.distance-a.distance||a.id-b.id;}return (low?1:-1)*(resultValue(s,a)-resultValue(s,b))||a.id-b.id;});}
+  // ตัดจบจากสถานะล่าสุด โดยไม่จำลองว่าคนที่ยังไม่ถึงเส้นชัยวิ่งครบแล้ว
+  function stop(s){
+    if(!s||s.done)return false;s.stopped=true;
+    s.racers.forEach(r=>{if(r.finish!==null)return;r.stopped=true;r.finish=s.elapsed;
+      if(s.mode==='jump')r.distance=r.score=r.x;
+      else if(s.mode==='sumo'||s.mode==='balance')r.score=s.elapsed+(s.mode==='sumo'?1:0);
+    });s.done=true;return true;
+  }
+  function resultValue(s,r){return s.mode==='run'||s.mode==='roll'?r.stopped?r.distance:r.finish===null?Infinity:r.finish:r.score;}
+  function resultKey(s,r){
+    if(s.stopped&&['run','roll'].includes(s.mode))return [r.stopped?1:0,r.stopped?-r.distance:r.finish];
+    if(s.stopped&&['sumo','balance'].includes(s.mode))return [r.out?1:0,-r.score];
+    return [0,(['run','roll'].includes(s.mode)?1:-1)*resultValue(s,r)];
+  }
+  function compareResult(s,a,b){const x=resultKey(s,a),y=resultKey(s,b);return x[0]-y[0]||x[1]-y[1];}
+  function rank(s){return s.racers.slice().sort((a,b)=>{if(!s.done){if(s.mode==="sumo"||s.mode==="balance")return Number(a.out)-Number(b.out)||b.score-a.score||a.id-b.id;if(s.mode==="jump")return b.x-a.x||a.id-b.id;return (a.finish===null?Infinity:a.finish)-(b.finish===null?Infinity:b.finish)||b.distance-a.distance||a.id-b.id;}return compareResult(s,a,b)||a.id-b.id;});}
   function create(team,list,distance=100,seed=1){const chosen=events(list);if(!chosen.length||team.length<2||team.length>6||!team.every(d=>validAthlete(d,chosen)))throw Error("เลือกกีฬาและวาดสัตว์ให้ครบก่อนแข่ง");return {team:copy(team),events:chosen,distance:distance===200?200:100,rng:E.random(seed),index:-1,session:null,results:[],totals:team.map((d,id)=>({id,name:d.name,points:0}))};}
   function next(t){if(t.session&&!t.session.done||t.index+1>=t.events.length)return null;t.index++;t.session=makeSession(t.events[t.index],t.team,t.team.map(()=>Math.floor(t.rng()*4294967296)),t.distance);return t.session;}
   function record(t){const s=t.session;if(!s||!s.done||t.results.length>t.index)return false;
     const sorted=rank(s),table=[10,7,5,3,2,1],rows=[];let i=0;
-    while(i<sorted.length){let end=i+1;while(end<sorted.length&&Math.abs(resultValue(s,sorted[end])-resultValue(s,sorted[i]))<1e-7)end++;
+    while(i<sorted.length){let end=i+1;while(end<sorted.length&&Math.abs(compareResult(s,sorted[end],sorted[i]))<1e-7)end++;
       const points=table.slice(i,end).reduce((a,b)=>a+b,0)/(end-i);
-      for(let j=i;j<end;j++){const r=sorted[j];rows.push({id:r.id,name:r.drawing.name,place:i+1,value:resultValue(s,r),points});t.totals[r.id].points=Number((t.totals[r.id].points+points).toFixed(10));}i=end;
+      for(let j=i;j<end;j++){const r=sorted[j];rows.push({id:r.id,name:r.drawing.name,place:i+1,value:resultValue(s,r),stopped:!!r.stopped,points});t.totals[r.id].points=Number((t.totals[r.id].points+points).toFixed(10));}i=end;
     }t.results.push({mode:s.mode,rows});return true;
   }
   function standings(t){const a=t.totals.slice().sort((a,b)=>Math.abs(b.points-a.points)<1e-7?a.id-b.id:b.points-a.points);return a.map((r,i)=>({...r,place:i&&Math.abs(r.points-a[i-1].points)<1e-7?a.findIndex(x=>Math.abs(x.points-r.points)<1e-7)+1:i+1}));}
-  function snapshot(s){return {mode:s.mode,distance:s.distance,elapsed:s.elapsed,done:s.done,arena:s.arena,tilt:s.tilt,racers:s.racers.map(r=>{const o={id:r.id};["distance","speed","time","finish","event","eventUntil","x","y","vx","vy","angle","omega","score","out","launched","hit","stagger","drive"].forEach(k=>{if(r[k]!==undefined)o[k]=r[k];});o.legs=r.legs.map(l=>({phase:l.phase,cadence:l.cadence,swing:l.swing,bend:l.bend,extension:l.extension}));return o;})};}
-  function apply(s,data){["elapsed","done","arena","tilt"].forEach(k=>{s[k]=data[k];});data.racers.forEach((r,i)=>{Object.keys(r).forEach(k=>{if(k!=="legs"&&k!=="id")s.racers[i][k]=r[k];});r.legs.forEach((l,j)=>Object.assign(s.racers[i].legs[j],l));});}
+  function snapshot(s){return {mode:s.mode,distance:s.distance,elapsed:s.elapsed,done:s.done,stopped:!!s.stopped,arena:s.arena,tilt:s.tilt,racers:s.racers.map(r=>{const o={id:r.id};["distance","speed","time","finish","event","eventUntil","x","y","vx","vy","angle","omega","score","out","stopped","launched","hit","stagger","drive"].forEach(k=>{if(r[k]!==undefined)o[k]=r[k];});o.legs=r.legs.map(l=>({phase:l.phase,cadence:l.cadence,swing:l.swing,bend:l.bend,extension:l.extension}));return o;})};}
+  function apply(s,data){["elapsed","done","stopped","arena","tilt"].forEach(k=>{s[k]=data[k];});data.racers.forEach((r,i)=>{Object.keys(r).forEach(k=>{if(k!=="legs"&&k!=="id")s.racers[i][k]=r[k];});r.legs.forEach((l,j)=>Object.assign(s.racers[i].legs[j],l));});}
   // รุ่นข้อความออนไลน์ต้องตรงกัน ป้องกันหน้าวิ่งรุ่นเก่าอ่านสถานะของกีฬาอื่น
-  const api={protocol:3,sports,events,validAthlete,geometry,pose,outline,support,traits,collision,create,next,step,rank,record,standings,snapshot,apply,makeSession,resultValue};if(typeof module!=="undefined"&&module.exports)module.exports=api;else root.DoodleOlympics=api;
+  const api={protocol:4,sports,events,validAthlete,geometry,pose,outline,support,traits,collision,create,next,step,rank,record,standings,snapshot,apply,makeSession,resultValue,stop};if(typeof module!=="undefined"&&module.exports)module.exports=api;else root.DoodleOlympics=api;
 })(typeof window!=="undefined"?window:this);

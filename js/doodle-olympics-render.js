@@ -23,7 +23,7 @@
         [250,530,780].forEach(n=>{const x=left+(right-left)*n/1000,y=ground-38*(1-n/1000);c.fillStyle="#c1ceab";c.beginPath();c.moveTo(x-9,y);c.lineTo(x,y-14);c.lineTo(x+9,y);c.fill();});
         const x=left+(right-left)*r.x/1000;
         const support=DoodleOlympics.support(r,r.angle,s.mode)*scale/.25;
-        animal(c,r,x,ground-38*(1-r.x/1000)-support+r.y*.45,scale,r.angle,s.mode);text(c,r.finish===null?Math.floor(r.x/10)+"%":r.finish.toFixed(2)+" วิ",w-12,top+20,colors[i],12,"right");
+        animal(c,r,x,ground-38*(1-r.x/1000)-support+r.y*.45,scale,r.angle,s.mode);text(c,r.stopped?Math.floor(r.x/10)+"% · ตัดจบ":r.finish===null?Math.floor(r.x/10)+"%":r.finish.toFixed(2)+" วิ",w-12,top+20,colors[i],12,"right");
         c.fillStyle="#df5936";c.fillRect(right,ground-35,3,35);
       }else if(s.mode==="jump"){
         c.fillStyle="#ead8a9";c.fillRect(left,ground,right-left,20);c.strokeStyle="#b59d69";c.lineWidth=1;
