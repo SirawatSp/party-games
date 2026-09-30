@@ -1,8 +1,9 @@
 // หน้าห้องออนไลน์: ภาพส่งถึงเจ้าของห้องเท่านั้น ก่อนเปิดให้ทุกเครื่องตอนปล่อยตัว
 // ใช้ชั้นเชื่อมต่อเดียวกับเกมศิลปินตัวปลอม ไม่เพิ่มบัญชีหรือคีย์ลับให้ผู้เล่น
- document.addEventListener("DOMContentLoaded",()=>{
+document.addEventListener("DOMContentLoaded",()=>{
   "use strict";
   const $=id=>document.getElementById(id),ui=window.DoodleRaceUI;
+  if(!ui){ $("drNetMessage").textContent="ไฟล์เกมยังอัปเดตไม่ครบ กรุณาโหลดหน้านี้ใหม่ก่อนเข้าห้อง";return; }
   let room=null,game=null,state=null,isHost=false,connected=false,busy=false,pending=false;
   let ticker=0,heartbeat=0,joinTimeout=0,saveTimeout=0,lastHeard=0;
   const testMode=new URLSearchParams(location.search).get("loopback")==="1";
