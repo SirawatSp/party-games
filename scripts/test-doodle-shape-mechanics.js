@@ -10,32 +10,35 @@ const circle={name:'กลม',body:[line(Array.from({length:65},(_,i)=>[250+80*
 const square={name:'เหลี่ยม',body:[rect(170,80,160,160)],legs:[]};
 const straight={name:'ขาตรง',body:[rect(150,110,170,70)],legs:[line([[165,180],[165,315]]),line([[305,180],[305,315]])]};
 const bent={name:'ขางอ',body:straight.body,legs:[line([[165,180],[115,235],[165,315]]),line([[305,180],[355,235],[305,315]])]};
-const pairs=[['run',runner,short],['sumo',stocky,tall],['roll',circle,square],['jump',bent,straight],['balance',stocky,tall]];
+const swimmer=(w,h)=>({name:w+'×'+h,body:[rect(180,120,w,h)],legs:[line([[180,120+h/2],[100,100+h/2]]),line([[180+w,120+h/2],[260+w,100+h/2]])]});
+const climber=width=>({name:'แขนหนา '+width,body:[rect(180,120,140,75)],legs:[line([[180,145],[100,45]],width),line([[320,145],[400,45]],width),line([[195,195],[170,260]],width),line([[305,195],[330,260]],width)]});
+const pairs=[['run',runner,short],['sumo',stocky,tall],['roll',circle,square],['jump',bent,straight],['balance',stocky,tall],['swim',swimmer(200,50),swimmer(100,100)],['climb',climber(15),climber(5)],['discus',climber(15),climber(5)]];
 const output=[];
 for(const [mode,better,worse] of pairs){assert.ok(O.validAthlete(better,[mode]));assert.ok(O.validAthlete(worse,[mode]));let wins=0,totalA=0,totalB=0;
  for(let i=0;i<24;i++){const swap=i%2,team=swap?[worse,better]:[better,worse],seed=125+i*73,s=O.makeSession(mode,team,[seed,seed],100);
   for(let n=0;n<6000&&!s.done;n++)O.step(s,1/60);assert.ok(s.done,mode+' ต้องจบ');const a=s.racers[swap],b=s.racers[1-swap];
-  const va=mode==='jump'?a.distance:a.finish,vb=mode==='jump'?b.distance:b.finish;totalA+=va;totalB+=vb;wins+=O.rank(s)[0].id===swap?1:0;
+  const va=['jump','discus'].includes(mode)?a.distance:a.finish,vb=['jump','discus'].includes(mode)?b.distance:b.finish;totalA+=va;totalB+=vb;wins+=O.rank(s)[0].id===swap?1:0;
  }
  const meanA=totalA/24,meanB=totalB/24;output.push({mode,wins,meanA:Number(meanA.toFixed(2)),meanB:Number(meanB.toFixed(2))});
  assert.ok(wins>=18,mode+' รูปที่เหมาะต้องชนะอย่างชัดเจนข้ามหลายเมล็ดและสลับตำแหน่ง');
- if(['run','roll'].includes(mode))assert.ok(meanA<meanB*.9,mode+' เวลาเฉลี่ยต้องดีขึ้นอย่างน้อย 10%');
+ if(['run','roll','swim','climb'].includes(mode))assert.ok(meanA<meanB*.9,mode+' เวลาเฉลี่ยต้องดีขึ้นอย่างน้อย 10%');
  if(mode==='jump')assert.ok(meanA>meanB*1.2,'ขางอต้องกระโดดไกลขึ้นอย่างน้อย 20%');
  if(mode==='balance')assert.ok(meanA>meanB*2,'ฐานกว้างตัวเตี้ยต้องยืนได้นานขึ้นอย่างน้อยสองเท่า');
+ if(mode==='discus')assert.ok(meanA>meanB*1.2,'แขนหนาพร้อมฐานต้องขว้างไกลขึ้นอย่างน้อย 20%');
 }
 console.log(JSON.stringify(output,null,2));
 // จำนวนจุด สี และลำดับการวาดเส้นไม่ควรสร้างความได้เปรียบ
 const dense=JSON.parse(JSON.stringify(stocky));dense.body=dense.body.map(s=>({...s,points:s.points.flatMap((p,i)=>i===s.points.length-1?[p]:Array.from({length:20},(_,j)=>[p[0]+(s.points[i+1][0]-p[0])*j/20,p[1]+(s.points[i+1][1]-p[1])*j/20]))}));
-for(const k of ['mass','base','spring','roundness','push','balanceControl'])assert.ok(Math.abs(O.geometry(dense)[k]-O.geometry(stocky)[k])<1e-7,'จุดถี่ต้องไม่เพิ่ม '+k);
+for(const k of ['mass','base','spring','roundness','push','balanceControl','waterDrag','climbReach','grip','lever','throwStrength'])assert.ok(Math.abs(O.geometry(dense)[k]-O.geometry(stocky)[k])<1e-7,'จุดถี่ต้องไม่เพิ่ม '+k);
 const recolored=JSON.parse(JSON.stringify(stocky));recolored.body.reverse();recolored.legs.reverse();[...recolored.body,...recolored.legs].forEach(s=>s.color='#df5936');
-for(const k of ['mass','base','spring','roundness','push','balanceControl'])assert.ok(Math.abs(O.geometry(recolored)[k]-O.geometry(stocky)[k])<1e-7,'สี/ลำดับเส้นต้องไม่เพิ่ม '+k);
+for(const k of ['mass','base','spring','roundness','push','balanceControl','waterDrag','climbReach','grip','lever','throwStrength'])assert.ok(Math.abs(O.geometry(recolored)[k]-O.geometry(stocky)[k])<1e-7,'สี/ลำดับเส้นต้องไม่เพิ่ม '+k);
 const arms={...runner,legs:[...runner.legs,line([[320,145],[430,145]])]};
 const bare=O.makeSession('sumo',[runner,runner],[5,5],100),reach=O.makeSession('sumo',[arms,runner],[5,5],100);
 for(const s of [bare,reach])s.racers.forEach((r,i)=>{r.x=i*65;r.y=0;r.angle=0;});
 assert.equal(O.collision(...bare.racers),null);assert.ok(O.collision(...reach.racers),'แขนที่ยื่นต้องแตะคู่แข่งก่อนลำตัว ไม่ใช้วงชนขนาดเดียวกัน');
 const thick=JSON.parse(JSON.stringify(runner));thick.legs.forEach(s=>s.width=15);assert.ok(O.geometry(thick).push>O.geometry(runner).push,'ขาหนาใช้ดันได้แรงขึ้น');
 // แขนขาขยับจริงและข้อแรกยังต่อกับลำตัว ภาพต้นฉบับยังเหมือนเดิม
-for(const mode of ['sumo','roll','jump','balance']){const before=JSON.stringify(runner),s=O.makeSession(mode,[runner,runner],[17,29],100),first=JSON.stringify(O.pose(s.racers[0],mode));for(let n=0;n<30;n++)O.step(s,1/60);const second=O.pose(s.racers[0],mode);assert.notEqual(JSON.stringify(second),first,mode+' ข้อต่อต้องขยับ');second.limbs.forEach((p,i)=>assert.deepEqual(p[0],runner.legs[i].points[0]));assert.equal(JSON.stringify(runner),before);}
+for(const mode of Object.keys(O.sports).filter(k=>k!=='run')){const before=JSON.stringify(runner),s=O.makeSession(mode,[runner,runner],[17,29],100),first=JSON.stringify(O.pose(s.racers[0],mode));for(let n=0;n<30;n++)O.step(s,1/60);const second=O.pose(s.racers[0],mode);assert.notEqual(JSON.stringify(second),first,mode+' ข้อต่อต้องขยับ');second.limbs.forEach((p,i)=>assert.deepEqual(p[0],runner.legs[i].points[0]));assert.equal(JSON.stringify(runner),before);}
 module.exports={pairs,output};
 for(const mode of Object.keys(O.sports)){const winners=new Set();for(let i=0;i<16;i++){const s=O.makeSession(mode,Array.from({length:4},()=>runner),Array.from({length:4},(_,j)=>900+i*37+j*19),100);for(let n=0;n<6000&&!s.done;n++)O.step(s,1/60);winners.add(O.rank(s)[0].id);}assert.ok(winners.size>=3,mode+' รูปใกล้เคียงกันต้องยังเปลี่ยนผู้ชนะตามจังหวะสุ่ม');}
 console.log('ผ่าน: รูปที่เหมาะได้เปรียบทุกกีฬา / สลับตำแหน่ง / ความถี่จุดและสีไม่เพิ่มแรง / แขนแตะคู่แข่งจริง / ขาหนาเพิ่มแรง / ข้อต่อขยับแต่ภาพเดิมไม่เสีย / รูปเหมือนกันยังสุ่มเปลี่ยนผู้ชนะ');

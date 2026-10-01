@@ -14,6 +14,19 @@
       s.racers.forEach((r,i)=>{c.globalAlpha=r.out?.22:1;animal(c,r,r.x,r.y,.25,r.angle,s.mode);if(r.hit>0&&!r.out){c.strokeStyle="#df5936";c.lineWidth=3;c.beginPath();c.arc(r.x,r.y,r.g.radius+6+(1-r.hit)*12,0,Math.PI*2);c.stroke();}text(c,(i+1)+" · "+r.drawing.name,r.x,r.y-r.g.radius-12,colors[i],12,"center");if(r.eventUntil>s.elapsed)text(c,r.event,r.x,r.y+r.g.radius+16,"#b44424",11,"center");});c.restore();
       text(c,"ยันขาแล้วดัน · ชนตามรูปจริง · ฐานแคบเสียหลักง่าย",w/2,28,"#243d32",13,"center");return;
     }
+    if(s.mode==="climb"){
+      const col=w/s.racers.length,top=75,bottom=h-40,span=bottom-top;
+      s.racers.forEach((r,i)=>{const mid=col*(i+.5),scale=Math.min(.21,(col-16)/r.g.w,85/r.g.h);c.save();c.beginPath();c.rect(i*col,40,col,h-40);c.clip();
+        c.fillStyle=i%2?"#e6d7bb":"#f0e4cd";c.fillRect(i*col,40,col,h-40);c.strokeStyle="#c0a984";c.lineWidth=1;
+        for(let n=0;n<=12;n++){const y=bottom-span*n/12;c.beginPath();c.moveTo(i*col+5,y);c.lineTo((i+1)*col-5,y);c.stroke();if(n%3===0)text(c,n+' ม.',i*col+4,y-3,"#8c784d",9);if(n&&n<12){c.fillStyle=colors[i];c.beginPath();c.arc(mid+(n%2?1:-1)*col*.2,y,4,0,Math.PI*2);c.fill();}}
+        const support=DoodleOlympics.support(r,r.angle,s.mode)*scale/.25,y=bottom-(span-55)*r.x/12-support;animal(c,r,mid,y,scale,r.angle,s.mode);
+        c.fillStyle="#df5936";c.fillRect(i*col+5,top-3,col-10,3);
+        text(c,r.drawing.name.slice(0,Math.max(4,Math.floor(col/9))),mid,55,colors[i],11,"center");
+        text(c,r.stopped?r.distance.toFixed(1)+' ม. · ตัดจบ':r.finish!==null?r.finish.toFixed(1)+' วิ':r.x.toFixed(1)+' ม.',mid,69,colors[i],10,"center");
+        c.fillStyle="#c9c2a4";c.fillRect(i*col+8,h-22,col-16,6);c.fillStyle=r.resting?"#c78c22":colors[i];c.fillRect(i*col+8,h-22,(col-16)*r.energy,6);
+        text(c,r.resting?'พักเติมแรง':r.eventUntil>s.elapsed?r.event:'แรง '+Math.round(r.energy*100)+'%',mid,h-29,colors[i],9,"center");c.restore();
+      });text(c,"ปีน 12 ม. · ระยะเอื้อม แรงจับ น้ำหนัก และการพัก",w/2,25,"#243d32",12,"center");return;
+    }
     const lane=(h-40)/s.racers.length,small=w<600,left=small?42:80,right=w-(small?30:70),scale=small?.13:.21;
     s.racers.forEach((r,i)=>{
       const top=40+i*lane,ground=top+lane-20;c.save();c.beginPath();c.rect(0,top,w,lane);c.clip();c.fillStyle=i%2?"#f2edda":"#fbf8ed";c.fillRect(0,top,w,lane);
@@ -25,6 +38,20 @@
         const support=DoodleOlympics.support(r,r.angle,s.mode)*scale/.25;
         animal(c,r,x,ground-38*(1-r.x/1000)-support+r.y*.45,scale,r.angle,s.mode);text(c,r.stopped?Math.floor(r.x/10)+"% · ตัดจบ":r.finish===null?Math.floor(r.x/10)+"%":r.finish.toFixed(2)+" วิ",w-12,top+20,colors[i],12,"right");
         c.fillStyle="#df5936";c.fillRect(right,ground-35,3,35);
+      }else if(s.mode==="swim"){
+        const water=top+lane*.64,swimScale=Math.min(scale,(lane-45)/r.g.h);c.fillStyle="#c9e7e9";c.fillRect(0,top+30,w,lane-30);
+        c.strokeStyle="#80bfc6";c.lineWidth=2;for(let line=0;line<3;line++){c.beginPath();for(let x=left;x<=right;x+=8){const y=water+line*9+Math.sin(x*.06+s.elapsed*2)*3;x===left?c.moveTo(x,y):c.lineTo(x,y);}c.stroke();}
+        const x=left+(right-left)*r.x/50;animal(c,r,x,water-5+Math.sin(s.elapsed*3+r.id)*3,swimScale,r.angle,s.mode);
+        c.strokeStyle="#ecb85a";c.setLineDash([5,5]);c.beginPath();c.moveTo(left,ground+6);c.lineTo(right,ground+6);c.stroke();c.setLineDash([]);c.fillStyle="#df5936";c.fillRect(right,top+32,3,lane-38);
+        text(c,r.stopped?r.x.toFixed(1)+' ม. · ตัดจบ':r.finish!==null?r.finish.toFixed(2)+' วิ':r.x.toFixed(1)+' / 50 ม.',w-12,top+20,colors[i],12,"right");
+      }else if(s.mode==="discus"){
+        c.fillStyle="#dfe8c5";c.fillRect(left,ground,right-left,20);[0,40,80,120,160].forEach(n=>text(c,n+' ม.',left+(right-left)*n/160,ground+16,"#8c784d",9,"center"));
+        const support=DoodleOlympics.support(r,r.angle,s.mode)*scale/.25;animal(c,r,left,ground-support,scale,r.angle,s.mode);
+        let x,y;
+        if(r.launched){x=left+(right-left)*r.discX/160;y=ground+r.discY*Math.min(2.2,(lane-65)/80);c.strokeStyle=colors[i];c.setLineDash([3,4]);c.beginPath();c.moveTo(x,ground);c.lineTo(x,y);c.stroke();c.setLineDash([]);}
+        else{const p=DoodleOlympics.pose(r,s.mode),tip=p.limbs[r.g.throwLimb]?.at(-1)||[r.g.cx+35,r.g.cy],dx=(tip[0]-r.g.cx)*scale,dy=(tip[1]-r.g.cy)*scale;x=left+dx*Math.cos(r.angle)-dy*Math.sin(r.angle);y=ground-support+dx*Math.sin(r.angle)+dy*Math.cos(r.angle);}
+        c.fillStyle="#df5936";c.beginPath();c.ellipse(x,y,7,3,s.elapsed*4,0,Math.PI*2);c.fill();
+        text(c,r.launched||r.stopped?r.discX.toFixed(2)+' ม.'+(r.stopped?' · ตัดจบ':''): 'หมุนสะสมแรง…',w-12,top+20,colors[i],12,"right");
       }else if(s.mode==="jump"){
         c.fillStyle="#ead8a9";c.fillRect(left,ground,right-left,20);c.strokeStyle="#b59d69";c.lineWidth=1;
         [0,60,120,180,240,300].forEach(n=>{const x=left+(right-left)*n/300;c.beginPath();c.moveTo(x,ground);c.lineTo(x,ground+8);c.stroke();text(c,n,x,ground+17,"#8c784d",9,"center");});
@@ -42,7 +69,7 @@
         text(c,r.out?"ตกเมื่อ "+r.finish.toFixed(2)+" วิ":"ยังทรงตัวอยู่",w-12,top+20,colors[i],12,"right");
       }if(r.eventUntil>s.elapsed)text(c,r.event,left,top+38,"#b44424",11);c.restore();
     });
-    text(c,s.mode==="roll"?"ความกลมช่วยรักษาความเร็ว · ส่วนยื่นและเหลี่ยมเสียพลัง":s.mode==="jump"?"ย่อขาเก็บแรง · ขางอและน้ำหนักมีผลต่อระยะ": "แท่นโยกเหมือนกัน · ศูนย์มวลต้องอยู่เหนือฐานเท้า",w/2,25,"#243d32",12,"center");
+    const title={roll:"ความกลมช่วยรักษาความเร็ว · ส่วนยื่นและเหลี่ยมเสียพลัง",jump:"ย่อขาเก็บแรง · ขางอและน้ำหนักมีผลต่อระยะ",balance:"แท่นโยกเหมือนกัน · ศูนย์มวลต้องอยู่เหนือฐานเท้า",swim:"ว่าย 50 ม. · จังหวะพายสร้างแรง ตัวเพรียวลดแรงต้าน",discus:"หมุนสะสมแรง → ปล่อยจักร · แขนและฐานเท้ามีผล"};text(c,title[s.mode],w/2,25,"#243d32",12,"center");
   }
   root.DoodleOlympicsRender={paint};
 })(typeof window!=="undefined"?window:this);

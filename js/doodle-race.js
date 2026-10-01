@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let stroke = null, pointer = null, saved = null, previewFrame = 0, raceFrame = 0;
   let racers = [], elapsed = 0, countdown = 3, lastFrame = 0, accumulator = 0, paused = false, finished = false, lastRankPaint = -1;
   let raceWidth = 1000, raceHeight = 520, online = false, onlineRound = 0, onlineSeq = -1;
-  let selected = ["run", "sumo", "roll", "jump", "balance"], tournament = null, session = null, onlineHost = false;
+  let selected = Object.keys(O.sports), tournament = null, session = null, onlineHost = false;
   const STEP = 1 / 60;
   const valid = d => O.validAthlete(d,selected);
   function selectedSports(id) { return O.events([...$(id).querySelectorAll("input:checked")].map(x=>x.value)); }
@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function schedule(list) { return list.map((k,i)=>(i+1)+". "+O.sports[k].name).join(" → "); }
   function readSettings() { selected=selectedSports("drSports");distance=Number($("drDistance").value);$("drSchedule").textContent=selected.length?schedule(selected):"เลือกกีฬาอย่างน้อย 1 รายการก่อนเริ่ม";$("drBegin").disabled=!selected.length;$("drHostRoom").disabled=!selected.length;$("drDistance").disabled=!selected.includes("run"); }
   fillSports("drSports",selected);readSettings();
+  $("drPreviewSport").replaceChildren(...Object.entries(O.sports).map(([key,sport])=>{const option=document.createElement("option");option.value=key;option.textContent=sport.name;return option;}));
   $("drSports").addEventListener("change",readSettings);
 
   const dc = $("drDraw").getContext("2d"), pc = $("drPreviewCanvas").getContext("2d"), rc = $("drTrack").getContext("2d");
@@ -196,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(mode==="run"&&!E.validDrawing(draft)){ $("drPreviewSport").value=selected.find(k=>k!=="run")||"sumo";return previewSport(); }
     const rival=clone(draft);rival.name="คู่ซ้อม";[...rival.body,...rival.legs].forEach(s=>{s.color="#965db0";});
     const practice=O.makeSession(mode,mode==="sumo"?[clone(draft),rival]:[clone(draft)],mode==="sumo"?[seed(),seed()]:[seed()],100);let prev=0,carry=0;
-    const height=mode==="run"?260:mode==="sumo"?420:320;setupCanvas($("drPreviewCanvas"),600,height);
+    const height=mode==="run"?260:mode==="sumo"?420:mode==="climb"?450:320;setupCanvas($("drPreviewCanvas"),600,height);
     function frame(t) {
       carry+=prev?Math.min(1,(t-prev)/1000):0;prev=t;while(carry>=STEP&&!practice.done){O.step(practice,STEP);carry-=STEP;}
       if(mode==="run"){pc.clearRect(0,0,600,260);pc.strokeStyle="#a4b08d";pc.lineWidth=2;pc.beginPath();pc.moveTo(20,222);pc.lineTo(580,222);pc.stroke();drawAnimal(pc,draft,practice.racers[0],300,218,.58);}
@@ -226,7 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function fitTrack() {
     if($("drRace").hidden) return;
     raceWidth=$("drTrack").parentElement.clientWidth;
-    raceHeight=session&&session.mode==="sumo"?Math.max(380,Math.min(600,raceWidth*.7)):session&&session.mode==="jump"?55+count*(raceWidth<600?210:240):55+count*(raceWidth<600 ? 120 : 145);
+    raceHeight=session&&session.mode==="sumo"?Math.max(380,Math.min(600,raceWidth*.7)):session&&session.mode==="climb"?Math.max(460,Math.min(620,raceWidth*.65)):session&&["jump","discus"].includes(session.mode)?55+count*(raceWidth<600?210:240):55+count*(raceWidth<600 ? 120 : 145);
     setupCanvas($("drTrack"),raceWidth,raceHeight);
     $("drTrack").style.height=raceHeight+"px";
     paintRace();
@@ -259,15 +260,16 @@ document.addEventListener("DOMContentLoaded", () => {
     racers.forEach(r=>{
       const row=document.createElement("div");row.className="dr-live-row";row.dataset.id=r.id;
       const number=document.createElement("b"), name=document.createElement("span"), meter=document.createElement("span"), bar=document.createElement("progress");
-      name.className="dr-live-name";name.textContent=r.drawing.name;bar.className="dr-live-progress";bar.max=session.mode==="run"?distance:session.mode==="roll"?1000:session.mode==="jump"?200:60;bar.value=0;bar.setAttribute("aria-label","ระยะทางของ "+r.drawing.name);
+      name.className="dr-live-name";name.textContent=r.drawing.name;bar.className="dr-live-progress";bar.max=O.sports[session.mode].finishDistance||(session.mode==="run"?distance:session.mode==="roll"?1000:session.mode==="discus"?160:60);bar.value=0;bar.setAttribute("aria-label","ระยะทางของ "+r.drawing.name);
       const trait=document.createElement("small");trait.textContent=O.traits(r.drawing)[session.mode];name.appendChild(trait);if(session.mode==="jump")bar.max=300;
       row.append(number,name,meter,bar);$("drLiveRanks").appendChild(row);
     });
   }
   function metric(r) {
-    if(r.stopped&&["run","roll"].includes(session.mode))return (session.mode==="run"?r.distance.toFixed(1)+" ม.":Math.floor(r.distance/10)+"%")+" · ตัดจบ";
-    if(session.mode==="run"||session.mode==="roll")return r.finish!==null?r.finish.toFixed(2)+" วิ":session.mode==="run"?Math.floor(r.distance)+" ม.":Math.floor(r.x/10)+"%";
+    if(r.stopped&&O.timed(session.mode))return (session.mode==="roll"?Math.floor(r.distance/10)+"%":r.distance.toFixed(1)+" ม.")+" · ตัดจบ";
+    if(O.timed(session.mode))return r.finish!==null?r.finish.toFixed(2)+" วิ":session.mode==="roll"?Math.floor(r.x/10)+"%":r.distance.toFixed(1)+" ม."+(session.mode==="climb"?' · แรง '+Math.round(r.energy*100)+'%':'');
     if(session.mode==="jump")return (r.finish!==null?r.distance:r.x).toFixed(2)+" ม.";
+    if(session.mode==="discus")return r.launched?r.discX.toFixed(2)+" ม.":"หมุนสะสมแรง";
     return r.out?r.finish.toFixed(2)+" วิ · ตกแล้ว":session.done?session.elapsed.toFixed(2)+" วิ":"ยังอยู่ · "+session.elapsed.toFixed(1)+" วิ";
   }
   function updateRanks() {
@@ -275,7 +277,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ranked.forEach((r,i)=>{
       const row=$("drLiveRanks").querySelector('[data-id="'+r.id+'"]');row.style.order=i;
       row.children[0].textContent=i+1;row.children[2].textContent=metric(r);
-      row.children[3].value=session.mode==="run"||session.mode==="roll"?r.distance:session.mode==="jump"?r.x:r.out?r.finish:session.elapsed;
+      row.children[3].value=O.timed(session.mode)||session.mode==="discus"?r.distance:session.mode==="jump"?r.x:r.out?r.finish:session.elapsed;
     });
     $("drRaceCommentary").textContent=O.sports[session.mode].rule;
   }
@@ -330,7 +332,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const result=tournament.results[tournament.index];if(!result)return;
     const final=tournament.index===tournament.events.length-1,winners=result.rows.filter(r=>r.place===1).map(r=>r.name);
     $("drResultLabel").textContent=(session.stopped?"ตัดจบ ":"จบ ")+O.sports[session.mode].name;$("drWinner").textContent="🏅 "+winners.join(" / ")+(winners.length>1?" ชนะร่วมกัน":" ชนะรายการนี้!");$("drPodium").replaceChildren();
-    result.rows.forEach(r=>{const li=document.createElement("li"),n=document.createElement("span"),name=document.createElement("b"),value=document.createElement("span");n.textContent=r.place;name.textContent=r.name;const unit=r.stopped&&session.mode==='run'?'ม.':O.sports[session.mode].unit;
+    result.rows.forEach(r=>{const li=document.createElement("li"),n=document.createElement("span"),name=document.createElement("b"),value=document.createElement("span");n.textContent=r.place;name.textContent=r.name;const unit=r.stopped&&O.timed(session.mode)&&session.mode!=='roll'?'ม.':O.sports[session.mode].unit;
       const label=r.stopped&&session.mode==='roll'?Math.floor(r.value/10)+'%':(session.mode==='sumo'?session.racers[r.id].finish:r.value).toFixed(2)+' '+unit;
       value.textContent=label+(r.stopped?' · ตัดจบ':'')+' · +'+Number(r.points.toFixed(2))+' คะแนน';li.append(n,name,value);$("drPodium").appendChild(li);});
     const leaders=O.standings(tournament).filter(r=>r.place===1);$("drStandingsTitle").textContent=final?"🏆 แชมป์คะแนนรวม: "+leaders.map(r=>r.name).join(" / "):"คะแนนสะสม · แข่งแล้ว "+tournament.results.length+" / "+tournament.events.length+" รายการ";scoreTable();

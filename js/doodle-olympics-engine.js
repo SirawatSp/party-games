@@ -8,7 +8,10 @@
     sumo:{name:"ซูโม่",icon:"💥",rule:"ยันขาดัน ชนตามส่วนที่วาด ตัวหนักฐานกว้างเสียหลักยาก",unit:"วิ"},
     roll:{name:"กลิ้งลงเขา",icon:"🌀",rule:"ตัวกลมกลิ้งลื่น เหลี่ยมและแขนขายื่นเสียพลังเมื่อหมุน",unit:"วิ"},
     jump:{name:"กระโดดไกล",icon:"🚀",rule:"ขางอเก็บแรงถีบ ขายาวช่วยส่ง ตัวหนักและส่วนยื่นต้านลม",unit:"ม."},
-    balance:{name:"ทรงตัว",icon:"⚖️",rule:"ฐานเท้ากว้างและตัวเตี้ยล้มยาก แขนช่วยต้านการเอียง",unit:"วิ"}
+    balance:{name:"ทรงตัว",icon:"⚖️",rule:"ฐานเท้ากว้างและตัวเตี้ยล้มยาก แขนช่วยต้านการเอียง",unit:"วิ"},
+    swim:{name:"ว่ายน้ำ",icon:"🏊",rule:"พายแขนขาฝ่าน้ำ 50 ม. ตัวเพรียวต้านน้ำน้อย แขนยาวพายแรงแต่ส่วนยื่นเพิ่มแรงต้าน",unit:"วิ",finishDistance:50},
+    climb:{name:"ปีนผา",icon:"🧗",rule:"ปีนให้ถึง 12 ม. แขนยาวเอื้อมไกล เส้นหนาจับแน่น ตัวหนักหมดแรงง่าย ต้องพักและระวังลื่น",unit:"วิ",finishDistance:12},
+    discus:{name:"ขว้างจักร",icon:"🥏",rule:"หมุนตัวแล้วเหวี่ยงจักร แขนยาวเพิ่มระยะเหวี่ยง แต่ฐานแคบหรือแขนอ่อนทำให้แรงและมุมปล่อยเสีย",unit:"ม."}
   };
   function events(list){return Array.isArray(list)?Object.keys(sports).filter(k=>list.includes(k)):[];}
   function validAthlete(d,list){return E.validDrawing(d,!events(list).includes("run"));}
@@ -38,7 +41,12 @@
     const roundness=clamp(circularity/(1+protrusion*.8),.08,1),base=clamp(halfBase/comHeight,.08,2.5),height=clamp(comHeight/40,.2,2.5);
     const avg=a=>a.length?a.reduce((n,v)=>n+v,0)/a.length:0,strength=avg(feet.map(l=>l.strength)),spring=clamp(Math.sqrt(feet.length)*avg(feet.map(l=>l.length/110*Math.sqrt(l.width/9)*(1+l.flex*3))),.12,3.6);
     const reach=avg(arms.map(l=>l.chord/100*Math.sqrt(l.width/9))),airControl=clamp(reach*.7,.0,1.2),inertia=clamp(mass*(b.w*b.w+b.h*b.h)/45000,.2,6);
-    return {cx,cy,w:b.w,h:b.h,bottom:low,points,bodyPoints,limbs,mass,radius,collisionRadius,base,height,roundness,area,protrusion,halfBase,footMid,comHeight,inertia,spring,airControl,push:clamp((.3+strength*.8)*Math.sqrt(Math.max(1,feet.length))*(.65+base*.35)+reach*.35,.25,3.8),balanceControl:clamp(.3+base*.5+strength*.2+airControl*.3,.3,2.2),launchAngle:clamp(.72+avg(feet.map(l=>(l.points.at(-1)[0]-l.points[0][0])/Math.max(20,l.chord)))*.3,.48,1.03)};
+    // กีฬาใหม่ใช้แขน/ขาเส้นเดิม แรงมาจากความหนาและระยะเอื้อม ไม่ได้มาจากจำนวนจุด
+    const waterDrag=clamp(Math.pow(body.h/Math.max(20,body.w),.8)+protrusion*.14,.2,3),climbReach=clamp(Math.max(20,...limbs.map(l=>l.chord))/110,.2,2.3);
+    const grip=clamp(limbs.reduce((n,l)=>n+l.strength*(l.foot?.4:1),0)/Math.sqrt(Math.max(1,limbs.length)),.15,3);
+    const throwing=arms.length?arms:feet,throwLimb=limbs.indexOf(throwing.slice().sort((a,b)=>b.chord-a.chord)[0]);
+    const throwArm=limbs[throwLimb],lever=clamp((throwArm?throwArm.chord:35)/100,.35,2.5),throwStrength=throwArm?throwArm.strength:.25;
+    return {cx,cy,w:b.w,h:b.h,bottom:low,points,bodyPoints,limbs,mass,radius,collisionRadius,base,height,roundness,area,protrusion,halfBase,footMid,comHeight,inertia,spring,airControl,waterDrag,climbReach,grip,throwLimb,lever,throwStrength,push:clamp((.3+strength*.8)*Math.sqrt(Math.max(1,feet.length))*(.65+base*.35)+reach*.35,.25,3.8),balanceControl:clamp(.3+base*.5+strength*.2+airControl*.3,.3,2.2),launchAngle:clamp(.72+avg(feet.map(l=>(l.points.at(-1)[0]-l.points[0][0])/Math.max(20,l.chord)))*.3,.48,1.03)};
   }
   function pose(r,mode,sampled=false){
     const limbs=r.g.limbs.map((l,i)=>{const state=r.legs[i],a=l.points[0],sn=Math.sin(state.phase),swing=sn*state.swing,cs=Math.cos(swing),ss=Math.sin(swing),extension=state.extension;
@@ -52,6 +60,9 @@
       if(mode==='sumo'){l.swing=g.foot?.28:.65;l.bend=.35;l.extension=g.foot?1:.9+Math.sin(l.phase)*.18;}
       else if(mode==='roll'){l.swing=.12;l.bend=.2;l.extension=.72+Math.sin(l.phase)*.08;}
       else if(mode==='jump'){l.swing=r.launched?(g.foot?.3:.65):.12;l.bend=r.launched?.5:1.2;l.extension=r.launched?1:.65+.35*Math.abs(Math.cos(r.time*Math.PI/3));}
+      else if(mode==='swim'){l.swing=g.foot?.55:1.05;l.bend=.45;l.extension=.85+Math.sin(l.phase)*.15;}
+      else if(mode==='climb'){l.swing=r.resting?.1:.65;l.bend=.65;l.extension=r.resting?.85:.8+.2*Math.cos(l.phase);}
+      else if(mode==='discus'){l.swing=r.launched?.15:g.foot?.18:.75;l.bend=.25;l.extension=i===r.g.throwLimb?1.05: .85;}
       else{l.swing=g.foot?clamp(-r.angle*.25,-.15,.15):.7;l.bend=g.foot?.4:.6;l.extension=1;}
     });
   }
@@ -61,7 +72,7 @@
     s.racers=team.map((d,i)=>{
       const g=geometry(d);if(mode==='run'){const r=E.makeRacer(copy(d),seeds[i],i);r.g=g;r.mass=g.mass;r.balance=clamp(.65+g.base*.35,.65,1.3);return r;}
       const rand=E.random(seeds[i]),a=i/team.length*Math.PI*2,start=Math.max(0,Math.min(145,s.arena-g.radius-20));
-      return {id:i,drawing:copy(d),g,rng:rand,x:mode==='sumo'?Math.cos(a)*start:0,y:mode==='sumo'?Math.sin(a)*start:0,vx:0,vy:0,angle:mode==='sumo'?a+Math.PI:0,omega:0,distance:0,speed:0,time:0,finish:null,score:0,out:false,nextForce:0,forceX:0,forceY:0,event:'',eventUntil:0,launched:false,hit:0,stagger:0,drive:0,legs:d.legs.map(stroke=>({stroke,phase:rand()*Math.PI*2,cadence:1.1+rand()*.5,swing:0,bend:0,extension:1}))};
+      return {id:i,drawing:copy(d),g,rng:rand,x:mode==='sumo'?Math.cos(a)*start:0,y:mode==='sumo'?Math.sin(a)*start:0,vx:0,vy:0,angle:mode==='sumo'?a+Math.PI:0,omega:0,distance:0,speed:0,time:0,finish:null,score:0,out:false,nextForce:0,forceX:0,forceY:0,event:'',eventUntil:0,launched:false,hit:0,stagger:0,drive:0,energy:1,resting:false,slipUntil:0,releaseAt:mode==='discus'?2.4+rand()*.6:0,discX:0,discY:0,discVx:0,discVy:0,legs:d.legs.map(stroke=>({stroke,phase:rand()*Math.PI*2,cadence:1.1+rand()*.5,swing:0,bend:0,extension:1}))};
     });return s;
   }
   function eliminate(r,s){r.out=true;r.finish=s.elapsed;r.score=s.elapsed;r.event='หลุดสนาม';r.eventUntil=s.elapsed+2;}
@@ -108,6 +119,52 @@
         r.vx*=Math.exp(-drag*dt);r.x+=r.vx*dt;r.vy+=9.8*dt;r.y+=r.vy*dt;
         if(r.y>=0&&r.vy>0){const fraction=clamp(r.y/(r.vy*dt),0,1);r.x-=r.vx*dt*fraction;r.y=0;r.distance=r.score=r.x;r.finish=s.elapsed-dt*fraction;r.hit=1;r.event='แตะพื้นแล้ว';}
       });s.done=s.racers.every(r=>r.finish!==null);
+    }else if(s.mode==='swim'){
+      // จังหวะที่ภาพพายแขนเป็นจังหวะเดียวกับแรงส่ง ส่วนแรงต้านเพิ่มตามความเร็วกำลังสอง
+      s.wind=Math.sin(s.elapsed*.65)*.16;
+      s.racers.forEach(r=>{if(r.finish!==null)return;
+        if(s.elapsed>=r.nextForce){r.forceX=.85+r.rng()*.3;r.nextForce=s.elapsed+.8+r.rng();}
+        const paddle=r.g.limbs.reduce((n,l,i)=>n+clamp(l.chord/90,0,2)*Math.sqrt(l.width/9)*(l.foot?.35:1)*(1-l.flex*.5)*Math.max(0,-Math.sin(r.legs[i].phase)),0);
+        r.drive=(1.4+2.6*paddle)*r.forceX;r.vx=clamp(r.vx+(r.drive-(.12+r.g.waterDrag*.55)*r.vx*r.vx+s.wind)*dt/Math.sqrt(r.g.mass),.12,9);
+        r.angle=Math.sin(s.elapsed*2+r.id)*.04;r.x+=r.vx*dt;r.distance=r.x;
+        if(paddle>1.3){r.event='พายแล้วพุ่ง!';r.eventUntil=s.elapsed+.2;}
+        if(r.x>=50){r.finish=s.elapsed-(r.x-50)/r.vx;r.x=r.distance=50;}
+      });s.done=s.racers.every(r=>r.finish!==null);if(!s.done&&s.elapsed>=75)stop(s);
+    }else if(s.mode==='climb'){
+      s.racers.forEach(r=>{if(r.finish!==null)return;
+        if(r.energy<.2)r.resting=true;else if(r.energy>.8)r.resting=false;
+        const pull=r.legs.length?r.legs.reduce((n,l,i)=>n+Math.max(0,Math.sin(l.phase))*(r.g.limbs[i].foot?.35:1),0)/Math.sqrt(r.legs.length):.15;
+        const gap=.65+.12*Math.sin(Math.floor(r.x/.7)*2.1),reach=clamp(r.g.climbReach/gap,.3,1.8),load=r.g.grip/Math.sqrt(r.g.mass);
+        r.energy=clamp(r.energy+dt*(r.resting?.3:-.055*r.g.mass/(.5+r.g.grip)*(1+r.g.climbReach*.3)),0,1);
+        if(s.elapsed>=r.nextForce){r.forceX=.85+r.rng()*.3;r.nextForce=s.elapsed+.9+r.rng()*.6;
+          const risk=clamp(.025+.09*r.g.mass/(r.g.grip+.4)*(1-r.energy),.025,.28);
+          if(!r.resting&&r.rng()<risk){r.slipUntil=s.elapsed+.45;r.hit=1;r.event='มือหลุด ลื่นลง!';r.eventUntil=s.elapsed+.8;}
+        }
+        r.vx=s.elapsed<r.slipUntil?-.9:r.resting?0:(.16+.42*pull)*reach*load*r.forceX*(.55+.45*r.energy);
+        r.x=clamp(r.x+r.vx*dt,0,12);r.distance=r.x;r.angle=Math.sin(s.elapsed*2+r.id)*.08;
+        if(r.resting){r.event='พักแขน เติมแรง';r.eventUntil=s.elapsed+.1;}
+        if(r.x>=12){r.finish=s.elapsed;r.x=r.distance=12;}
+      });s.done=s.racers.every(r=>r.finish!==null);if(!s.done&&s.elapsed>=75)stop(s);
+    }else if(s.mode==='discus'){
+      // แรงบิดต้องเอาชนะแรงเฉื่อยของตัวและแขนก่อนปล่อย แล้วจักรบินด้วยความเร็วและมุมที่ได้จริง
+      s.wind=Math.sin(s.elapsed*1.7)*.7;
+      s.racers.forEach(r=>{if(r.finish!==null)return;
+        if(!r.launched){
+          const plant=clamp(.35+r.g.base*.45,.35,1),torque=(8+11*r.g.throwStrength)*Math.sqrt(r.g.mass)*plant;
+          r.omega=clamp(r.omega+(torque-r.omega*1.6)*dt/(r.g.inertia+r.g.lever*r.g.lever*.35),0,12);r.angle+=r.omega*dt;
+          r.stagger=clamp(r.omega*r.g.height*.025/(.2+r.g.base),0,1);
+          if(s.elapsed>=r.releaseAt){
+            const arm=r.g.limbs[r.g.throwLimb],slope=arm?(arm.points[0][1]-arm.points.at(-1)[1])/Math.max(20,arm.chord):0;
+            const timing=.86+.14*Math.max(0,Math.cos(r.legs[r.g.throwLimb]?.phase||0));
+            const speed=clamp(7+r.omega*r.g.lever*2.2*plant*clamp(.55+r.g.throwStrength*.25,.4,1)*timing,6,38),angle=clamp(.66+slope*.2+(r.rng()-.5)*(.14+r.stagger*.7),.2,1.25);
+            r.launched=true;r.discVx=Math.cos(angle)*speed;r.discVy=-Math.sin(angle)*speed;r.discY=-Math.max(.8,r.g.comHeight*.035);r.hit=1;r.event=r.stagger>.5?'เสียหลักตอนปล่อย!':'เหวี่ยงจักรออกไป!';r.eventUntil=s.elapsed+1;
+          }
+        }else{
+          r.omega*=Math.exp(-dt*2);r.angle+=r.omega*dt;
+          r.discVx=Math.max(0,r.discVx+(s.wind-r.discVx*.025)*dt);r.discX+=r.discVx*dt;r.discVy+=9.8*dt;r.discY+=r.discVy*dt;r.score=r.distance=r.discX;
+          if(r.discY>=0&&r.discVy>0){const fraction=clamp(r.discY/(r.discVy*dt),0,1);r.discX-=r.discVx*dt*fraction;r.discY=0;r.distance=r.score=r.discX;r.finish=s.elapsed-dt*fraction;r.event='จักรแตะพื้น';}
+        }
+      });s.done=s.racers.every(r=>r.finish!==null);
     }else if(s.mode==='balance'){
       if(s.elapsed>=s.nextWind){s.wind=(s.rng()-.5)*(.15+s.elapsed*.025);s.nextWind=s.elapsed+.4+s.rng();}
       s.tilt=Math.sin(s.elapsed*.9)*(.03+s.elapsed*.006)+Math.sin(s.elapsed*.4)*.025;
@@ -125,24 +182,29 @@
     sumo:(g.push>1.8?'แรงดันสูง':g.push>1?'แรงดันกลาง':'แรงดันน้อย')+' · '+(g.base>.7?'ฐานมั่นคง':'ฐานแคบ เสียหลักง่าย'),
     roll:(g.roundness>.85?'กลิ้งลื่น':g.roundness>.6?'มีเหลี่ยมบ้าง':'เหลี่ยม/ส่วนยื่นมาก')+' · ความกลม '+Math.round(g.roundness*100)+'%',
     jump:(g.spring/g.mass>2?'แรงส่งสูง':g.spring/g.mass>.8?'แรงส่งกลาง':'แรงส่งน้อย')+' · '+(g.airControl>.4?'แขนช่วยลดหมุน':'หมุนกลางอากาศง่าย'),
-    balance:(g.base>.8?'ฐานกว้าง':g.base>.4?'ฐานปานกลาง':'ฐานแคบ')+' · '+(g.height>1?'ศูนย์มวลสูง':'ศูนย์มวลต่ำ')
+    balance:(g.base>.8?'ฐานกว้าง':g.base>.4?'ฐานปานกลาง':'ฐานแคบ')+' · '+(g.height>1?'ศูนย์มวลสูง':'ศูนย์มวลต่ำ'),
+    swim:(g.waterDrag<.7?'ตัวเพรียว ต้านน้ำน้อย':'ต้านน้ำมาก')+' · '+(g.limbs.some(l=>!l.foot&&l.chord>100)?'แขนพายยาว':g.limbs.some(l=>!l.foot)?'แขนพายสั้น':g.limbs.length?'ใช้ขาช่วยพาย':'ใช้ตัวดันน้ำ'),
+    climb:(g.climbReach>1?'เอื้อมไกล':'เอื้อมสั้น')+' · '+(g.grip/Math.sqrt(g.mass)>1?'จับแน่น':'แรงจับต่อน้ำหนักน้อย'),
+    discus:(g.lever>1?'แขนเหวี่ยงยาว':'แขนเหวี่ยงสั้น')+' · '+(g.base>.7?'ฐานรับแรงดี':'ฐานแคบ เสียหลักง่าย')
   };}
   // ตัดจบจากสถานะล่าสุด โดยไม่จำลองว่าคนที่ยังไม่ถึงเส้นชัยวิ่งครบแล้ว
   function stop(s){
     if(!s||s.done)return false;s.stopped=true;
     s.racers.forEach(r=>{if(r.finish!==null)return;r.stopped=true;r.finish=s.elapsed;
       if(s.mode==='jump')r.distance=r.score=r.x;
+      else if(s.mode==='discus')r.distance=r.score=r.discX;
       else if(s.mode==='sumo'||s.mode==='balance')r.score=s.elapsed+(s.mode==='sumo'?1:0);
     });s.done=true;return true;
   }
-  function resultValue(s,r){return s.mode==='run'||s.mode==='roll'?r.stopped?r.distance:r.finish===null?Infinity:r.finish:r.score;}
+  function timed(mode){return ['run','roll','swim','climb'].includes(mode);}
+  function resultValue(s,r){return timed(s.mode)?r.stopped?r.distance:r.finish===null?Infinity:r.finish:r.score;}
   function resultKey(s,r){
-    if(s.stopped&&['run','roll'].includes(s.mode))return [r.stopped?1:0,r.stopped?-r.distance:r.finish];
+    if(s.stopped&&timed(s.mode))return [r.stopped?1:0,r.stopped?-r.distance:r.finish];
     if(s.stopped&&['sumo','balance'].includes(s.mode))return [r.out?1:0,-r.score];
-    return [0,(['run','roll'].includes(s.mode)?1:-1)*resultValue(s,r)];
+    return [0,(timed(s.mode)?1:-1)*resultValue(s,r)];
   }
   function compareResult(s,a,b){const x=resultKey(s,a),y=resultKey(s,b);return x[0]-y[0]||x[1]-y[1];}
-  function rank(s){return s.racers.slice().sort((a,b)=>{if(!s.done){if(s.mode==="sumo"||s.mode==="balance")return Number(a.out)-Number(b.out)||b.score-a.score||a.id-b.id;if(s.mode==="jump")return b.x-a.x||a.id-b.id;return (a.finish===null?Infinity:a.finish)-(b.finish===null?Infinity:b.finish)||b.distance-a.distance||a.id-b.id;}return compareResult(s,a,b)||a.id-b.id;});}
+  function rank(s){return s.racers.slice().sort((a,b)=>{if(!s.done){if(s.mode==="sumo"||s.mode==="balance")return Number(a.out)-Number(b.out)||b.score-a.score||a.id-b.id;if(s.mode==="jump")return b.x-a.x||a.id-b.id;if(s.mode==="discus")return b.discX-a.discX||a.id-b.id;return (a.finish===null?Infinity:a.finish)-(b.finish===null?Infinity:b.finish)||b.distance-a.distance||a.id-b.id;}return compareResult(s,a,b)||a.id-b.id;});}
   function create(team,list,distance=100,seed=1){const chosen=events(list);if(!chosen.length||team.length<2||team.length>6||!team.every(d=>validAthlete(d,chosen)))throw Error("เลือกกีฬาและวาดสัตว์ให้ครบก่อนแข่ง");return {team:copy(team),events:chosen,distance:distance===200?200:100,rng:E.random(seed),index:-1,session:null,results:[],totals:team.map((d,id)=>({id,name:d.name,points:0}))};}
   function next(t){if(t.session&&!t.session.done||t.index+1>=t.events.length)return null;t.index++;t.session=makeSession(t.events[t.index],t.team,t.team.map(()=>Math.floor(t.rng()*4294967296)),t.distance);return t.session;}
   function record(t){const s=t.session;if(!s||!s.done||t.results.length>t.index)return false;
@@ -153,8 +215,8 @@
     }t.results.push({mode:s.mode,rows});return true;
   }
   function standings(t){const a=t.totals.slice().sort((a,b)=>Math.abs(b.points-a.points)<1e-7?a.id-b.id:b.points-a.points);return a.map((r,i)=>({...r,place:i&&Math.abs(r.points-a[i-1].points)<1e-7?a.findIndex(x=>Math.abs(x.points-r.points)<1e-7)+1:i+1}));}
-  function snapshot(s){return {mode:s.mode,distance:s.distance,elapsed:s.elapsed,done:s.done,stopped:!!s.stopped,arena:s.arena,tilt:s.tilt,racers:s.racers.map(r=>{const o={id:r.id};["distance","speed","time","finish","event","eventUntil","x","y","vx","vy","angle","omega","score","out","stopped","launched","hit","stagger","drive"].forEach(k=>{if(r[k]!==undefined)o[k]=r[k];});o.legs=r.legs.map(l=>({phase:l.phase,cadence:l.cadence,swing:l.swing,bend:l.bend,extension:l.extension}));return o;})};}
-  function apply(s,data){["elapsed","done","stopped","arena","tilt"].forEach(k=>{s[k]=data[k];});data.racers.forEach((r,i)=>{Object.keys(r).forEach(k=>{if(k!=="legs"&&k!=="id")s.racers[i][k]=r[k];});r.legs.forEach((l,j)=>Object.assign(s.racers[i].legs[j],l));});}
+  function snapshot(s){return {mode:s.mode,distance:s.distance,elapsed:s.elapsed,done:s.done,stopped:!!s.stopped,arena:s.arena,tilt:s.tilt,wind:s.wind,racers:s.racers.map(r=>{const o={id:r.id};["distance","speed","time","finish","event","eventUntil","x","y","vx","vy","angle","omega","score","out","stopped","launched","hit","stagger","drive","energy","resting","discX","discY","discVx","discVy"].forEach(k=>{if(r[k]!==undefined)o[k]=r[k];});o.legs=r.legs.map(l=>({phase:l.phase,cadence:l.cadence,swing:l.swing,bend:l.bend,extension:l.extension}));return o;})};}
+  function apply(s,data){["elapsed","done","stopped","arena","tilt","wind"].forEach(k=>{s[k]=data[k];});data.racers.forEach((r,i)=>{Object.keys(r).forEach(k=>{if(k!=="legs"&&k!=="id")s.racers[i][k]=r[k];});r.legs.forEach((l,j)=>Object.assign(s.racers[i].legs[j],l));});}
   // รุ่นข้อความออนไลน์ต้องตรงกัน ป้องกันหน้าวิ่งรุ่นเก่าอ่านสถานะของกีฬาอื่น
-  const api={protocol:4,sports,events,validAthlete,geometry,pose,outline,support,traits,collision,create,next,step,rank,record,standings,snapshot,apply,makeSession,resultValue,stop};if(typeof module!=="undefined"&&module.exports)module.exports=api;else root.DoodleOlympics=api;
+  const api={protocol:5,sports,events,validAthlete,geometry,pose,outline,support,traits,collision,create,next,step,rank,record,standings,snapshot,apply,makeSession,resultValue,timed,stop};if(typeof module!=="undefined"&&module.exports)module.exports=api;else root.DoodleOlympics=api;
 })(typeof window!=="undefined"?window:this);

@@ -1,7 +1,7 @@
 // Service Worker สำหรับเล่นออฟไลน์ได้ทั้งเว็บ (เก็บ cache ทุกหน้า/สคริปต์/คลังโจทย์ไว้ในเครื่อง)
 // เปิดเว็บครั้งแรกตอนมีเน็ต ระบบจะโหลดเก็บไว้ให้อัตโนมัติ ครั้งต่อไปเปิดได้แม้ไม่มีเน็ตเลย
 // อัปเดตเนื้อหาเว็บทีไร ให้เปลี่ยนเลข CACHE_VERSION เพื่อบังคับดาวน์โหลดของใหม่ทับของเก่า
-const CACHE_VERSION = "party-games-v86";
+const CACHE_VERSION = "party-games-v87";
 
 // หมายเหตุ: เกม "ทายถนน" (street-scene) เก็บโครงหน้า แผนที่ และคลังสถานที่ไว้
 // โหมด "สถานที่สำคัญ" จึงเล่นได้เต็มรูปแบบตอนออฟไลน์
@@ -45,14 +45,14 @@ const PRECACHE_URLS = [
   "who-is-most.html",
   "who-ordered.html",
   "css/style.css",
-  "css/doodle-race.css?v=86",
+  "css/doodle-race.css?v=87",
   "js/animalrace.js",
-  "js/doodle-race-engine.js?v=86",
-  "js/doodle-olympics-engine.js?v=86",
-  "js/doodle-olympics-render.js?v=86",
-  "js/doodle-race.js?v=86",
-  "js/doodle-race-net.js?v=86",
-  "js/doodle-race-online.js?v=86",
+  "js/doodle-race-engine.js?v=87",
+  "js/doodle-olympics-engine.js?v=87",
+  "js/doodle-olympics-render.js?v=87",
+  "js/doodle-race.js?v=87",
+  "js/doodle-race-net.js?v=87",
+  "js/doodle-race-online.js?v=87",
   "js/bluff.js",
   "js/borderchain.js",
   "js/category.js",
@@ -64,7 +64,7 @@ const PRECACHE_URLS = [
   "js/fake-artist-net.js",
   "js/fake-artist-online.js",
   "js/net-room.js",
-  "js/net-room.js?v=86",
+  "js/net-room.js?v=87",
   "js/flashquiz.js",
   "js/flirt.js",
   "js/guess-number.js",

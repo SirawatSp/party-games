@@ -4,7 +4,7 @@ const assert=require('node:assert/strict'),O=require('../js/doodle-olympics-engi
 const stroke=points=>({color:'#243d32',width:9,points});
 const animal=name=>({name,body:[stroke([[150,120],[320,120],[320,190],[150,190],[150,120]])],legs:[stroke([[165,190],[145,245],[175,300]]),stroke([[300,190],[330,235],[310,305]])]});
 const team=['หนึ่ง','สอง','สาม','สี่'].map(animal);
-for(const mode of ['run','roll']){
+for(const mode of ['run','roll','swim','climb']){
  const t=O.create(team,[mode],100,42),s=O.next(t);s.elapsed=20;
  // มีผู้ถึงเส้นชัยก่อนสองคน และอีกสองคนยังต้องเรียงตามระยะ ไม่ใช้เวลาตัดจบเป็นเวลาเข้าเส้นชัย
  s.racers.forEach((r,i)=>{r.distance=r.x=[100,100,65,40][i];r.finish=i<2?10+i:null;});
@@ -24,7 +24,7 @@ assert.equal(O.stop(null),false);
 class Room{constructor(){this.handlers={};this.frames=[];}on(k,f){this.handlers[k]=f;}to(){}broadcast(k,d){if(k==='dr:frame')this.frames.push(JSON.parse(JSON.stringify(d)));}}
 let time=0;const room=new Room(),host=new Host(room,{events:Object.keys(O.sports),now:()=>time,seed:()=>37});host.join('g1',{name:'เพื่อน',protocol:O.protocol});host.ready('host',team[0]);host.ready('g1',team[1]);
 assert.equal(host.stop(),false);
-for(let i=0;i<5;i++){
+for(let i=0;i<Object.keys(O.sports).length;i++){
  assert.ok(host.start(100));assert.equal(host.stop(),false,'ตัดจบตอนนับถอยหลังไม่ได้');time=host.startsAt+2000;host.tick();assert.equal(host.phase,'race');
  assert.equal(host.stop('g1'),false,'ผู้เล่นตัดจบไม่ได้');assert.equal(host.stop('host',host.round-1),false,'คำสั่งรอบเก่าตัดรอบใหม่ไม่ได้');assert.equal(host.session.done,false);
  assert.ok(host.stop());assert.equal(host.phase,'result');assert.equal(host.tournament.results.length,i+1);
@@ -33,4 +33,4 @@ for(let i=0;i<5;i++){
  const totals=JSON.stringify(host.tournament.totals);assert.equal(host.stop(),false);time+=2000;host.tick();assert.equal(host.tournament.results.length,i+1);assert.equal(JSON.stringify(host.tournament.totals),totals);
 }
 assert.ok(host.canStart(),'จบครบแล้วเริ่มชุดใหม่ได้');assert.ok(host.lobby(),'กลับห้องรอได้');
-console.log('ผ่าน: ตัดจบทั้ง 5 กีฬา / ถึงเส้นชัยก่อนระยะค้าง / ระยะเท่ากันแบ่งคะแนน / ผู้รอดซูโม่และทรงตัวอันดับร่วม / กระโดดใช้ระยะล่าสุด / ตัดครั้งเดียว / คะแนนไม่ซ้ำ / ห้ามผู้เล่นและคำสั่งรอบเก่า / ห้ามตัดตอนนับถอยหลัง / ภาพและผลออนไลน์ตรงกัน / ต่อกีฬาและเริ่มชุดใหม่ได้');
+console.log('ผ่าน: ตัดจบทั้ง 8 กีฬา / ถึงเส้นชัยก่อนระยะค้าง / ระยะเท่ากันแบ่งคะแนน / ผู้รอดซูโม่และทรงตัวอันดับร่วม / กระโดดใช้ระยะล่าสุด / ตัดครั้งเดียว / คะแนนไม่ซ้ำ / ห้ามผู้เล่นและคำสั่งรอบเก่า / ห้ามตัดตอนนับถอยหลัง / ภาพและผลออนไลน์ตรงกัน / ต่อกีฬาและเริ่มชุดใหม่ได้');
