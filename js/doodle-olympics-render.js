@@ -16,13 +16,14 @@
     }
     if(s.mode==="climb"){
       const col=w/s.racers.length,top=80,bottom=h-45,span=bottom-top;
-      s.racers.forEach((r,i)=>{const mid=col*(i+.5),scale=Math.min(.23,(col-18)/Math.max(360,r.g.w,r.g.h),span/(1080+r.g.radius*8)),origin=bottom-r.g.radius*4*scale;
+      s.racers.forEach((r,i)=>{const mid=col*(i+.5),scale=Math.min(.45,(col-18)/Math.max(360,r.g.w,r.g.h),span/(1080+r.g.radius*8)),origin=bottom-r.g.radius*4*scale;
         c.save();c.beginPath();c.rect(i*col,40,col,h-40);c.clip();c.fillStyle=i%2?"#e6d7bb":"#f0e4cd";c.fillRect(i*col,40,col,h-40);
         for(let n=0;n<=22;n++){
           const y=origin-n*55*scale;if(y<top-20)continue;
-          if(n%5===0)text(c,(n*55/90).toFixed(1)+' ม.',i*col+3,y-3,"#8c784d",9);
+
           for(let x=-135;x<=135;x+=45){c.fillStyle="#b4a07a";c.beginPath();c.ellipse(mid+x*scale,y,Math.max(2,9*scale),Math.max(2,6*scale),0,0,Math.PI*2);c.fill();}
         }
+        [0,3,6,9,12].forEach(m=>text(c,m+' ม.',i*col+3,origin-m*90*scale-5,"#8c784d",9));
         r.legs.forEach(l=>{if(l.planted&&Number.isFinite(l.holdX)){c.fillStyle=colors[i];c.beginPath();c.arc(mid+l.holdX*scale,origin-l.holdY*scale,Math.max(3,12*scale),0,Math.PI*2);c.fill();}});
         animal(c,r,mid,origin-r.x*90*scale,scale,r.angle,s.mode);
         c.fillStyle="#df5936";c.fillRect(i*col+5,origin-1080*scale,col-10,3);
