@@ -12,7 +12,7 @@ class Room{
 }
 const ui={enterOnline(){entered++;},leaveOnline(){left++;},race(){frames++;},frame(){frames++;},resetRound(){}};
 const document={getElementById:element,addEventListener(k,f){if(k==='DOMContentLoaded')f();}},window={DoodleRaceUI:ui,addEventListener(){}};
-const context={document,window,location:{href:'https://example.test/party-games/doodle-race.html?room=ABCDE',search:'?room=ABCDE',replace(url){replace=url;}},URL,URLSearchParams,DoodleOlympics:O,PGRoom:Room,PGPeerTransport:class{},performance:{now:()=>0},console,navigator:{},setTimeout(){timers.add(++nextTimer);return nextTimer;},setInterval(){timers.add(++nextTimer);return nextTimer;},clearTimeout(id){timers.delete(id);},clearInterval(id){timers.delete(id);}};
+const context={document,window,location:{href:'https://example.test/party-games/doodle-race.html?room=ABCDE',search:'?room=ABCDE',replace(url){replace=url;}},URL,URLSearchParams,crypto:require("node:crypto").webcrypto,DoodleOlympics:O,PGRoom:Room,PGPeerTransport:class{},performance:{now:()=>0},console,navigator:{},setTimeout(){timers.add(++nextTimer);return nextTimer;},setInterval(){timers.add(++nextTimer);return nextTimer;},clearTimeout(id){timers.delete(id);},clearInterval(id){timers.delete(id);}};
 vm.runInNewContext(fs.readFileSync(require.resolve('../js/doodle-race-online.js'),'utf8'),context);
 (async()=>{
  element('drOnlineName').value='ผู้เล่น';await element('drJoinRoom').handlers.click();assert.equal(entered,1);assert.equal(Room.last.joinMessage.d.protocol,O.protocol);

@@ -12,17 +12,29 @@
     room.on("dr:join",(d,id)=>this.join(id,d));room.on("dr:ready",(d,id)=>this.ready(id,d));
     room.on("dr:edit",(_,id)=>this.edit(id));room.on("peer:leave",id=>this.leave(id));
     room.on("dr:ping",(_,id)=>room.to(id,"dr:pong",{}));
+    room.on("dr:leave",(_,id)=>{const p=this.players.find(p=>p.id===id);if(p)p.resumeKey=null;this.leave(id);});
   }
   Host.prototype.ack=function(id,ok,message=""){const data={ok,message};if(id==="host")this.onAck(data);else this.room.to(id,"dr:ack",data);return ok;};
   Host.prototype.join=function(id,d){
     if(!id||id==="host")return false;
     if(!d||d.protocol!==O.protocol)return this.ack(id,false,"เกมของคุณกับเจ้าของห้องเป็นคนละรุ่น กรุณาปิดหน้าเกมแล้วเปิดลิงก์ชวนเพื่อนล่าสุดจากเจ้าของห้อง");
-    if(this.phase!=="lobby")return this.ack(id,false,"ห้องกำลังแข่งอยู่ ให้เพื่อนกลับห้องรอก่อนแล้วเข้ามาใหม่");
-    if(this.players.some(p=>p.id===id)){this.publish();return true;}
+    const key=typeof d.resumeKey==='string'&&/^[a-f0-9]{32}$/.test(d.resumeKey)?d.resumeKey:null;
+    const returning=this.players.find(p=>p.id===id||key&&p.resumeKey===key);
+    if(returning){
+      returning.id=id;returning.connected=true;this.publish();this.sync(id);return true;
+    }
+    if(this.phase!=="lobby")return this.ack(id,false,"ห้องกำลังแข่งอยู่ รับเฉพาะผู้เล่นเดิมที่กลับมาเชื่อมต่อ");
     if(this.players.length>=6)return this.ack(id,false,"ห้องเต็มแล้ว รับได้ 6 คน");
     const name=d&&typeof d.name==="string"?d.name.trim().slice(0,24):"";
     if(!name)return this.ack(id,false,"กรุณาใส่ชื่อผู้เล่น");
-    this.players.push({id,name,ready:false,connected:true,drawing:null});this.publish();return true;
+    this.players.push({id,name,ready:false,connected:true,drawing:null,resumeKey:key});this.publish();return true;
+  };
+  // รหัสกลับเข้าห้องส่งเฉพาะเจ้าของห้อง ไม่เผยในรายชื่อหรือภาพการแข่งขัน
+  Host.prototype.raceData=function(){return {protocol:O.protocol,mode:this.session.mode,round:this.round,distance:this.distance,events:this.tournament.events,index:this.tournament.index,totals:copy(this.tournament.totals),results:copy(this.tournament.results),team:this.racers.map(r=>copy(r.drawing))};};
+  Host.prototype.sync=function(id){
+    if(!['race','result'].includes(this.phase))return;
+    this.room.to(id,'dr:race',{...this.raceData(),resync:true});
+    this.room.to(id,'dr:frame',this.snapshot());
   };
   Host.prototype.ready=function(id,d){
     const p=this.players.find(p=>p.id===id);
@@ -33,8 +45,8 @@
   Host.prototype.edit=function(id){const p=this.players.find(p=>p.id===id);if(this.phase!=="lobby"||!p)return false;p.ready=false;this.publish();return true;};
   Host.prototype.leave=function(id){
     const p=this.players.find(p=>p.id===id);if(!p)return;
-    if(this.phase==="lobby")this.players=this.players.filter(p=>p.id!==id);
-    else{p.connected=false;if(this.phase==="countdown"){if(this.tournament&&this.tournament.index>0){this.tournament.index--;this.tournament.session.done=true;this.phase="result";}else{this.phase="lobby";this.tournament=null;this.players=this.players.filter(p=>p.connected);}}}
+    if(this.phase==="lobby"&&!p.resumeKey)this.players=this.players.filter(p=>p.id!==id);
+    else{p.connected=false;if(this.phase==="countdown"&&!p.resumeKey){if(this.tournament&&this.tournament.index>0){this.tournament.index--;this.tournament.session.done=true;this.phase="result";}else{this.phase="lobby";this.tournament=null;this.players=this.players.filter(p=>p.connected);}}}
     this.publish();
   };
   Host.prototype.settings=function(list,distance){if(this.phase!=="lobby")return false;const chosen=O.events(list);if(!chosen.length)return false;this.events=chosen;this.distance=distance===200?200:100;this.players.forEach(p=>{if(p.drawing&&!O.validAthlete(p.drawing,chosen))p.ready=false;});this.publish();return true;};
@@ -55,7 +67,7 @@
   Host.prototype.tick=function(){
     if(this.phase==="countdown"){
       const n=Math.max(0,Math.ceil((this.startsAt-this.now())/1000));if(n>0){if(n!==this.lastCount){this.lastCount=n;this.publish();}return;}
-      this.phase="race";const data={protocol:O.protocol,mode:this.session.mode,round:this.round,distance:this.distance,events:this.tournament.events,index:this.tournament.index,totals:copy(this.tournament.totals),results:copy(this.tournament.results),team:this.racers.map(r=>copy(r.drawing))};this.room.broadcast("dr:race",data);this.onRace(data);
+      this.phase="race";const data=this.raceData();this.room.broadcast("dr:race",data);this.onRace(data);
     }
     if(this.phase!=="race")return;
     // ชั่วโมงฝั่งโฮสต์เป็นหลัก แท็บที่สะดุดค่อยจำลองก้าวที่ค้างจนตามทัน

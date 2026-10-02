@@ -353,7 +353,7 @@ document.addEventListener("DOMContentLoaded", () => {
     settings(list, meters) { selected=O.events(list);distance=meters;if(!$("drEditor").hidden)setTool(tool); },
     selection() { return {events:selectedSports("drSports"),distance:Number($("drDistance").value)}; },
     race(data) {
-      if (!online || data.protocol!==O.protocol || !O.sports[data.mode] || data.events[data.index]!==data.mode || data.round<=onlineRound) return;
+      if (!online || data.protocol!==O.protocol || !O.sports[data.mode] || data.events[data.index]!==data.mode || data.round<onlineRound || data.round===onlineRound&&!data.resync) return;
       onlineRound=data.round;onlineSeq=-1;distance=data.distance;count=data.team.length;selected=O.events(data.events);
       tournament={team:data.team,events:selected,index:data.index,totals:data.totals,results:data.results};
       session=O.makeSession(data.mode,data.team,data.team.map(()=>0),distance);countdown=0;prepareRace();

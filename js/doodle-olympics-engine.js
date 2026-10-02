@@ -48,22 +48,37 @@
     const throwArm=limbs[throwLimb],lever=clamp((throwArm?throwArm.chord:35)/100,.35,2.5),throwStrength=throwArm?throwArm.strength:.25;
     return {cx,cy,w:b.w,h:b.h,bottom:low,points,bodyPoints,limbs,mass,radius,collisionRadius,base,height,roundness,area,protrusion,halfBase,footMid,comHeight,inertia,spring,airControl,waterDrag,climbReach,grip,throwLimb,lever,throwStrength,push:clamp((.3+strength*.8)*Math.sqrt(Math.max(1,feet.length))*(.65+base*.35)+reach*.35,.25,3.8),balanceControl:clamp(.3+base*.5+strength*.2+airControl*.3,.3,2.2),launchAngle:clamp(.72+avg(feet.map(l=>(l.points.at(-1)[0]-l.points[0][0])/Math.max(20,l.chord)))*.3,.48,1.03)};
   }
+  // ปลายแขนขาที่จับผาหรือยืนบนแท่นต้องอยู่กับจุดสัมผัส ข้อแรกยังต่อกับเส้นเดิม
+  function contactTip(r,i,mode){
+    const l=r.g.limbs[i],state=r.legs[i],g=r.g,cs=Math.cos(r.angle),sn=Math.sin(r.angle);
+    let dx,dy;
+    if(mode==='climb'&&Number.isFinite(state.holdX)){
+      dx=state.holdX;dy=r.x*90-state.holdY;
+    }else if(mode==='balance'&&l.foot&&!r.out){
+      const tilt=r.platformTilt||0,tip=l.points.at(-1),span=tip[0]-g.footMid;
+      const bx=g.cx-g.footMid,by=g.cy-g.bottom;
+      dx=span*Math.cos(tilt)-(bx*cs-by*sn);dy=span*Math.sin(tilt)-(bx*sn+by*cs);
+    }else return null;
+    return [g.cx+dx*cs+dy*sn,g.cy-dx*sn+dy*cs];
+  }
   function pose(r,mode,sampled=false){
     const limbs=r.g.limbs.map((l,i)=>{const state=r.legs[i],a=l.points[0],sn=Math.sin(state.phase),swing=sn*state.swing,cs=Math.cos(swing),ss=Math.sin(swing),extension=state.extension;
-      const source=sampled?l.points:r.drawing.legs[i].points;return source.map((p,j)=>{const t=sampled?j/(source.length-1):l.progress[j],dx=(p[0]-a[0])*extension,dy=(p[1]-a[1])*extension;return [a[0]+dx*cs-dy*ss+Math.sin(state.phase*2)*state.bend*t*t*18,a[1]+dx*ss+dy*cs];});
+      const target=contactTip(r,i,mode),source=sampled?l.points:r.drawing.legs[i].points;const points=source.map((p,j)=>{const t=sampled?j/(source.length-1):l.progress[j],dx=(p[0]-a[0])*extension,dy=(p[1]-a[1])*extension;return [a[0]+dx*cs-dy*ss+Math.sin(state.phase*2)*state.bend*t*t*18,a[1]+dx*ss+dy*cs];});
+      if(target){const end=points.at(-1);return points.map((p,j)=>{const t=sampled?j/(source.length-1):l.progress[j],weight=t*t*(3-2*t);return [p[0]+(target[0]-end[0])*weight,p[1]+(target[1]-end[1])*weight];});}
+      return points;
     });return {body:r.drawing.body.map(s=>s.points),limbs};
   }
   function outline(r,mode){const p=pose(r,mode,true);return hull([...r.g.bodyPoints,...p.limbs.flatMap((l,j)=>l.filter((_,i)=>i%3===0||i===l.length-1).flatMap(p=>{const w=r.drawing.legs[j].width/2;return [[p[0]-w,p[1]-w],[p[0]+w,p[1]-w],[p[0]+w,p[1]+w],[p[0]-w,p[1]+w]];}))]).map(p=>[(p[0]-r.g.cx)*.25,(p[1]-r.g.cy)*.25]);}
   function support(r,angle,mode){const sn=Math.sin(angle),cs=Math.cos(angle);return Math.max(2,...outline(r,mode).map(p=>p[0]*sn+p[1]*cs));}
   function articulation(r,mode,dt){
-    r.legs.forEach((l,i)=>{const g=r.g.limbs[i];l.phase+=dt*Math.PI*2*l.cadence;
+    r.legs.forEach((l,i)=>{const g=r.g.limbs[i];if(mode!=='climb'||!r.resting)l.phase+=dt*Math.PI*2*l.cadence;
       if(mode==='sumo'){l.swing=g.foot?.28:.65;l.bend=.35;l.extension=g.foot?1:.9+Math.sin(l.phase)*.18;}
       else if(mode==='roll'){l.swing=.12;l.bend=.2;l.extension=.72+Math.sin(l.phase)*.08;}
       else if(mode==='jump'){l.swing=r.launched?(g.foot?.3:.65):.12;l.bend=r.launched?.5:1.2;l.extension=r.launched?1:.65+.35*Math.abs(Math.cos(r.time*Math.PI/3));}
       else if(mode==='swim'){l.swing=g.foot?.55:1.05;l.bend=.45;l.extension=.85+Math.sin(l.phase)*.15;}
-      else if(mode==='climb'){l.swing=r.resting?.1:.65;l.bend=.65;l.extension=r.resting?.85:.8+.2*Math.cos(l.phase);}
+      else if(mode==='climb'){l.swing=.12;l.bend=.3;l.extension=1;}
       else if(mode==='discus'){l.swing=r.launched?.15:g.foot?.18:.75;l.bend=.25;l.extension=i===r.g.throwLimb?1.05: .85;}
-      else{l.swing=g.foot?clamp(-r.angle*.25,-.15,.15):.7;l.bend=g.foot?.4:.6;l.extension=1;}
+      else{l.phase=-(r.angle-(r.platformTilt||0))*3-r.omega*1.2+i*.4;l.swing=g.foot?0:.8;l.bend=g.foot?.12:.5;l.extension=1;}
     });
   }
   function stance(r){const p=pose(r,'sumo',true),feet=p.limbs.filter((_,i)=>r.g.limbs[i].foot).map(p=>p.at(-1));if(!feet.length)return .18;const low=Math.max(...feet.map(p=>p[1]));return .25+.75*feet.reduce((n,p)=>n+clamp(1-(low-p[1])/30,0,1),0)/feet.length;}
@@ -72,7 +87,7 @@
     s.racers=team.map((d,i)=>{
       const g=geometry(d);if(mode==='run'){const r=E.makeRacer(copy(d),seeds[i],i);r.g=g;r.mass=g.mass;r.balance=clamp(.65+g.base*.35,.65,1.3);return r;}
       const rand=E.random(seeds[i]),a=i/team.length*Math.PI*2,start=Math.max(0,Math.min(145,s.arena-g.radius-20));
-      return {id:i,drawing:copy(d),g,rng:rand,x:mode==='sumo'?Math.cos(a)*start:0,y:mode==='sumo'?Math.sin(a)*start:0,vx:0,vy:0,angle:mode==='sumo'?a+Math.PI:0,omega:0,distance:0,speed:0,time:0,finish:null,score:0,out:false,nextForce:0,forceX:0,forceY:0,event:'',eventUntil:0,launched:false,hit:0,stagger:0,drive:0,energy:1,resting:false,slipUntil:0,releaseAt:mode==='discus'?2.4+rand()*.6:0,discX:0,discY:0,discVx:0,discVy:0,legs:d.legs.map(stroke=>({stroke,phase:rand()*Math.PI*2,cadence:1.1+rand()*.5,swing:0,bend:0,extension:1}))};
+      return {id:i,drawing:copy(d),g,rng:rand,x:mode==='sumo'?Math.cos(a)*start:0,y:mode==='sumo'?Math.sin(a)*start:0,vx:0,vy:0,angle:mode==='sumo'?a+Math.PI:mode==='climb'?-Math.PI/2:0,omega:0,distance:0,speed:0,time:0,finish:null,score:0,out:false,nextForce:0,forceX:0,forceY:0,event:'',eventUntil:0,launched:false,hit:0,stagger:0,drive:0,energy:1,resting:false,slipUntil:0,platformTilt:0,releaseAt:mode==='discus'?2.4+rand()*.6:0,discX:0,discY:0,discVx:0,discVy:0,legs:d.legs.map(stroke=>({stroke,phase:rand()*Math.PI*2,cadence:1.1+rand()*.5,swing:0,bend:0,extension:1}))};
     });return s;
   }
   function eliminate(r,s){r.out=true;r.finish=s.elapsed;r.score=s.elapsed;r.event='หลุดสนาม';r.eventUntil=s.elapsed+2;}
@@ -133,7 +148,27 @@
     }else if(s.mode==='climb'){
       s.racers.forEach(r=>{if(r.finish!==null)return;
         if(r.energy<.2)r.resting=true;else if(r.energy>.8)r.resting=false;
-        const pull=r.legs.length?r.legs.reduce((n,l,i)=>n+Math.max(0,Math.sin(l.phase))*(r.g.limbs[i].foot?.35:1),0)/Math.sqrt(r.legs.length):.15;
+        // สลับเอื้อมก่อนจับ แล้วดึงตัวขณะที่ปลายแขนขาอยู่กับปุ่มเดิมบนผา
+        let contacts=0,pull=0;
+        r.legs.forEach((state,i)=>{
+          const limb=r.g.limbs[i],phase=(state.phase/(Math.PI*2))%1,planted=phase>=.25;
+          const joint=limb.points[0],cs=Math.cos(r.angle),sn=Math.sin(r.angle),jx=(joint[0]-r.g.cx)*cs-(joint[1]-r.g.cy)*sn,jy=(joint[0]-r.g.cx)*sn+(joint[1]-r.g.cy)*cs;
+          const shoulderY=r.x*90-jy;
+          if(!Number.isFinite(state.holdX)||state.planted&&!planted){
+            state.fromX=Number.isFinite(state.holdX)?state.holdX:jx;state.fromY=Number.isFinite(state.holdY)?state.holdY:shoulderY;
+            const candidates=[];
+            for(let hx=-135;hx<=135;hx+=45)for(let row=Math.ceil((shoulderY-limb.length)/55);row<=Math.floor((shoulderY+limb.length)/55);row++){
+              const hy=row*55;if(Math.hypot(hx-jx,hy-shoulderY)<=limb.length*1.05)candidates.push([hx,hy]);
+            }
+            candidates.sort((a,b)=>b[1]-a[1]||Math.abs(a[0]-jx)-Math.abs(b[0]-jx));
+            state.canGrip=!!candidates.length;[state.targetX,state.targetY]=candidates[0]||[jx,shoulderY];
+          }
+          if(!planted){
+            const blend=clamp(phase/.25,0,1);state.holdX=state.fromX+(state.targetX-state.fromX)*blend;state.holdY=state.fromY+(state.targetY-state.fromY)*blend;
+          }else{state.holdX=state.targetX;state.holdY=state.targetY;if(state.canGrip){contacts++;pull+=(limb.foot?.35:1)*Math.max(.1,Math.sin(phase*Math.PI));}}
+          state.planted=planted&&state.canGrip;
+        });
+        pull=r.legs.length?pull/Math.sqrt(r.legs.length):.15;
         const gap=.65+.12*Math.sin(Math.floor(r.x/.7)*2.1),reach=clamp(r.g.climbReach/gap,.3,1.8),load=r.g.grip/Math.sqrt(r.g.mass);
         r.energy=clamp(r.energy+dt*(r.resting?.3:-.055*r.g.mass/(.5+r.g.grip)*(1+r.g.climbReach*.3)),0,1);
         if(s.elapsed>=r.nextForce){r.forceX=.85+r.rng()*.3;r.nextForce=s.elapsed+.9+r.rng()*.6;
@@ -141,7 +176,9 @@
           if(!r.resting&&r.rng()<risk){r.slipUntil=s.elapsed+.45;r.hit=1;r.event='มือหลุด ลื่นลง!';r.eventUntil=s.elapsed+.8;}
         }
         r.vx=s.elapsed<r.slipUntil?-.9:r.resting?0:(.16+.42*pull)*reach*load*r.forceX*(.55+.45*r.energy);
-        r.x=clamp(r.x+r.vx*dt,0,12);r.distance=r.x;r.angle=Math.sin(s.elapsed*2+r.id)*.08;
+        if(r.legs.length&&!contacts)r.vx=Math.min(0,r.vx);
+        r.x=clamp(r.x+r.vx*dt,0,12);r.distance=r.x;r.angle=-Math.PI/2+Math.sin(s.elapsed*2+r.id)*.06;
+        if(s.elapsed<r.slipUntil)r.legs.forEach(l=>{l.holdY+=r.vx*90*dt;l.planted=false;});
         if(r.resting){r.event='พักแขน เติมแรง';r.eventUntil=s.elapsed+.1;}
         if(r.x>=12){r.finish=s.elapsed;r.x=r.distance=12;}
       });s.done=s.racers.every(r=>r.finish!==null);if(!s.done&&s.elapsed>=75)stop(s);
@@ -168,11 +205,11 @@
     }else if(s.mode==='balance'){
       if(s.elapsed>=s.nextWind){s.wind=(s.rng()-.5)*(.15+s.elapsed*.025);s.nextWind=s.elapsed+.4+s.rng();}
       s.tilt=Math.sin(s.elapsed*.9)*(.03+s.elapsed*.006)+Math.sin(s.elapsed*.4)*.025;
-      s.racers.forEach(r=>{if(r.out){r.angle+=r.omega*dt;return;}if(s.elapsed>=r.nextForce){r.forceX=(r.rng()-.5)*(.05+s.elapsed*.002);r.nextForce=s.elapsed+.3+r.rng()*.6;}
+      s.racers.forEach(r=>{r.platformTilt=s.tilt;if(r.out){r.angle+=r.omega*dt;return;}if(s.elapsed>=r.nextForce){r.forceX=(r.rng()-.5)*(.05+s.elapsed*.002);r.nextForce=s.elapsed+.3+r.rng()*.6;}
         const error=r.angle-s.tilt,gravity=Math.sin(error)*(1.5+s.elapsed*.07)*r.g.height,correction=-error*r.g.balanceControl*2.2/(1+s.elapsed*.025),gust=(s.wind+r.forceX)/Math.sqrt(r.g.mass);
         r.omega+=(gravity+correction+gust-r.omega*.8)*dt/Math.sqrt(r.g.inertia);r.angle+=r.omega*dt;
         r.vx+=(Math.sin(s.tilt)*12/(.4+r.g.base)-r.vx*.7)*dt;r.x+=r.vx*dt;
-        const projected=(r.g.cx-r.g.footMid)*.25+Math.sin(error)*r.g.comHeight;
+        const projected=(r.g.cx-r.g.footMid)*.25*Math.cos(error)+Math.sin(error)*r.g.comHeight;
         if(Math.abs(projected)>r.g.halfBase+2||Math.abs(error)>1.05||Math.abs(r.x)>95)eliminate(r,s);
       });const alive=s.racers.filter(r=>!r.out);if(!alive.length||s.elapsed>=60){alive.forEach(r=>{r.finish=60;r.score=60;});s.done=true;}
     }
@@ -215,8 +252,8 @@
     }t.results.push({mode:s.mode,rows});return true;
   }
   function standings(t){const a=t.totals.slice().sort((a,b)=>Math.abs(b.points-a.points)<1e-7?a.id-b.id:b.points-a.points);return a.map((r,i)=>({...r,place:i&&Math.abs(r.points-a[i-1].points)<1e-7?a.findIndex(x=>Math.abs(x.points-r.points)<1e-7)+1:i+1}));}
-  function snapshot(s){return {mode:s.mode,distance:s.distance,elapsed:s.elapsed,done:s.done,stopped:!!s.stopped,arena:s.arena,tilt:s.tilt,wind:s.wind,racers:s.racers.map(r=>{const o={id:r.id};["distance","speed","time","finish","event","eventUntil","x","y","vx","vy","angle","omega","score","out","stopped","launched","hit","stagger","drive","energy","resting","discX","discY","discVx","discVy"].forEach(k=>{if(r[k]!==undefined)o[k]=r[k];});o.legs=r.legs.map(l=>({phase:l.phase,cadence:l.cadence,swing:l.swing,bend:l.bend,extension:l.extension}));return o;})};}
+  function snapshot(s){return {mode:s.mode,distance:s.distance,elapsed:s.elapsed,done:s.done,stopped:!!s.stopped,arena:s.arena,tilt:s.tilt,wind:s.wind,racers:s.racers.map(r=>{const o={id:r.id};["distance","speed","time","finish","event","eventUntil","x","y","vx","vy","angle","omega","score","out","stopped","launched","hit","stagger","drive","energy","resting","platformTilt","discX","discY","discVx","discVy"].forEach(k=>{if(r[k]!==undefined)o[k]=r[k];});o.legs=r.legs.map(l=>({phase:l.phase,cadence:l.cadence,swing:l.swing,bend:l.bend,extension:l.extension,holdX:l.holdX,holdY:l.holdY,planted:l.planted}));return o;})};}
   function apply(s,data){["elapsed","done","stopped","arena","tilt","wind"].forEach(k=>{s[k]=data[k];});data.racers.forEach((r,i)=>{Object.keys(r).forEach(k=>{if(k!=="legs"&&k!=="id")s.racers[i][k]=r[k];});r.legs.forEach((l,j)=>Object.assign(s.racers[i].legs[j],l));});}
   // รุ่นข้อความออนไลน์ต้องตรงกัน ป้องกันหน้าวิ่งรุ่นเก่าอ่านสถานะของกีฬาอื่น
-  const api={protocol:5,sports,events,validAthlete,geometry,pose,outline,support,traits,collision,create,next,step,rank,record,standings,snapshot,apply,makeSession,resultValue,timed,stop};if(typeof module!=="undefined"&&module.exports)module.exports=api;else root.DoodleOlympics=api;
+  const api={protocol:6,sports,events,validAthlete,geometry,pose,outline,support,traits,collision,create,next,step,rank,record,standings,snapshot,apply,makeSession,resultValue,timed,stop};if(typeof module!=="undefined"&&module.exports)module.exports=api;else root.DoodleOlympics=api;
 })(typeof window!=="undefined"?window:this);
