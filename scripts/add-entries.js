@@ -16,9 +16,10 @@ const { byKey, loadPool, dupValue, uiCats, DATA_DIR, POOLS } = require("./conten
 
 const [key, jsonPath, ...flags] = process.argv.slice(2);
 const DRY = flags.includes("--dry");
+const INIT = flags.includes("--init");
 
 if (!key || !jsonPath) {
-  console.error("ใช้: node scripts/add-entries.js <คลัง> <ไฟล์.json> [--dry]");
+  console.error("ใช้: node scripts/add-entries.js <คลัง> <ไฟล์.json> [--dry] [--init สำหรับคลังใหม่]");
   console.error("คลังที่ต่อท้ายได้: " + POOLS.filter((p) => p.appendable !== false).map((p) => p.key).join(", "));
   process.exit(2);
 }
@@ -44,7 +45,12 @@ if (!Array.isArray(incoming) || !incoming.length) {
   process.exit(2);
 }
 
-const existing = loadPool(pool);
+const file = path.join(DATA_DIR, pool.file);
+if (INIT && fs.existsSync(file)) {
+  console.error("--init ใช้ได้เฉพาะคลังใหม่ ยังไม่เขียนทับไฟล์ที่มีอยู่");
+  process.exit(2);
+}
+const existing = INIT ? [] : loadPool(pool);
 const seen = new Set(existing.map((x) => dupValue(pool, x)));
 const norm = (s) => String(s).toLowerCase().replace(/[\s?!.,:;"'()]/g, "");
 const seenNorm = new Set(existing.map((x) => norm(dupValue(pool, x))));
@@ -106,8 +112,7 @@ function line(item) {
   return "  { " + keys.map((k) => k + ": " + lit(item[k])).join(", ") + " },";
 }
 
-const file = path.join(DATA_DIR, pool.file);
-const src = fs.readFileSync(file, "utf8");
+const src = INIT ? "// คลัง " + pool.label + "\nconst " + pool.varName + " = [\n];\n" : fs.readFileSync(file, "utf8");
 const eol = src.includes("\r\n") ? "\r\n" : "\n";
 const close = src.lastIndexOf(eol + "];");
 if (close < 0) {

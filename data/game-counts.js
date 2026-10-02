@@ -1,6 +1,7 @@
 // สร้างอัตโนมัติจาก scripts/build-game-counts.js — อย่าแก้ไขตรงนี้ตรง ๆ
 // รันใหม่ทุกครั้งที่แก้ไขคลังโจทย์: node scripts/build-game-counts.js
 const GAME_COUNTS = {
+  "witness-sketch.html": { count: 16, unit: "รูป" },
   "category.html": { count: 358, unit: "หมวด" },
   "charades.html": { count: 859, unit: "คำ" },
   "drinking-games.html": { count: 17, unit: "เกม" },

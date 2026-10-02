@@ -8,6 +8,7 @@ const DATA_DIR = path.join(__dirname, "..", "data");
 const OUT_FILE = path.join(DATA_DIR, "game-counts.js");
 
 const PAGES = [
+  { page: "witness-sketch.html", unit: "รูป", files: [["sketch-references.js", "SKETCH_REFERENCES"]] },
   { page: "category.html", unit: "หมวด", files: [["category-game.js", "CATEGORIES"]] },
   { page: "charades.html", unit: "คำ", files: [["charades.js", "CHARADES_WORDS"]] },
   { page: "drinking-games.html", unit: "เกม", files: [["drinking-games.js", "DRINKING_GAMES"]] },

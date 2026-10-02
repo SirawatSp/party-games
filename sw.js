@@ -1,7 +1,7 @@
 // Service Worker สำหรับเล่นออฟไลน์ได้ทั้งเว็บ (เก็บ cache ทุกหน้า/สคริปต์/คลังโจทย์ไว้ในเครื่อง)
 // เปิดเว็บครั้งแรกตอนมีเน็ต ระบบจะโหลดเก็บไว้ให้อัตโนมัติ ครั้งต่อไปเปิดได้แม้ไม่มีเน็ตเลย
 // อัปเดตเนื้อหาเว็บทีไร ให้เปลี่ยนเลข CACHE_VERSION เพื่อบังคับดาวน์โหลดของใหม่ทับของเก่า
-const CACHE_VERSION = "party-games-v90";
+const CACHE_VERSION = "party-games-v91";
 
 // หมายเหตุ: เกม "ทายถนน" (street-scene) เก็บโครงหน้า แผนที่ และคลังสถานที่ไว้
 // โหมด "สถานที่สำคัญ" จึงเล่นได้เต็มรูปแบบตอนออฟไลน์
@@ -14,6 +14,11 @@ const PRECACHE_URLS = [
   "manifest.json",
   "animalrace.html",
   "doodle-race.html",
+  "witness-sketch.html",
+  "css/witness-sketch.css?v=91",
+  "js/witness-sketch-engine.js?v=91",
+  "js/witness-sketch.js?v=91",
+  "data/sketch-references.js",
   "bluff.html",
   "borderchain.html",
   "category.html",
@@ -155,14 +160,15 @@ self.addEventListener("fetch", (event) => {
 
   // หน้าโอลิมปิกต้องสดก่อนเข้าห้อง ป้องกันเพื่อนโหลดหน้าวิ่งเก่าจาก cache
   // ไฟล์เกมระบุรุ่นใน URL แล้ว จึงยังเปิดออฟไลน์ได้ด้วยชุดไฟล์รุ่นเดียวกัน
-  if (req.mode === "navigate" && new URL(req.url).pathname.endsWith("/doodle-race.html")) {
+  const freshGame = ["doodle-race.html", "witness-sketch.html"].find(page => new URL(req.url).pathname.endsWith("/" + page));
+  if (req.mode === "navigate" && freshGame) {
     event.respondWith(fetch(req, { cache: "no-store" }).then((res) => {
       if (res.status === 200) {
         const clone = res.clone();
         return caches.open(CACHE_VERSION).then((cache) => cache.put(req, clone)).catch(() => {}).then(() => res);
       }
       return caches.match(req).then((cached) => cached || res);
-    }).catch(() => caches.match(req).then((cached) => cached || caches.match("doodle-race.html"))));
+    }).catch(() => caches.match(req).then((cached) => cached || caches.match(freshGame))));
     return;
   }
 

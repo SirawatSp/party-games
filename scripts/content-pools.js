@@ -20,6 +20,13 @@ const DATA_DIR = path.join(ROOT, "data");
 //                ห้ามเพิ่มค่าใหม่โดยไม่แก้หน้าเว็บด้วย
 const POOLS = [
   {
+    key: "sketch", file: "sketch-references.js", varName: "SKETCH_REFERENCES",
+    page: "witness-sketch.html", script: "js/witness-sketch.js",
+    label: "วาดจากคำให้การ — ภาพอ้างอิง",
+    required: ["name", "cat", "file", "image", "author", "license", "licenseUrl"], optional: [],
+    dupKey: "name", catField: "cat", closedCats: true,
+  },
+  {
     key: "flashquiz", file: "flashquiz.js", varName: "FLASHQUIZ_LIST",
     page: "flashquiz.html", script: "js/flashquiz.js",
     label: "Flash Quiz — คำถามความรู้รอบตัว",
