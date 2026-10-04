@@ -29,6 +29,7 @@
     <ol>
       <li>เลือกหมวดหรือกด “ทุกสถานการณ์” แล้วให้หนึ่งคนอ่านโจทย์ออกเสียง</li>
       <li>ทุกคนเลือกคำตอบของตัวเอง ถ้าโจทย์ถามถึงคนในวงให้นับ 1-2-3 แล้วชี้พร้อมกัน</li>
+      <li>หมวด “จะโทรหาใคร” เลือกคนอื่นที่ร่วมวงอยู่หนึ่งคน ห้ามเลือกตัวเองหรือคนนอกวง แล้วบอกว่าจะขอให้เขาช่วยอะไรและเพราะอะไร</li>
       <li>เล่าเหตุผลทีละคน คนอื่นมีสิทธิ์ถามต่อหรือแย้งได้คนละหนึ่งครั้ง</li>
       <li>ถ้าคำตอบเปลี่ยนหลังฟังเพื่อน ให้บอกด้วยว่าเหตุผลไหนทำให้เปลี่ยนใจ</li>
       <li>เหตุการณ์ทั้งหมดเป็นเรื่องสมมติ ใช้เปิดบทสนทนา ไม่ใช่คำแนะนำสำหรับเหตุฉุกเฉินจริง</li>
@@ -37,6 +38,7 @@
 
   <div class="tags situation-tags reveal-up" id="situationTags">
     <span class="tag active" data-cat="all">ทุกสถานการณ์</span>
+    <span class="tag" data-cat="phone">☎️ จะโทรหาใคร</span>
     <span class="tag" data-cat="circle">👥 เลือกคนในวง</span>
     <span class="tag" data-cat="work">💼 ที่ทำงาน</span>
     <span class="tag" data-cat="event">🎤 ออกงาน</span>
@@ -58,7 +60,7 @@
       </div>
       <div class="situation-alert">สถานการณ์ตรงหน้า</div>
       <p id="situationText"></p>
-      <div class="situation-talkline">เลือกคำตอบ แล้วเล่าให้วงฟังว่า “ทำไม”</div>
+      <div class="situation-talkline" id="situationTalkline">เลือกคำตอบ แล้วเล่าให้วงฟังว่า “ทำไม”</div>
     </article>
   </main>
 

@@ -3,11 +3,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const categoryEl = document.getElementById("situationCategory");
   const caseEl = document.getElementById("situationCase");
   const textEl = document.getElementById("situationText");
+  const talklineEl = document.getElementById("situationTalkline");
   const card = document.getElementById("situationCard");
   const nextBtn = document.getElementById("situationNextBtn");
   const timerBtn = document.getElementById("situationTimerBtn");
 
   const CAT_LABEL = {
+    phone: "จะโทรหาใคร",
     circle: "เลือกคนในวง", work: "ที่ทำงาน", event: "ออกงาน", travel: "เดินทาง",
     emergency: "เหตุฉุกเฉิน", money: "เงินและของมีค่า", family: "ครอบครัว",
     digital: "โลกออนไลน์", everyday: "ชีวิตประจำวัน", wild: "เหนือความคาดหมาย"
@@ -41,6 +43,9 @@ document.addEventListener("DOMContentLoaded", () => {
     categoryEl.textContent = CAT_LABEL[item.cat];
     caseEl.textContent = "CASE " + String(index).padStart(3, "0");
     textEl.textContent = item.scenario;
+    talklineEl.textContent = item.cat === "phone"
+      ? "โทรหาใครในวง 1 คน · ขอให้ช่วยอะไร · ทำไมต้องเป็นคนนี้?"
+      : "เลือกคำตอบ แล้วเล่าให้วงฟังว่า “ทำไม”";
     card.classList.remove("situation-pop");
     void card.offsetWidth;
     card.classList.add("situation-pop");
