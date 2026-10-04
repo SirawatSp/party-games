@@ -1,7 +1,7 @@
 // Service Worker สำหรับเล่นออฟไลน์ได้ทั้งเว็บ (เก็บ cache ทุกหน้า/สคริปต์/คลังโจทย์ไว้ในเครื่อง)
 // เปิดเว็บครั้งแรกตอนมีเน็ต ระบบจะโหลดเก็บไว้ให้อัตโนมัติ ครั้งต่อไปเปิดได้แม้ไม่มีเน็ตเลย
 // อัปเดตเนื้อหาเว็บทีไร ให้เปลี่ยนเลข CACHE_VERSION เพื่อบังคับดาวน์โหลดของใหม่ทับของเก่า
-const CACHE_VERSION = "party-games-v93";
+const CACHE_VERSION = "party-games-v94";
 
 // หมายเหตุ: เกม "ทายถนน" (street-scene) เก็บโครงหน้า แผนที่ และคลังสถานที่ไว้
 // โหมด "สถานที่สำคัญ" จึงเล่นได้เต็มรูปแบบตอนออฟไลน์
@@ -81,7 +81,7 @@ const PRECACHE_URLS = [
   "js/psychology.js",
   "js/rapidfire.js",
   "js/roundhand.js",
-  "js/situation.js",
+  "js/situation.js?v=94",
   "js/street-scene.js",
   "js/street-scene-api.js",
   "js/landmark-photo.js",
@@ -118,7 +118,7 @@ const PRECACHE_URLS = [
   "data/street-scenes.js",
   "data/race-animals.js",
   "data/shes-a-10-but.js",
-  "data/situations.js",
+  "data/situations.js?v=94",
   "data/tapple-categories-en.js",
   "data/tapple-categories.js",
   "data/tattoo-colour.js",
@@ -158,9 +158,9 @@ self.addEventListener("fetch", (event) => {
   // ตอนออฟไลน์ฟอนต์จะโหลดไม่ได้ก็แค่ fallback ไปฟอนต์ระบบ ไม่กระทบการเล่น
   if (new URL(req.url).origin !== self.location.origin) return;
 
-  // หน้าโอลิมปิกต้องสดก่อนเข้าห้อง ป้องกันเพื่อนโหลดหน้าวิ่งเก่าจาก cache
+  // หน้าเกมที่ระบุรุ่นไฟล์ต้องโหลดชุดล่าสุด ป้องกันหน้าใหม่ใช้คลังหรือสคริปต์เก่าจาก cache
   // ไฟล์เกมระบุรุ่นใน URL แล้ว จึงยังเปิดออฟไลน์ได้ด้วยชุดไฟล์รุ่นเดียวกัน
-  const freshGame = ["doodle-race.html", "witness-sketch.html"].find(page => new URL(req.url).pathname.endsWith("/" + page));
+  const freshGame = ["doodle-race.html", "witness-sketch.html", "situation.html"].find(page => new URL(req.url).pathname.endsWith("/" + page));
   if (req.mode === "navigate" && freshGame) {
     event.respondWith(fetch(req, { cache: "no-store" }).then((res) => {
       if (res.status === 200) {
