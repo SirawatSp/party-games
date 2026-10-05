@@ -337,9 +337,9 @@ Flash Quiz คือเกม "ตอบไว" ที่คนอ่านโ�
 |---|---|
 | ไฟล์ | `data/situations.js` → `SITUATION_LIST` |
 | หน้าเว็บ | `situation.html` · `js/situation.js` |
-| จำนวนตอนนี้ | 400 |
+| จำนวนตอนนี้ | 500 |
 | ฟิลด์บังคับ | `scenario` · `cat` |
-| หมวด (`cat`) | `phone` 100 · `circle` 30 · `work` 30 · `event` 30 · `travel` 30 · `emergency` 30 · `money` 30 · `family` 30 · `digital` 30 · `everyday` 30 · `wild` 30 |
+| หมวด (`cat`) | `phone` 200 · `circle` 30 · `work` 30 · `event` 30 · `travel` 30 · `emergency` 30 · `money` 30 · `family` 30 · `digital` 30 · `everyday` 30 · `wild` 30 |
 | หมวดล็อกไว้กับหน้าเว็บ | **ใช่** — เพิ่มหมวดใหม่ต้องแก้หน้าเว็บด้วย |
 
 ```js
