@@ -7,6 +7,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const battlePanel = document.getElementById("battlePanel");
 
   const TAG_LABEL = {
+    fresh_home: "ชุดใหม่ · บ้านและงานออกแบบ",
+    fresh_kitchen: "ชุดใหม่ · เข้าครัว",
+    fresh_photo: "ชุดใหม่ · ถ่ายภาพ",
+    fresh_music: "ชุดใหม่ · ฟังและเล่นดนตรี",
     thai: "ไทย", general: "ทั่วไป", science: "วิทยาศาสตร์", history: "ประวัติศาสตร์",
     movie: "หนัง/การ์ตูน", music: "เพลง", sport: "กีฬา", game: "เกม",
     food: "อาหาร", animal: "สัตว์", geo: "ภูมิศาสตร์", tech: "เทคโนโลยี", art: "ศิลปะ/วรรณกรรม"
@@ -27,7 +31,13 @@ document.addEventListener("DOMContentLoaded", () => {
   let quizTotal = 0;
 
   function pool() {
-    return activeTag === "all" ? FLASHQUIZ_LIST : FLASHQUIZ_LIST.filter((q) => q.tag === activeTag);
+    if (activeTag === "all") return FLASHQUIZ_LIST;
+    return FLASHQUIZ_LIST.filter((q) => {
+      const fresh = q.tag.startsWith("fresh_");
+      if (activeTag === "fresh") return fresh;
+      if (activeTag === "legacy") return !fresh;
+      return q.tag === activeTag;
+    });
   }
 
   function refreshPicker() {
@@ -94,9 +104,14 @@ document.addEventListener("DOMContentLoaded", () => {
     tagEl.addEventListener("click", () => {
       filterTags.querySelectorAll(".tag").forEach((t) => t.classList.remove("active"));
       tagEl.classList.add("active");
-      activeTag = tagEl.dataset.tag;
+      activeTag = tagEl.dataset.tag || tagEl.dataset.pack;
       refreshPicker();
       next();
+      stopBattleTimer();
+      exitFqDualView();
+      battlePlayPanel.style.display = "none";
+      battleEndPanel.style.display = "none";
+      battleIntroPanel.style.display = "";
     });
   });
 
@@ -271,7 +286,7 @@ document.addEventListener("DOMContentLoaded", () => {
   startBattleBtn.addEventListener("click", () => {
     sides = [{ timeLeft: TIME_BANK_SECONDS, correct: 0 }, { timeLeft: TIME_BANK_SECONDS, correct: 0 }];
     currentSideIdx = 0;
-    drawBattleQuestion = createPicker(FLASHQUIZ_LIST, "pg_flashquiz_battle");
+    drawBattleQuestion = createPicker(pool(), "pg_flashquiz_battle_" + activeTag);
     battleIntroPanel.style.display = "none";
     battleEndPanel.style.display = "none";
     battlePlayPanel.style.display = "";
@@ -330,7 +345,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const isQuiz = targetMode === "quiz";
       rulesQuiz.style.display = isQuiz ? "" : "none";
       rulesBattle.style.display = isQuiz ? "none" : "";
-      filterTags.style.display = isQuiz ? "" : "none";
+      filterTags.style.display = "";
       quizPanel.style.display = isQuiz ? "" : "none";
       battlePanel.style.display = isQuiz ? "none" : "";
 
