@@ -1,7 +1,7 @@
 // Service Worker สำหรับเล่นออฟไลน์ได้ทั้งเว็บ (เก็บ cache ทุกหน้า/สคริปต์/คลังโจทย์ไว้ในเครื่อง)
 // เปิดเว็บครั้งแรกตอนมีเน็ต ระบบจะโหลดเก็บไว้ให้อัตโนมัติ ครั้งต่อไปเปิดได้แม้ไม่มีเน็ตเลย
 // อัปเดตเนื้อหาเว็บทีไร ให้เปลี่ยนเลข CACHE_VERSION เพื่อบังคับดาวน์โหลดของใหม่ทับของเก่า
-const CACHE_VERSION = "party-games-v115";
+const CACHE_VERSION = "party-games-v116";
 
 // หมายเหตุ: เกม "ทายถนน" (street-scene) เก็บโครงหน้า แผนที่ และคลังสถานที่ไว้
 // โหมด "สถานที่สำคัญ" จึงเล่นได้เต็มรูปแบบตอนออฟไลน์
@@ -9,6 +9,20 @@ const CACHE_VERSION = "party-games-v115";
 // เปิดตอนออฟไลน์จะบอกว่าเฉพาะโหมดภาพถนนที่เล่นไม่ได้
 // หน้า street-scene-curator.html เป็นเครื่องมือหลังบ้าน ไม่ได้เก็บ cache ไว้เช่นกัน
 const PRECACHE_URLS = [
+  "picture-reveal.html",
+  "css/picture-reveal.css",
+  "js/picture-reveal.js",
+  "data/picture-reveal.js",
+  "assets/picture-reveal/food-01.jpg",
+  "assets/picture-reveal/food-02.jpg",
+  "assets/picture-reveal/food-03.jpg",
+  "assets/picture-reveal/food-04.jpg",
+  "assets/picture-reveal/food-05.jpg",
+  "assets/picture-reveal/food-06.jpg",
+  "assets/picture-reveal/food-07.jpg",
+  "assets/picture-reveal/food-08.jpg",
+  "assets/picture-reveal/food-09.jpg",
+  "assets/picture-reveal/food-10.jpg",
   "truth-or-dare.html",
   "css/truth-or-dare.css",
   "js/truth-or-dare.js",

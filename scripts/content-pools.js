@@ -20,6 +20,13 @@ const DATA_DIR = path.join(ROOT, "data");
 //                ห้ามเพิ่มค่าใหม่โดยไม่แก้หน้าเว็บด้วย
 const POOLS = [
   {
+    key: "picturereveal", file: "picture-reveal.js", varName: "PICTURE_REVEAL_LIST",
+    page: "picture-reveal.html", script: "js/picture-reveal.js",
+    label: "เปิดป้าย ทายรูป — หนัง การ์ตูน อาหารไทย",
+    required: ["answer", "cat", "image", "source", "author", "rights", "rightsUrl", "kind", "sourceFile"],
+    optional: ["aliases", "fallback"], dupKey: "answer", catField: "cat", closedCats: true,
+  },
+  {
     key: "truthordare", file: "truth-or-dare.js", varName: "TRUTH_OR_DARE_LIST",
     page: "truth-or-dare.html", script: "js/truth-or-dare.js",
     label: "Truth or Dare — พูดจริงหรือกล้าทำ",

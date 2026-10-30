@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>เปิดป้าย ทายรูป — หนัง การ์ตูน อาหารไทย</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/picture-reveal.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0c0710">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<main class="wrap pr-wrap">
+  <div class="topnav">
+    <a class="brand-logo" href="index.html"><img class="brand-img" src="assets/logo.png" width="720" height="416" alt="Party Games — วงกำลังจะเหงา"></a>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+  <section class="page-head reveal-up">
+    <span class="kicker">เปิดน้อย ได้แต้มเยอะ · เล่นด้วยกันทั้งวง</span>
+    <h1>เปิดป้าย <span class="pr-accent">ทายรูป</span></h1>
+    <p>แตะเปิดทีละช่อง แล้วแข่งกันทายชื่อเรื่องหรืออาหาร ตอบก่อนกดเฉลย ยิ่งเหลือช่องปิดมาก ยิ่งได้แต้มเยอะ!</p>
+  </section>
+  <div class="pr-categories reveal-up" id="prCategories" role="group" aria-label="หมวดภาพ">
+    <button type="button" class="tag active" data-cat="all" aria-pressed="true">ทั้งหมด</button>
+    <button type="button" class="tag" data-cat="movies" aria-pressed="false">🎬 หนังดัง</button>
+    <button type="button" class="tag" data-cat="cartoons" aria-pressed="false">🧸 การ์ตูนดัง</button>
+    <button type="button" class="tag" data-cat="thai_food" aria-pressed="false">🍜 อาหารไทย</button>
+  </div>
+  <section class="pr-options reveal-up" aria-label="จำนวนช่องและคะแนน">
+    <label for="prGridSize">จำนวนแผ่นป้าย
+      <select id="prGridSize">
+        <option value="3">9 ช่อง · เปิดไว</option>
+        <option value="4" selected>16 ช่อง · กำลังดี</option>
+        <option value="5">25 ช่อง · ท้าทาย</option>
+      </select>
+    </label>
+    <div class="pr-score"><span>แต้มสะสม <b id="prTotalScore">0</b></span><button type="button" id="prResetScore">เริ่มนับใหม่ ↻</button></div>
+  </section>
+  <section class="pr-stage reveal-up" aria-label="ภาพปริศนา">
+    <div class="pr-round-meta"><span id="prCategoryName">กำลังเตรียมภาพ</span><span id="prPoolCount"></span></div>
+    <div class="pr-hud" aria-live="polite"><span id="prOpened">เปิดแล้ว 0/16</span><span id="prPoints">ตอบถูกได้ 16 แต้ม</span></div>
+    <div class="pr-loading" id="prLoading" role="status">กำลังโหลดภาพปริศนา…</div>
+    <div class="pr-error" id="prError" hidden role="alert">
+      <p>โหลดภาพนี้ไม่สำเร็จ ลองเช็กอินเทอร์เน็ตแล้วลองใหม่ หรือข้ามไปภาพถัดไปได้</p>
+      <button class="btn secondary" type="button" id="prRetry">ลองโหลดภาพนี้อีกครั้ง ↻</button>
+    </div>
+    <div class="pr-board" id="prBoard" hidden aria-label="แตะป้ายหมายเลขเพื่อเปิดภาพ">
+      <div class="pr-image-host" id="prImageHost"></div>
+      <div class="pr-tiles" id="prTiles" role="group" aria-label="แผ่นป้ายปิดภาพ"></div>
+    </div>
+    <div class="pr-controls">
+      <button class="btn secondary" type="button" id="prRandom" disabled>🎲 สุ่มเปิด 1 ช่อง</button>
+      <button class="btn" type="button" id="prReveal" disabled>เฉลยรูป 👀</button>
+    </div>
+    <div class="pr-answer" id="prAnswer" hidden aria-live="polite" aria-atomic="true">
+      <span class="pr-answer-label">คำตอบคือ</span>
+      <h2 id="prAnswerText"></h2>
+      <p class="pr-aliases" id="prAliases"></p>
+      <p class="pr-credit" id="prCredit"></p>
+      <button class="btn pr-correct" type="button" id="prCorrect" disabled>ตอบถูก ✓</button>
+    </div>
+    <div class="pr-bottom"><button class="btn secondary" type="button" id="prSkip">ข้ามรูป / รูปถัดไป →</button></div>
+    <p class="pr-note">ทายชื่อเรื่องหรือแฟรนไชส์ได้ · เปลี่ยนจำนวนช่องจะเริ่มรูปใหม่<br>ภาพหนังและการ์ตูนโหลดออนไลน์ ส่วนอาหารไทยเล่นออฟไลน์ได้หลังเปิดเว็บครั้งแรก</p>
+  </section>
+  <details class="panel pr-rules reveal-up">
+    <summary>วิธีเล่น</summary>
+    <ol>
+      <li>เลือกหมวดและจำนวนช่อง ภาพจะเริ่มโดยมีป้ายปิดครบทุกช่อง</li>
+      <li>ผลัดกันเลือกหมายเลข หรือให้เกมสุ่มเปิดหนึ่งช่อง แล้วทายออกมาดัง ๆ ได้ทันที</li>
+      <li>เมื่อตอบแล้ว กดเฉลย ถ้าตอบถูกกดปุ่มสีเขียวเพื่อรับแต้มเท่าจำนวนช่องที่ยังปิดก่อนเฉลย แล้วไปภาพใหม่</li>
+      <li>ถ้ายังตอบไม่ได้เปิดเพิ่มได้เรื่อย ๆ หรือข้ามโดยไม่รับแต้ม ภาพในหมวดที่เลือกจะไม่ซ้ำจนกว่าจะครบรอบ</li>
+    </ol>
+  </details>
+  <footer>ชวนกันทาย เปิดทีละช่อง แล้วลุ้นไปด้วยกัน ✨</footer>
+</main>
+<script src="data/picture-reveal.js"></script>
+<script src="js/main.js"></script>
+<script src="js/picture-reveal.js"></script>
+</body>
+</html>

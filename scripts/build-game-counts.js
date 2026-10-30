@@ -8,6 +8,7 @@ const DATA_DIR = path.join(__dirname, "..", "data");
 const OUT_FILE = path.join(DATA_DIR, "game-counts.js");
 
 const PAGES = [
+  { page: "picture-reveal.html", unit: "รูป", files: [["picture-reveal.js", "PICTURE_REVEAL_LIST"]] },
   { page: "truth-or-dare.html", unit: "โจทย์", files: [["truth-or-dare.js", "TRUTH_OR_DARE_LIST"]] },
   { page: "witness-sketch.html", unit: "รูป", files: [["sketch-references.js", "SKETCH_REFERENCES"]] },
   { page: "category.html", unit: "หมวด", files: [["category-game.js", "CATEGORIES"]] },

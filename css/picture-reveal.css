@@ -1,0 +1,52 @@
+.pr-wrap { max-width: 980px; }
+.pr-accent { color: var(--coral); }
+.pr-categories { display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0 18px; }
+.pr-categories .tag { font: inherit; cursor: pointer; }
+.pr-options { display: flex; justify-content: space-between; gap: 16px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+.pr-options label { color: #e6d9ee; font-size: .85rem; }
+.pr-options select { display: block; background: #201426; color: #fffdf7; border: 2px solid #87708f; border-radius: 8px; padding: 10px 12px; margin-top: 7px; font: inherit; }
+.pr-score { color: #ddd1e3; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+.pr-score b { color: #d6ff3d; font-size: 1.6rem; margin-left: 8px; }
+.pr-score button { background: none; border: 0; color: #cab6d5; text-decoration: underline; font: inherit; font-size: .8rem; cursor: pointer; padding: 10px 4px; }
+.pr-stage { background: #1c1124; border: 2px solid #786183; padding: clamp(14px, 3vw, 28px); border-radius: 16px; box-shadow: 7px 7px 0 #05010a; }
+.pr-round-meta, .pr-hud { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center; }
+.pr-round-meta { color: #d5c1df; font-size: .85rem; }
+.pr-hud { color: #fffdf7; margin: 16px 0; font-size: .9rem; }
+#prPoints { color: #d6ff3d; font-weight: 600; }
+.pr-board { --picture-ratio: 1.333; --grid-size: 4; position: relative; width: min(100%, calc(64vh * var(--picture-ratio))); aspect-ratio: var(--picture-ratio); background: #0b080e; margin: 0 auto; overflow: hidden; border: 2px solid #05010a; border-radius: 5px; isolation: isolate; }
+.pr-image-host, .pr-image-host img, .pr-tiles { position: absolute; inset: 0; width: 100%; height: 100%; }
+.pr-image-host img { display: block; object-fit: contain; user-select: none; -webkit-user-select: none; }
+.pr-tiles { display: grid; grid-template-columns: repeat(var(--grid-size), 1fr); grid-template-rows: repeat(var(--grid-size), 1fr); }
+.pr-tile { position: relative; padding: 0; border: 2px solid #0c0710; background: #7340ae; background-image: linear-gradient(135deg, #a56ce0, #422366); color: #fffdf7; font: inherit; font-size: clamp(1rem, 3.8vw, 1.7rem); font-weight: 800; text-shadow: 2px 2px #231030; cursor: pointer; min-width: 0; transition: opacity .18s ease, filter .15s ease; }
+.pr-tile:nth-child(3n) { background-image: linear-gradient(135deg, #e5579f, #71305e); }
+.pr-tile:nth-child(3n + 2) { background-image: linear-gradient(135deg, #4489ad, #1f3e61); }
+.pr-tile:hover:not(:disabled) { filter: brightness(1.2); }
+.pr-tile.is-open { opacity: 0; pointer-events: none; }
+.pr-loading, .pr-error { min-height: 260px; padding: 50px 15px; display: flex; align-items: center; justify-content: center; text-align: center; color: #e1cced; line-height: 1.8; }
+.pr-error { flex-direction: column; gap: 14px; }
+.pr-controls { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 22px; }
+.pr-controls .btn { flex: 1 1 200px; font-size: .95rem; }
+.pr-wrap button:disabled { cursor: default; }
+.pr-controls .btn:disabled { opacity: .45; }
+.pr-answer { text-align: center; padding: 25px 8px 8px; }
+.pr-answer-label { color: #d6ff3d; font-size: .85rem; }
+.pr-answer h2 { color: #fffdf7; margin: 12px 0 8px; line-height: 1.6; font-size: clamp(1.4rem, 4vw, 2rem); overflow-wrap: anywhere; }
+.pr-aliases { color: #ddcbe7; font-size: .85rem; line-height: 1.7; }
+.pr-credit { color: #bfa9ca; font-size: .72rem; line-height: 1.8; margin: 16px 0 20px; overflow-wrap: anywhere; }
+.pr-credit a { color: #a8e8e1; text-decoration: underline; }
+.pr-correct { background: #bde873; color: #162006; width: 100%; }
+.pr-bottom { margin-top: 16px; text-align: center; }
+.pr-bottom .btn { width: 100%; font-size: .9rem; }
+.pr-note { text-align: center; color: #c5b0d0; font-size: .75rem; line-height: 1.9; margin: 20px 0 0; }
+.pr-rules { margin-top: 28px; }
+.pr-rules summary { color: #fffdf7; cursor: pointer; font-weight: 600; }
+.pr-rules li { margin-top: 12px; }
+.pr-wrap [hidden] { display: none !important; }
+.pr-wrap button:focus-visible, .pr-wrap select:focus-visible, .pr-wrap summary:focus-visible { outline: 3px solid #fffdf7; outline-offset: 3px; }
+@media (max-width: 480px) {
+  .pr-score { gap: 10px; }
+  .pr-hud { font-size: .8rem; }
+  .pr-stage { padding: 12px; }
+  .pr-categories { gap: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { .pr-tile { transition: none; } }
