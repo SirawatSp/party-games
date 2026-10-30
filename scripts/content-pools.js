@@ -20,6 +20,13 @@ const DATA_DIR = path.join(ROOT, "data");
 //                ห้ามเพิ่มค่าใหม่โดยไม่แก้หน้าเว็บด้วย
 const POOLS = [
   {
+    key: "truthordare", file: "truth-or-dare.js", varName: "TRUTH_OR_DARE_LIST",
+    page: "truth-or-dare.html", script: "js/truth-or-dare.js",
+    label: "Truth or Dare — พูดจริงหรือกล้าทำ",
+    required: ["prompt", "cat"], optional: [],
+    dupKey: "prompt", catField: "cat", closedCats: true,
+  },
+  {
     key: "sketch", file: "sketch-references.js", varName: "SKETCH_REFERENCES",
     page: "witness-sketch.html", script: "js/witness-sketch.js",
     label: "วาดจากคำให้การ — ภาพอ้างอิง",
@@ -250,3 +257,4 @@ function uiCats(pool) {
 }
 
 module.exports = { POOLS, DATA_DIR, ROOT, loadPool, byKey, dupValue, uiCats };
+

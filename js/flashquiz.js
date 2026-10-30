@@ -18,6 +18,11 @@ document.addEventListener("DOMContentLoaded", () => {
     fresh_travel: "ชุดใหม่ · การเดินทาง",
     fresh_screen: "ชุดใหม่ · หนังและหนังสือ",
     fresh_daily: "ชุดใหม่ · ของใช้และงานประจำวัน",
+    fresh_art: "ชุดใหม่ · วาดและทำงานศิลป์",
+    fresh_digital: "ชุดใหม่ · โลกดิจิทัลใกล้ตัว",
+    fresh_sport: "ชุดใหม่ · อุปกรณ์และสนามกีฬา",
+    fresh_play: "ชุดใหม่ · ของเล่นและเกมโต๊ะ",
+    fresh_time: "ชุดใหม่ · เวลาและการนัดหมาย",
     thai: "ไทย", general: "ทั่วไป", science: "วิทยาศาสตร์", history: "ประวัติศาสตร์",
     movie: "หนัง/การ์ตูน", music: "เพลง", sport: "กีฬา", game: "เกม",
     food: "อาหาร", animal: "สัตว์", geo: "ภูมิศาสตร์", tech: "เทคโนโลยี", art: "ศิลปะ/วรรณกรรม"
@@ -366,3 +371,4 @@ document.addEventListener("DOMContentLoaded", () => {
   refreshPicker();
   next();
 });
+

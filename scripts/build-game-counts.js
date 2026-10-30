@@ -8,6 +8,7 @@ const DATA_DIR = path.join(__dirname, "..", "data");
 const OUT_FILE = path.join(DATA_DIR, "game-counts.js");
 
 const PAGES = [
+  { page: "truth-or-dare.html", unit: "โจทย์", files: [["truth-or-dare.js", "TRUTH_OR_DARE_LIST"]] },
   { page: "witness-sketch.html", unit: "รูป", files: [["sketch-references.js", "SKETCH_REFERENCES"]] },
   { page: "category.html", unit: "หมวด", files: [["category-game.js", "CATEGORIES"]] },
   { page: "charades.html", unit: "คำ", files: [["charades.js", "CHARADES_WORDS"]] },
@@ -72,3 +73,4 @@ ${lines}
 fs.writeFileSync(OUT_FILE, out);
 console.log("wrote", OUT_FILE);
 Object.entries(counts).forEach(([page, { count, unit }]) => console.log(page, count, unit));
+

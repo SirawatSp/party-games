@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Truth or Dare — พูดจริงหรือกล้าทำ</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/truth-or-dare.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0c0710">
+</head>
+<body>
+<div class="marquee"><span></span></div>
+<main class="wrap td-wrap">
+  <div class="topnav">
+    <a class="brand-logo" href="index.html"><img class="brand-img" src="assets/logo.png" width="720" height="416" alt="Party Games — วงกำลังจะเหงา"></a>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+  <section class="page-head reveal-up">
+    <span class="kicker">พูดจริงหรือกล้าทำ · เล่นได้ตั้งแต่ 2 คน</span>
+    <h1>Truth <span class="td-or">or</span> Dare</h1>
+    <p>เลือกว่าจะเปิดใจหรือรับคำท้า แล้วส่งมือถือให้คนถัดไป แยกหมวดเบากับหนักชัดเจน เลือกความเข้มที่ทั้งวงสบายใจก่อนเริ่ม</p>
+  </section>
+  <section class="td-settings reveal-up" aria-label="เลือกความเข้ม">
+    <div class="td-levels" role="group" aria-label="ระดับโจทย์">
+      <button class="td-level active" type="button" data-intensity="light" aria-pressed="true">🌤 เบา <span>ขำ ๆ ละลายพฤติกรรม</span></button>
+      <button class="td-level" type="button" data-intensity="heavy" aria-pressed="false">🔥 หนัก <span>เปิดใจและใช้ความกล้า</span></button>
+    </div>
+    <p class="td-hint" id="tdLevelHint">คำถามสบาย ๆ และคำท้าสั้น ๆ ที่เล่นได้ทันที</p>
+    <p class="td-count" id="tdPoolCount"></p>
+  </section>
+  <section class="td-stage reveal-up" aria-label="โจทย์ปัจจุบัน">
+    <div class="td-meta"><span id="tdTurn">ตาที่ 1</span><span id="tdBadge">พร้อมเมื่อไรก็เลือกเลย</span></div>
+    <div class="td-card" id="tdCard" aria-live="polite" aria-atomic="true">
+      <div class="td-symbol" aria-hidden="true">?</div>
+      <h2 id="tdPrompt">พูดจริง หรือ กล้าทำ?</h2>
+      <p id="tdSubtext">เลือก Truth, Dare หรือให้เกมสุ่มให้</p>
+    </div>
+    <div class="td-choices" role="group" aria-label="เลือกวิธีเล่น">
+      <button class="btn td-truth" type="button" data-kind="truth">💬 Truth<span>ตอบความจริง</span></button>
+      <button class="btn td-dare" type="button" data-kind="dare">⚡ Dare<span>รับคำท้า</span></button>
+      <button class="btn secondary td-random" type="button" data-kind="random">🎲 สุ่มให้<span>ได้ทั้งสองแบบ</span></button>
+    </div>
+    <div class="td-actions">
+      <button class="btn secondary" type="button" id="tdSkip" disabled>ข้าม / เปลี่ยนข้อ ↻</button>
+      <button class="btn" type="button" id="tdNext" disabled>จบตา · คนถัดไป →</button>
+    </div>
+    <p class="td-consent">ข้ามได้ทุกข้อ ไม่มีบทลงโทษ · ถ้าโจทย์ชวนคนอื่นร่วม ให้เจ้าตัวตกลงก่อน</p>
+  </section>
+  <details class="panel td-rules reveal-up">
+    <summary>วิธีเล่นและความต่างของหมวด</summary>
+    <ol>
+      <li>ผลัดกันตามลำดับที่นั่ง เลือกหมวดเบาหรือหนักร่วมกันก่อนเล่น</li>
+      <li>คนที่ถึงตาเลือก Truth เพื่อตอบ, Dare เพื่อทำ หรือสุ่มให้เกมเลือกทั้งสองแบบ</li>
+      <li>หมวดเบาเป็นเรื่องขำและคำท้าง่าย หมวดหนักเป็นเรื่องเปิดใจหรือแสดงต่อหน้าวง เล่าเท่าที่พร้อม ไม่ต้องเปิดเผยชื่อหรือข้อมูลส่วนตัวของคนอื่น</li>
+      <li>เปลี่ยนโจทย์ได้เสมอ กดจบตาเมื่อพร้อมส่งให้คนถัดไป เกมจำโจทย์ที่ออกแล้วแยกตามระดับและวิธีสุ่มจนกว่าจะครบคลังนั้น</li>
+    </ol>
+  </details>
+  <footer>เล่นเพื่อรู้จักกันมากขึ้น และให้ทุกคนยังอยากเล่นต่อ ✨</footer>
+</main>
+<script src="data/truth-or-dare.js"></script>
+<script src="js/main.js"></script>
+<script src="js/truth-or-dare.js"></script>
+</body>
+</html>

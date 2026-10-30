@@ -1,11 +1,12 @@
 // สร้างอัตโนมัติจาก scripts/build-game-counts.js — อย่าแก้ไขตรงนี้ตรง ๆ
 // รันใหม่ทุกครั้งที่แก้ไขคลังโจทย์: node scripts/build-game-counts.js
 const GAME_COUNTS = {
+  "truth-or-dare.html": { count: 100, unit: "โจทย์" },
   "witness-sketch.html": { count: 16, unit: "รูป" },
   "category.html": { count: 358, unit: "หมวด" },
   "charades.html": { count: 859, unit: "คำ" },
   "drinking-games.html": { count: 17, unit: "เกม" },
-  "flashquiz.html": { count: 2130, unit: "คำถาม" },
+  "flashquiz.html": { count: 2500, unit: "คำถาม" },
   "flirt.html": { count: 199, unit: "สถานการณ์" },
   "guess-number.html": { count: 294, unit: "โจทย์" },
   "insider.html": { count: 446, unit: "คำ" },
