@@ -56,6 +56,50 @@ async function run(chromium, options = {}) {
     check("ข้ามหรือเฉลยอย่างเดียวไม่เพิ่มคะแนน", await page.locator("#prTotalScore").textContent() === "0");
 
     await page.locator('[data-cat="thai_food"]').click();
+    await ready(page);
+    const roundState = () => page.evaluate(() => ({
+      image: document.querySelector("#prImageHost img").src,
+      tiles: Array.from(document.querySelectorAll(".pr-tile"), (el) => ({ open: el.classList.contains("is-open"), disabled: el.disabled })),
+      opened: document.getElementById("prOpened").textContent,
+      points: document.getElementById("prPoints").textContent,
+      score: document.getElementById("prTotalScore").textContent,
+      answerHidden: document.getElementById("prAnswer").hidden,
+      correctDisabled: document.getElementById("prCorrect").disabled
+    }));
+    const initialRound = await roundState();
+    await page.locator("#prHostPeek").click();
+    check("คนดำเนินเกมเห็นเฉลยตรงกับรูปที่ปิดอยู่", await page.evaluate(() => {
+      const image = document.querySelector("#prImageHost img").src;
+      const entry = PICTURE_REVEAL_LIST.find((x) => [x.image, x.fallback].filter(Boolean).some((url) => new URL(url, location.href).href === image));
+      return document.getElementById("prHostAnswer").textContent === entry?.answer
+        && document.getElementById("prHostAliases").textContent === ((entry.aliases || []).filter((x) => x !== entry.answer).length
+          ? "รับคำตอบได้ด้วย: " + entry.aliases.filter((x) => x !== entry.answer).join(" · ") : "");
+    }));
+    check("หน้าต่างเฉลยรับโฟกัสและกันการกดเกมด้านหลัง", await page.evaluate(() => document.getElementById("prHostDialog").matches(":modal") && document.activeElement.id === "prHostClose"));
+    check("แอบดูคำตอบไม่เปิดป้ายหรือเปลี่ยนคะแนน", JSON.stringify(await roundState()) === JSON.stringify(initialRound));
+    check("หน้าต่างเฉลยพอดีจอมือถือ", await page.locator("#prHostDialog").evaluate((el) => { const r = el.getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && el.scrollWidth <= el.clientWidth; }));
+    await page.keyboard.press("Escape");
+    await page.waitForFunction(() => !document.getElementById("prHostDialog").open && !document.getElementById("prHostAnswer").textContent);
+    check("กดหนีเพื่อปิดเฉลย ล้างคำตอบ และคืนโฟกัส", await page.evaluate(() => document.activeElement.id === "prHostPeek" && !document.getElementById("prHostAliases").textContent));
+    await page.locator(".pr-tile").first().click();
+    const partialRound = await roundState();
+    await page.locator("#prHostPeek").click();
+    await page.locator("#prHostClose").click();
+    check("ปิดเฉลยแล้วเล่นต่อจากป้ายและแต้มเดิม", JSON.stringify(await roundState()) === JSON.stringify(partialRound));
+    for (const action of ["skip", "category", "grid"]) {
+      await page.locator("#prHostPeek").click();
+      await page.evaluate((action) => {
+        if (action === "skip") document.getElementById("prSkip").click();
+        if (action === "category") document.querySelector('[data-cat="thai_food"]').click();
+        if (action === "grid") {
+          const select = document.getElementById("prGridSize");
+          select.value = "3";
+          select.dispatchEvent(new Event("change"));
+        }
+      }, action);
+      await ready(page);
+      check("เปลี่ยนรอบแล้วปิดและล้างเฉลยเดิม " + action, await page.evaluate(() => !document.getElementById("prHostDialog").open && !document.getElementById("prHostAnswer").textContent && !document.getElementById("prHostAliases").textContent));
+    }
     let expectedScore = 0;
     for (const size of [3, 4, 5]) {
       await page.locator("#prGridSize").selectOption(String(size));
@@ -70,7 +114,11 @@ async function run(chromium, options = {}) {
       await page.locator("#prRandom").click();
       await page.locator("#prRandom").click();
       check("สุ่มเปิดเฉพาะช่องที่ยังปิด " + n, await page.locator(".pr-tile.is-open").count() === 3);
+      await page.locator("#prHostPeek").click();
+      const peekedAnswer = await page.locator("#prHostAnswer").textContent();
+      await page.locator("#prHostClose").click();
       await page.locator("#prReveal").click();
+      check("เฉลยสาธารณะตรงกับที่คนดำเนินเกมเห็น " + n, await page.locator("#prAnswerText").textContent() === peekedAnswer && await page.locator("#prHostPeek").isDisabled());
       check("เฉลยแล้วเปิดภาพครบ " + n, await page.locator(".pr-tile").evaluateAll((els) => els.every((el) => el.disabled && getComputedStyle(el).opacity === "0")));
       check("แต้มยึดจากช่องก่อนเฉลย " + n, (await page.locator("#prCorrect").textContent()).includes(String(n - 3)));
       await page.locator("#prCorrect").evaluate((el) => { el.click(); el.click(); });
@@ -117,6 +165,7 @@ async function run(chromium, options = {}) {
     await faultPage.waitForSelector("#prError:not([hidden])", { timeout: 25000 });
     check("ภาพเสียแสดงทางเลือกแทนจอว่าง", await faultPage.locator("#prRetry").isVisible() && await faultPage.locator("#prBoard").isHidden());
     check("ภาพเสียรับแต้มไม่ได้", await faultPage.locator("#prReveal").isDisabled() && await faultPage.locator("#prCorrect").isDisabled());
+    check("ภาพยังไม่พร้อมเปิดเฉลยคนดำเนินเกมไม่ได้", await faultPage.locator("#prHostPeek").isDisabled());
     await faultPage.unroute("**/food-*.jpg");
     await faultPage.locator("#prRetry").click();
     await ready(faultPage);

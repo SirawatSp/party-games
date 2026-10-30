@@ -10,6 +10,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const answer = document.getElementById("prAnswer");
   const randomButton = document.getElementById("prRandom");
   const revealButton = document.getElementById("prReveal");
+  const peekButton = document.getElementById("prHostPeek");
+  const peekDialog = document.getElementById("prHostDialog");
+  const peekAnswer = document.getElementById("prHostAnswer");
+  const peekAliases = document.getElementById("prHostAliases");
   const correctButton = document.getElementById("prCorrect");
   const openedText = document.getElementById("prOpened");
   const pointsText = document.getElementById("prPoints");
@@ -38,7 +42,26 @@ document.addEventListener("DOMContentLoaded", () => {
     pointsText.textContent = "ตอบถูกได้ " + (size * size - opened.size) + " แต้ม";
     randomButton.disabled = phase !== "playing" || opened.size === size * size;
     revealButton.disabled = phase !== "playing";
+    peekButton.disabled = phase !== "playing";
   }
+
+  function closeHostAnswer() {
+    if (peekDialog.open) peekDialog.close();
+    peekAnswer.textContent = "";
+    peekAliases.textContent = "";
+  }
+
+  peekButton.addEventListener("click", () => {
+    if (phase !== "playing" || peekDialog.open) return;
+    peekAnswer.textContent = current.answer;
+    const aliases = (current.aliases || []).filter((value) => value !== current.answer);
+    peekAliases.textContent = aliases.length ? "รับคำตอบได้ด้วย: " + aliases.join(" · ") : "";
+    peekDialog.showModal();
+  });
+  document.getElementById("prHostClose").addEventListener("click", closeHostAnswer);
+  peekDialog.addEventListener("close", () => {
+    if (!peekDialog.open) closeHostAnswer();
+  });
 
   function openTile(index) {
     if (phase !== "playing" || opened.has(index)) return;
@@ -86,6 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function loadCurrent() {
+    closeHostAnswer();
     const request = ++serial;
     if (cancelImage) cancelImage();
     phase = "loading";
@@ -141,6 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function reveal() {
     if (phase !== "playing") return;
+    closeHostAnswer();
     phase = "revealed";
     roundPoints = size * size - opened.size;
     tiles.querySelectorAll("button").forEach((tile) => { tile.classList.add("is-open"); tile.disabled = true; });
@@ -155,6 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
     answer.hidden = false;
     randomButton.disabled = true;
     revealButton.disabled = true;
+    peekButton.disabled = true;
     pointsText.textContent = "ตอบก่อนเฉลย รับได้ " + roundPoints + " แต้ม";
   }
 

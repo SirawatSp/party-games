@@ -40,6 +40,10 @@
   <section class="pr-stage reveal-up" aria-label="ภาพปริศนา">
     <div class="pr-round-meta"><span id="prCategoryName">กำลังเตรียมภาพ</span><span id="prPoolCount"></span></div>
     <div class="pr-hud" aria-live="polite"><span id="prOpened">เปิดแล้ว 0/16</span><span id="prPoints">ตอบถูกได้ 16 แต้ม</span></div>
+    <div class="pr-host-controls">
+      <button class="btn secondary" type="button" id="prHostPeek" aria-haspopup="dialog" aria-controls="prHostDialog" disabled>ดูเฉลยสำหรับคนดำเนินเกม</button>
+      <p>หันหน้าจอให้คนดำเนินเกมก่อนกดดูคำตอบ</p>
+    </div>
     <div class="pr-loading" id="prLoading" role="status">กำลังโหลดภาพปริศนา…</div>
     <div class="pr-error" id="prError" hidden role="alert">
       <p>โหลดภาพนี้ไม่สำเร็จ ลองเช็กอินเทอร์เน็ตแล้วลองใหม่ หรือข้ามไปภาพถัดไปได้</p>
@@ -70,10 +74,18 @@
       <li>ผลัดกันเลือกหมายเลข หรือให้เกมสุ่มเปิดหนึ่งช่อง แล้วทายออกมาดัง ๆ ได้ทันที</li>
       <li>เมื่อตอบแล้ว กดเฉลย ถ้าตอบถูกกดปุ่มสีเขียวเพื่อรับแต้มเท่าจำนวนช่องที่ยังปิดก่อนเฉลย แล้วไปภาพใหม่</li>
       <li>ถ้ายังตอบไม่ได้เปิดเพิ่มได้เรื่อย ๆ หรือข้ามโดยไม่รับแต้ม ภาพในหมวดที่เลือกจะไม่ซ้ำจนกว่าจะครบรอบ</li>
+      <li>คนดำเนินเกมกด “ดูเฉลยสำหรับคนดำเนินเกม” เพื่อดูเฉพาะคำตอบได้ แล้วปิดหน้าต่างก่อนส่งให้ผู้เล่น แผ่นป้ายและคะแนนยังคงเดิม</li>
     </ol>
   </details>
   <footer>ชวนกันทาย เปิดทีละช่อง แล้วลุ้นไปด้วยกัน ✨</footer>
 </main>
+<dialog class="pr-host-dialog" id="prHostDialog" aria-labelledby="prHostTitle" aria-describedby="prHostHint">
+  <h2 id="prHostTitle">เฉลยสำหรับคนดำเนินเกม</h2>
+  <p class="pr-host-answer" id="prHostAnswer"></p>
+  <p class="pr-aliases" id="prHostAliases"></p>
+  <p class="pr-host-hint" id="prHostHint">ปิดหน้าต่างนี้ก่อนส่งหน้าจอให้ผู้เล่น แผ่นป้ายและคะแนนจะคงเดิม</p>
+  <button class="btn" type="button" id="prHostClose" autofocus>ปิดเฉลย กลับไปเล่นต่อ</button>
+</dialog>
 <script src="data/picture-reveal.js"></script>
 <script src="js/main.js"></script>
 <script src="js/picture-reveal.js"></script>
