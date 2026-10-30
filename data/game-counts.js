@@ -1,7 +1,7 @@
 // สร้างอัตโนมัติจาก scripts/build-game-counts.js — อย่าแก้ไขตรงนี้ตรง ๆ
 // รันใหม่ทุกครั้งที่แก้ไขคลังโจทย์: node scripts/build-game-counts.js
 const GAME_COUNTS = {
-  "picture-reveal.html": { count: 30, unit: "รูป" },
+  "picture-reveal.html": { count: 120, unit: "รูป" },
   "truth-or-dare.html": { count: 100, unit: "โจทย์" },
   "witness-sketch.html": { count: 16, unit: "รูป" },
   "category.html": { count: 358, unit: "หมวด" },

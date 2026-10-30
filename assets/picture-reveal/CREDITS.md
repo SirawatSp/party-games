@@ -1,6 +1,6 @@
 # เครดิตภาพอาหารสำหรับเกมเปิดป้าย ทายรูป
 
-ภาพทั้งสิบดาวน์โหลดเป็นภาพย่อจาก Wikimedia Commons ไม่ครอปหรือแก้ไขเนื้อภาพ แสดงเต็มภาพในเกม ชื่อไฟล์ในโปรเจกต์เป็นรหัสเพื่อไม่บอกคำตอบก่อนเล่น สิทธิ์ของภาพแต่ละไฟล์เป็นไปตามสัญญาอนุญาตต้นทางในตาราง
+ภาพทั้งสี่สิบดาวน์โหลดเป็นภาพย่อจาก Wikimedia Commons ไม่ครอปหรือแก้ไขเนื้อภาพ แสดงเต็มภาพในเกม ชื่อไฟล์ในโปรเจกต์เป็นรหัสเพื่อไม่บอกคำตอบก่อนเล่น สิทธิ์ของภาพแต่ละไฟล์เป็นไปตามสัญญาอนุญาตต้นทางในตาราง
 
 | ไฟล์ | ภาพ | ผู้สร้างภาพ | สัญญาอนุญาต | แหล่งภาพ |
 |---|---|---|---|---|
@@ -14,5 +14,35 @@
 | food-08.jpg | ข้าวมันไก่ | Takeaway | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:2013_Khao_man_kai_Chiang_Mai.jpg) |
 | food-09.jpg | ข้าวเหนียวมะม่วง | Dennis Wong from Hong Kong, Hong Kong | [CC BY 2.0](https://creativecommons.org/licenses/by/2.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Mango_sticy_rice_(3859549574).jpg) |
 | food-10.jpg | ลาบ | Jpatokal | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:LaoFood_LarbNeua.JPG) |
+| food-11.jpg | ข้าวผัด | Karl Thomas Moore | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Thai_Fried_Rice.jpg) |
+| food-12.jpg | ผัดซีอิ๊ว | Vee Satayamas | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Pad_See_Ew_-_Bangkok.jpg) |
+| food-13.jpg | ราดหน้า | Takeaway | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Kuai-tiao_rat_na_mu.JPG) |
+| food-14.jpg | สุกี้ | Nissy-KITAQ | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Thai_Suki_of_MK_Restaurant.JPG) |
+| food-15.jpg | ก๋วยเตี๋ยวเรือ | Flickr user Alpha | [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Boat_noodles.jpg) |
+| food-16.jpg | เย็นตาโฟ | surtr | [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Yen_ta_fo_noodles.jpg) |
+| food-17.jpg | ข้าวขาหมู | Takeaway | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Khao_kha_mu.jpg) |
+| food-18.jpg | ข้าวหมูแดง | Takeaway | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Khao_mu_daeng.jpg) |
+| food-19.jpg | ข้าวคลุกกะปิ | by PoppyW | [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Khao.kluke.kapi-01.jpg) |
+| food-20.jpg | ข้าวยำ | Takeaway | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:2019_Khao_yam_mixed.jpg) |
+| food-21.jpg | แกงส้ม | Takeaway | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Kaeng_som_kung.jpg) |
+| food-22.jpg | พะแนง | Takeaway | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Phanaeng_mu.jpg) |
+| food-23.jpg | แกงป่า | Charles Haynes | [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Fish_Jungle_Curry_(8644200729).jpg) |
+| food-24.jpg | ต้มข่าไก่ | Globe-trotter | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Tom_Kha_Kai_in_Phra_Nakhon_District,_Bangkok,_Thailand.jpg) |
+| food-25.jpg | น้ำพริกอ่อง | Takeaway | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Nam_phrik_ong_02.jpg) |
+| food-26.jpg | ห่อหมก | Jakub Michankow | [CC BY 2.0](https://creativecommons.org/licenses/by/2.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Hor_Mok.jpg) |
+| food-27.jpg | ทอดมันปลา | Takeaway | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Thanin_market_tod_man_pla.jpg) |
+| food-28.jpg | ไก่ย่าง | Takeaway | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Kai_yang_CM.jpg) |
+| food-29.jpg | หมูสะเต๊ะ | Athikhun.suw | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Pork_satay_2022.jpg) |
+| food-30.jpg | หมูปิ้ง | Phoebus 28 | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Mu_ping.jpg) |
+| food-31.jpg | ไส้อั่ว | Takeaway | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Sai_ua_CR.jpg) |
+| food-32.jpg | ไส้กรอกอีสาน | Takeaway | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Sai_krok_isan.jpg) |
+| food-33.jpg | ยำวุ้นเส้น | Takeaway | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Yam_wun_sen.JPG) |
+| food-34.jpg | ขนมครก | Takeaway | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Khanom_khrok.jpg) |
+| food-35.jpg | ขนมชั้น | Jane and Xuan | [CC0](http://creativecommons.org/publicdomain/zero/1.0/deed.en) | [ที่มา](https://commons.wikimedia.org/wiki/File:Khanom_chan.jpg) |
+| food-36.jpg | ฝอยทอง | Takeaway | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Foi_thong.jpg) |
+| food-37.jpg | ทับทิมกรอบ | Iudexvivorum | [CC0](http://creativecommons.org/publicdomain/zero/1.0/deed.en) | [ที่มา](https://commons.wikimedia.org/wiki/File:Rear_Palace_Thapthim_Krop_-_2017-02-25_(001).jpg) |
+| food-38.jpg | กล้วยบวชชี | Susan Slater | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Kluai_buat_chi.jpg) |
+| food-39.jpg | บัวลอย | Alpha | [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Bua_loi_-_2009-08-01_-_001.jpg) |
+| food-40.jpg | ขนมเบื้อง | Paul_012 | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) | [ที่มา](https://commons.wikimedia.org/wiki/File:Khanom_bueang.jpg) |
 
 ภาพหนังและการ์ตูนใช้ลิงก์ภาพโปสเตอร์/ภาพปกออนไลน์จากแหล่งอ้างอิง ไม่มีไฟล์โปสเตอร์อยู่ในโฟลเดอร์นี้ เครดิตและลิงก์ข้อมูลสิทธิ์แสดงหลังเฉลยแต่ละภาพ และเก็บไว้ใน data/picture-reveal.js

@@ -24,14 +24,14 @@ async function run(chromium, options = {}) {
     await page.goto(base + "/picture-reveal.html", { waitUntil: "domcontentloaded" });
     await ready(page);
     const counts = await page.evaluate(() => PICTURE_REVEAL_LIST.reduce((s, x) => (s[x.cat] = (s[x.cat] || 0) + 1, s), {}));
-    check("สามหมวดมีภาพหมวดละสิบรูป", Object.keys(counts).length === 3 && Object.values(counts).every((n) => n === 10), counts);
+    check("สามหมวดมีภาพหมวดละสี่สิบรูป", Object.keys(counts).length === 3 && Object.values(counts).every((n) => n === 40), counts);
 
     for (const category of ["movies", "cartoons", "thai_food"]) {
       await page.locator('[data-cat="' + category + '"]').click();
       const seen = new Set();
       let valid = true;
       let last = "";
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 40; i++) {
         await ready(page);
         await page.locator("#prReveal").click();
         const item = await page.evaluate(() => {
@@ -48,7 +48,7 @@ async function run(chromium, options = {}) {
         await page.locator("#prSkip").click();
       }
       check("ภาพจริงและเฉลยตรงกันครบหมวด " + category, valid);
-      check("สิบรูปไม่ซ้ำก่อนครบรอบ " + category, seen.size === 10);
+      check("สี่สิบรูปไม่ซ้ำก่อนครบรอบ " + category, seen.size === 40);
       await ready(page);
       await page.locator("#prReveal").click();
       check("เริ่มรอบใหม่ไม่ซ้ำรูปสุดท้าย " + category, await page.locator("#prAnswerText").textContent() !== last);
@@ -173,7 +173,7 @@ async function run(chromium, options = {}) {
       || new URL(await faultPage.locator("#prImageHost img").getAttribute("src"), base + "/picture-reveal.html").href === failedUrl);
     await faultPage.locator('[data-cat="movies"]').click();
     let fallbackWorked = false;
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 40; i++) {
       await ready(faultPage);
       if (await faultPage.locator("#prImageHost img").getAttribute("src") === fallbackEntry.fallback) {
         fallbackWorked = true;
@@ -189,10 +189,10 @@ async function run(chromium, options = {}) {
     faultBrowser = null;
     check("เล่นแล้วไม่มีข้อผิดพลาดสคริปต์", errors.length === 0, errors);
     await page.goto(base + "/index.html", { waitUntil: "domcontentloaded" });
-    check("หน้าแรกมีเกมใหม่พร้อมจำนวนสามสิบรูป", /30/.test(await page.locator('.card[href="picture-reveal.html"] .card-count').textContent()));
+    check("หน้าแรกมีเกมพร้อมจำนวนหนึ่งร้อยยี่สิบรูป", /120/.test(await page.locator('.card[href="picture-reveal.html"] .card-count').textContent()));
     const sw = fs.readFileSync(path.join(ROOT, "sw.js"), "utf8");
     const localImages = fs.readdirSync(path.join(ROOT, "assets/picture-reveal")).filter((f) => f.endsWith(".jpg"));
-    check("อาหารสิบรูปมีไฟล์และเตรียมเก็บออฟไลน์ครบ", localImages.length === 10 && localImages.every((f) => sw.includes('"assets/picture-reveal/' + f + '"')));
+    check("อาหารสี่สิบรูปมีไฟล์และเตรียมเก็บออฟไลน์ครบ", localImages.length === 40 && localImages.every((f) => sw.includes('"assets/picture-reveal/' + f + '"')));
     await context.close();
   } finally {
     if (faultBrowser) await faultBrowser.close();

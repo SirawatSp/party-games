@@ -1,7 +1,7 @@
 // Service Worker สำหรับเล่นออฟไลน์ได้ทั้งเว็บ (เก็บ cache ทุกหน้า/สคริปต์/คลังโจทย์ไว้ในเครื่อง)
 // เปิดเว็บครั้งแรกตอนมีเน็ต ระบบจะโหลดเก็บไว้ให้อัตโนมัติ ครั้งต่อไปเปิดได้แม้ไม่มีเน็ตเลย
 // อัปเดตเนื้อหาเว็บทีไร ให้เปลี่ยนเลข CACHE_VERSION เพื่อบังคับดาวน์โหลดของใหม่ทับของเก่า
-const CACHE_VERSION = "party-games-v117";
+const CACHE_VERSION = "party-games-v118";
 
 // หมายเหตุ: เกม "ทายถนน" (street-scene) เก็บโครงหน้า แผนที่ และคลังสถานที่ไว้
 // โหมด "สถานที่สำคัญ" จึงเล่นได้เต็มรูปแบบตอนออฟไลน์
@@ -23,6 +23,36 @@ const PRECACHE_URLS = [
   "assets/picture-reveal/food-08.jpg",
   "assets/picture-reveal/food-09.jpg",
   "assets/picture-reveal/food-10.jpg",
+  "assets/picture-reveal/food-11.jpg",
+  "assets/picture-reveal/food-12.jpg",
+  "assets/picture-reveal/food-13.jpg",
+  "assets/picture-reveal/food-14.jpg",
+  "assets/picture-reveal/food-15.jpg",
+  "assets/picture-reveal/food-16.jpg",
+  "assets/picture-reveal/food-17.jpg",
+  "assets/picture-reveal/food-18.jpg",
+  "assets/picture-reveal/food-19.jpg",
+  "assets/picture-reveal/food-20.jpg",
+  "assets/picture-reveal/food-21.jpg",
+  "assets/picture-reveal/food-22.jpg",
+  "assets/picture-reveal/food-23.jpg",
+  "assets/picture-reveal/food-24.jpg",
+  "assets/picture-reveal/food-25.jpg",
+  "assets/picture-reveal/food-26.jpg",
+  "assets/picture-reveal/food-27.jpg",
+  "assets/picture-reveal/food-28.jpg",
+  "assets/picture-reveal/food-29.jpg",
+  "assets/picture-reveal/food-30.jpg",
+  "assets/picture-reveal/food-31.jpg",
+  "assets/picture-reveal/food-32.jpg",
+  "assets/picture-reveal/food-33.jpg",
+  "assets/picture-reveal/food-34.jpg",
+  "assets/picture-reveal/food-35.jpg",
+  "assets/picture-reveal/food-36.jpg",
+  "assets/picture-reveal/food-37.jpg",
+  "assets/picture-reveal/food-38.jpg",
+  "assets/picture-reveal/food-39.jpg",
+  "assets/picture-reveal/food-40.jpg",
   "truth-or-dare.html",
   "css/truth-or-dare.css",
   "js/truth-or-dare.js",
