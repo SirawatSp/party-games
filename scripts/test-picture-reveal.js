@@ -8,6 +8,7 @@ const ROOT = path.join(__dirname, "..");
 async function run(chromium, options = {}) {
   const base = (options.base || pathToFileURL(ROOT + path.sep).href).replace(/\/$/, "");
   const browser = await chromium.launch({ headless: true });
+  let faultBrowser = null;
   const results = [];
   const check = (name, ok, detail) => results.push({ name, ok: !!ok, detail });
   const ready = async (page) => {
@@ -102,10 +103,15 @@ async function run(chromium, options = {}) {
     await page.locator("#prReveal").click();
     if (options.shots) await page.screenshot({ path: path.join(options.shots, "picture-desktop.png"), fullPage: true });
 
-    const faultPage = await context.newPage();
+    // ใช้เบราว์เซอร์ใหม่ เพื่อไม่ให้หน่วยความจำภาพที่โหลดก่อนหน้าข้ามการจำลองเครือข่ายล้มเหลว
+    const fallbackEntry = await page.evaluate(() => PICTURE_REVEAL_LIST.find((x) => x.cat === "movies" && x.fallback));
+    faultBrowser = await chromium.launch({ headless: true });
+    const faultContext = await faultBrowser.newContext({ serviceWorkers: "block", reducedMotion: "reduce" });
+    const faultPage = await faultContext.newPage();
     faultPage.on("pageerror", (e) => errors.push(e.message));
     let failedUrl = "";
     await faultPage.route("**/food-*.jpg", (route) => { failedUrl = route.request().url(); return route.abort(); });
+    await faultPage.route(fallbackEntry.image, (route) => route.abort());
     await faultPage.goto(base + "/picture-reveal.html", { waitUntil: "domcontentloaded" });
     await faultPage.locator('[data-cat="thai_food"]').click();
     await faultPage.waitForSelector("#prError:not([hidden])", { timeout: 25000 });
@@ -116,8 +122,6 @@ async function run(chromium, options = {}) {
     await ready(faultPage);
     check("ลองใหม่ได้รูปเดิมจริง", await faultPage.locator("#prImageHost img").getAttribute("src") === failedUrl
       || new URL(await faultPage.locator("#prImageHost img").getAttribute("src"), base + "/picture-reveal.html").href === failedUrl);
-    const fallbackEntry = await faultPage.evaluate(() => PICTURE_REVEAL_LIST.find((x) => x.cat === "movies" && x.fallback));
-    await faultPage.route(fallbackEntry.image, (route) => route.abort());
     await faultPage.locator('[data-cat="movies"]').click();
     let fallbackWorked = false;
     for (let i = 0; i < 10; i++) {
@@ -131,6 +135,9 @@ async function run(chromium, options = {}) {
     check("ภาพสำรองทำงานเมื่อแหล่งหลักเสีย", fallbackWorked);
     await faultPage.locator("#prReveal").click();
     check("ภาพสำรองยังเฉลยตรงเรื่องเดิม", await faultPage.locator("#prAnswerText").textContent() === fallbackEntry.answer);
+    await faultContext.close();
+    await faultBrowser.close();
+    faultBrowser = null;
     check("เล่นแล้วไม่มีข้อผิดพลาดสคริปต์", errors.length === 0, errors);
     await page.goto(base + "/index.html", { waitUntil: "domcontentloaded" });
     check("หน้าแรกมีเกมใหม่พร้อมจำนวนสามสิบรูป", /30/.test(await page.locator('.card[href="picture-reveal.html"] .card-count').textContent()));
@@ -139,6 +146,7 @@ async function run(chromium, options = {}) {
     check("อาหารสิบรูปมีไฟล์และเตรียมเก็บออฟไลน์ครบ", localImages.length === 10 && localImages.every((f) => sw.includes('"assets/picture-reveal/' + f + '"')));
     await context.close();
   } finally {
+    if (faultBrowser) await faultBrowser.close();
     await browser.close();
   }
   return results;
