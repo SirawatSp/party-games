@@ -15,6 +15,9 @@ document.addEventListener("DOMContentLoaded", () => {
     fresh_numbers: "ชุดใหม่ · ตัวเลขและรูปทรง",
     fresh_style: "ชุดใหม่ · เสื้อผ้าและสิ่งทอ",
     fresh_nature: "ชุดใหม่ · สวนและธรรมชาติ",
+    fresh_travel: "ชุดใหม่ · การเดินทาง",
+    fresh_screen: "ชุดใหม่ · หนังและหนังสือ",
+    fresh_daily: "ชุดใหม่ · ของใช้และงานประจำวัน",
     thai: "ไทย", general: "ทั่วไป", science: "วิทยาศาสตร์", history: "ประวัติศาสตร์",
     movie: "หนัง/การ์ตูน", music: "เพลง", sport: "กีฬา", game: "เกม",
     food: "อาหาร", animal: "สัตว์", geo: "ภูมิศาสตร์", tech: "เทคโนโลยี", art: "ศิลปะ/วรรณกรรม"
