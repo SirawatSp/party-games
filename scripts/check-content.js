@@ -10,6 +10,9 @@
 //
 // ออกด้วยรหัส 1 ถ้าเจอ ERROR (ห้าม commit) และรหัส 0 ถ้ามีแต่ REVIEW (ให้คนอ่านแล้วตัดสินเอง)
 const { POOLS, byKey, loadPool, dupValue, uiCats } = require("./content-pools.js");
+const fs = require("fs");
+const path = require("path");
+const ROOT = path.join(__dirname, "..");
 
 const argv = process.argv.slice(2);
 const newIdx = argv.indexOf("--new");
@@ -63,6 +66,80 @@ function textFields(pool, item) {
     );
 }
 
+// ชื่ออื่นใช้ตอบได้เหมือนเฉลย จึงห้ามชนกันข้ามรูป แม้อยู่คนละหมวด
+function checkPicturePool(pool, list) {
+  const names = new Map();
+  const files = new Map();
+  const images = new Map();
+  const normalizeName = (s) => s.normalize("NFKC").toLowerCase().replace(/[\p{P}\p{Z}\s\u200b-\u200d\ufeff]/gu, "");
+  const isWebUrl = (s) => {
+    if (typeof s !== "string" || !s.trim()) return false;
+    try { return ["http:", "https:"].includes(new URL(s).protocol); }
+    catch (e) { return false; }
+  };
+  const readOptional = (file) => fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
+  const credits = readOptional(path.join(ROOT, "assets/picture-reveal/CREDITS.md"));
+  const sw = readOptional(path.join(ROOT, "sw.js"));
+  list.forEach((item, i) => {
+    const at = "ข้อ #" + (i + 1);
+    (pool.required || []).forEach((field) => {
+      if (typeof item[field] !== "string") err(pool, at + " ฟิลด์ " + field + " ต้องเป็นข้อความ");
+    });
+    if (item.aliases !== undefined && (!Array.isArray(item.aliases) || !item.aliases.length
+      || item.aliases.some((s) => typeof s !== "string" || !s.trim())))
+      err(pool, at + " aliases ต้องเป็นรายชื่อข้อความไม่ว่าง หรือไม่ใส่ฟิลด์นี้");
+    const aliases = Array.isArray(item.aliases) ? item.aliases : [];
+    [item.answer, ...aliases].filter((s) => typeof s === "string").forEach((name) => {
+      const key = normalizeName(name);
+      if (!key) return err(pool, at + " มีชื่อคำตอบที่ไม่มีตัวอักษรหรือตัวเลข");
+      if (names.has(key) && names.get(key) !== at)
+        err(pool, at + " คำตอบหรือชื่ออื่นซ้ำกับ " + names.get(key) + " — " + name);
+      else names.set(key, at);
+    });
+    if (typeof item.sourceFile === "string") {
+      const key = item.sourceFile.normalize("NFKC").toLowerCase();
+      if (files.has(key)) err(pool, at + " sourceFile ซ้ำกับ " + files.get(key) + " — " + item.sourceFile);
+      else files.set(key, at);
+    }
+    ["source", "rightsUrl"].forEach((field) => {
+      if (!isWebUrl(item[field])) err(pool, at + " ฟิลด์ " + field + " ต้องเป็น URL แบบ http หรือ https");
+    });
+    ["image", "fallback"].forEach((field) => {
+      if (field === "fallback" && item[field] === undefined) return;
+      const value = item[field];
+      let key;
+      if (isWebUrl(value)) {
+        const url = new URL(value);
+        url.hash = "";
+        // พารามิเตอร์ติดตามไม่เปลี่ยนตัวภาพ
+        [...url.searchParams.keys()].filter((k) => k.startsWith("utm_")).forEach((k) => url.searchParams.delete(k));
+        key = url.href;
+      } else if (typeof value === "string" && /^assets\/picture-reveal\/[^/]+\.(?:jpg|jpeg|png|webp)$/i.test(value)) {
+        key = value;
+      } else {
+        err(pool, at + " ฟิลด์ " + field + " ต้องเป็น URL ภาพ หรือไฟล์ใน assets/picture-reveal/");
+        return;
+      }
+      if (images.has(key) && images.get(key) !== at) err(pool, at + " ภาพซ้ำกับ " + images.get(key) + " — " + value);
+      else images.set(key, at);
+    });
+    if (item.cat === "thai_food") {
+      const image = item.image;
+      if (typeof image !== "string" || !/^assets\/picture-reveal\/[^/]+\.(?:jpg|jpeg|png|webp)$/i.test(image)) {
+        err(pool, at + " อาหารไทยต้องใช้ไฟล์ภาพในเครื่องเพื่อเล่นออฟไลน์");
+        return;
+      }
+      const file = path.join(ROOT, image);
+      if (!fs.existsSync(file) || !fs.statSync(file).isFile() || !fs.statSync(file).size)
+        err(pool, at + " ไม่มีไฟล์ภาพอาหารหรือไฟล์ว่าง — " + image);
+      const credit = credits.split("\n").find((line) => line.split("|")[1]?.trim() === path.basename(image));
+      if (!credit || credit.split("|")[2]?.trim() !== item.answer || !credit.includes(item.rightsUrl))
+        err(pool, at + " เครดิตภาพอาหารต้องมีชื่อไฟล์ เฉลย และลิงก์สิทธิ์ตรงกับคลัง — " + image);
+      if (!sw.includes(JSON.stringify(image))) err(pool, at + " ภาพอาหารยังไม่อยู่ในรายการเก็บออฟไลน์ — " + image);
+    }
+  });
+}
+
 for (const pool of pools) {
   let list;
   try {
@@ -75,6 +152,7 @@ for (const pool of pools) {
     err(pool, "ไม่ใช่ array หรือว่างเปล่า");
     continue;
   }
+  if (pool.key === "picturereveal") checkPicturePool(pool, list);
 
   const allowedCats = pool.catField && pool.closedCats ? uiCats(pool) : null;
   const existingCats = new Set();

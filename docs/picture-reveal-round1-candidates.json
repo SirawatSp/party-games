@@ -1,0 +1,366 @@
+[
+  {
+    "answer": "จอห์น วิค",
+    "cat": "movies",
+    "aliases": [
+      "John Wick",
+      "จอห์นวิค",
+      "แรงกว่านรก"
+    ]
+  },
+  {
+    "answer": "มิชชั่น อิมพอสซิเบิล",
+    "cat": "movies",
+    "aliases": [
+      "Mission: Impossible",
+      "Mission Impossible",
+      "มิชชั่น อิมพอสซิเบิ้ล"
+    ]
+  },
+  {
+    "answer": "เดอะ มัมมี่",
+    "cat": "movies",
+    "aliases": [
+      "The Mummy",
+      "มัมมี่",
+      "คืนชีพคำสาปนรกล้างโลก"
+    ]
+  },
+  {
+    "answer": "โกสต์บัสเตอร์ส",
+    "cat": "movies",
+    "aliases": [
+      "Ghostbusters",
+      "บริษัทกำจัดผี"
+    ]
+  },
+  {
+    "answer": "เอเลี่ยน",
+    "cat": "movies",
+    "aliases": [
+      "Alien",
+      "เอเลียน"
+    ]
+  },
+  {
+    "answer": "คนเรียกผี",
+    "cat": "movies",
+    "aliases": [
+      "The Conjuring",
+      "เดอะ คอนเจอริ่ง"
+    ]
+  },
+  {
+    "answer": "หมอผี เอ็กซอร์ซิสต์",
+    "cat": "movies",
+    "aliases": [
+      "The Exorcist",
+      "เอ็กซอร์ซิสต์"
+    ]
+  },
+  {
+    "answer": "ชอว์แชงค์",
+    "cat": "movies",
+    "aliases": [
+      "The Shawshank Redemption",
+      "ชอว์แชงค์ มิตรภาพ ความหวัง ความรุนแรง"
+    ]
+  },
+  {
+    "answer": "ดิบดวลดิบ",
+    "cat": "movies",
+    "aliases": [
+      "Fight Club",
+      "ไฟต์คลับ",
+      "ไฟท์คลับ"
+    ]
+  },
+  {
+    "answer": "แกลดิเอเตอร์",
+    "cat": "movies",
+    "aliases": [
+      "Gladiator",
+      "นักรบผู้กล้าผ่าแผ่นดิน"
+    ]
+  },
+  {
+    "answer": "ชีวิตอัศจรรย์ของพาย",
+    "cat": "movies",
+    "aliases": [
+      "Life of Pi",
+      "ไลฟ์ ออฟ พาย"
+    ]
+  },
+  {
+    "answer": "กู้ตาย 140 ล้านไมล์",
+    "cat": "movies",
+    "aliases": [
+      "The Martian",
+      "เดอะ มาร์เชียน"
+    ]
+  },
+  {
+    "answer": "ชนชั้นปรสิต",
+    "cat": "movies",
+    "aliases": [
+      "Parasite",
+      "พาราไซต์"
+    ]
+  },
+  {
+    "answer": "ด่วนนรก ซอมบี้คลั่ง",
+    "cat": "movies",
+    "aliases": [
+      "Train to Busan",
+      "เทรน ทู ปูซาน"
+    ]
+  },
+  {
+    "answer": "ฉลาดเกมส์โกง",
+    "cat": "movies",
+    "aliases": [
+      "Bad Genius",
+      "ฉลาดเกมโกง"
+    ]
+  },
+  {
+    "answer": "ดราก้อนบอล",
+    "cat": "cartoons",
+    "aliases": [
+      "Dragon Ball",
+      "ดรากอนบอล"
+    ]
+  },
+  {
+    "answer": "แขนกล คนแปรธาตุ",
+    "cat": "cartoons",
+    "aliases": [
+      "Fullmetal Alchemist",
+      "ฟูลเมทัล อัลเคมิสต์"
+    ]
+  },
+  {
+    "answer": "ฮันเตอร์ × ฮันเตอร์",
+    "cat": "cartoons",
+    "aliases": [
+      "Hunter × Hunter",
+      "Hunter x Hunter",
+      "ฮันเตอร์ x ฮันเตอร์"
+    ]
+  },
+  {
+    "answer": "วันพันช์แมน",
+    "cat": "cartoons",
+    "aliases": [
+      "One-Punch Man",
+      "One Punch Man",
+      "วันพั้นช์แมน"
+    ]
+  },
+  {
+    "answer": "โตเกียวกูล",
+    "cat": "cartoons",
+    "aliases": [
+      "Tokyo Ghoul",
+      "ผีปอบโตเกียว"
+    ]
+  },
+  {
+    "answer": "ดร.สโตน เจ้าแห่งวิทยาศาสตร์",
+    "cat": "cartoons",
+    "aliases": [
+      "Dr. Stone",
+      "ดร.สโตน"
+    ]
+  },
+  {
+    "answer": "บลูล็อก ขังดวลแข้ง",
+    "cat": "cartoons",
+    "aliases": [
+      "Blue Lock",
+      "บลูล็อก"
+    ]
+  },
+  {
+    "answer": "คนเก่งฟ้าประทาน",
+    "cat": "cartoons",
+    "aliases": [
+      "Yu Yu Hakusho",
+      "ยูยูฮาคุโช"
+    ]
+  },
+  {
+    "answer": "ดิจิมอน",
+    "cat": "cartoons",
+    "aliases": [
+      "Digimon",
+      "Digimon Adventure"
+    ]
+  },
+  {
+    "answer": "แฮมทาโร่",
+    "cat": "cartoons",
+    "aliases": [
+      "Hamtaro",
+      "แฮมทาโร"
+    ]
+  },
+  {
+    "answer": "แม่มดน้อยโดเรมี",
+    "cat": "cartoons",
+    "aliases": [
+      "Ojamajo Doremi",
+      "โดเรมี"
+    ]
+  },
+  {
+    "answer": "ซากุระ มือปราบไพ่ทาโรต์",
+    "cat": "cartoons",
+    "aliases": [
+      "Cardcaptor Sakura",
+      "การ์ดแคปเตอร์ซากุระ"
+    ]
+  },
+  {
+    "answer": "หลับตาฝัน ถึงชื่อเธอ",
+    "cat": "cartoons",
+    "aliases": [
+      "Your Name",
+      "Kimi no Na wa",
+      "ยัวร์เนม"
+    ]
+  },
+  {
+    "answer": "ฤดูฝัน ฉันมีเธอ",
+    "cat": "cartoons",
+    "aliases": [
+      "Weathering with You",
+      "Tenki no Ko"
+    ]
+  },
+  {
+    "answer": "การผนึกประตูของซุซุเมะ",
+    "cat": "cartoons",
+    "aliases": [
+      "Suzume",
+      "Suzume no Tojimari",
+      "ซุซุเมะ"
+    ]
+  },
+  {
+    "answer": "ข้าวหน้าเป็ด",
+    "cat": "thai_food",
+    "aliases": [
+      "Khao Na Pet",
+      "ข้าวเป็ดย่าง"
+    ]
+  },
+  {
+    "answer": "ข้าวหมกไก่",
+    "cat": "thai_food",
+    "aliases": [
+      "Khao Mok Gai",
+      "ข้าวหมก"
+    ]
+  },
+  {
+    "answer": "ข้าวต้มปลา",
+    "cat": "thai_food",
+    "aliases": [
+      "Khao Tom Pla"
+    ]
+  },
+  {
+    "answer": "โจ๊ก",
+    "cat": "thai_food",
+    "aliases": [
+      "Jok",
+      "Chok",
+      "โจ๊กหมู"
+    ]
+  },
+  {
+    "answer": "ขนมจีนน้ำยา",
+    "cat": "thai_food",
+    "aliases": [
+      "Khanom Chin Nam Ya",
+      "ขนมจีน น้ำยา"
+    ]
+  },
+  {
+    "answer": "ขนมจีนน้ำเงี้ยว",
+    "cat": "thai_food",
+    "aliases": [
+      "Khanom Chin Nam Ngiao",
+      "น้ำเงี้ยว"
+    ]
+  },
+  {
+    "answer": "ผัดผักบุ้งไฟแดง",
+    "cat": "thai_food",
+    "aliases": [
+      "Pad Pak Bung Fai Daeng",
+      "ผักบุ้งไฟแดง"
+    ]
+  },
+  {
+    "answer": "ไข่พะโล้",
+    "cat": "thai_food",
+    "aliases": [
+      "Khai Phalo",
+      "พะโล้"
+    ]
+  },
+  {
+    "answer": "แกงเลียง",
+    "cat": "thai_food",
+    "aliases": [
+      "Kaeng Liang"
+    ]
+  },
+  {
+    "answer": "แกงไตปลา",
+    "cat": "thai_food",
+    "aliases": [
+      "Kaeng Tai Pla"
+    ]
+  },
+  {
+    "answer": "คั่วกลิ้ง",
+    "cat": "thai_food",
+    "aliases": [
+      "Khua Kling"
+    ]
+  },
+  {
+    "answer": "สะตอผัดกะปิ",
+    "cat": "thai_food",
+    "aliases": [
+      "Sato Pad Kapi",
+      "ผัดสะตอ"
+    ]
+  },
+  {
+    "answer": "ปูผัดผงกะหรี่",
+    "cat": "thai_food",
+    "aliases": [
+      "Pu Pad Pong Kari",
+      "ปูผัดผงกะหรี"
+    ]
+  },
+  {
+    "answer": "หอยทอด",
+    "cat": "thai_food",
+    "aliases": [
+      "Hoi Thot",
+      "Hoi Tod"
+    ]
+  },
+  {
+    "answer": "ข้าวหลาม",
+    "cat": "thai_food",
+    "aliases": [
+      "Khao Lam"
+    ]
+  }
+]
