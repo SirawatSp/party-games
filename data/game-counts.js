@@ -26,7 +26,7 @@ const GAME_COUNTS = {
   "animalrace.html": { count: 20, unit: "ตัว" },
   "hues-and-cues.html": { count: 480, unit: "เฉดสี" },
   "favorites.html": { count: 480, unit: "คำถาม" },
-  "rapidfire.html": { count: 800, unit: "โจทย์" },
+  "rapidfire.html": { count: 852, unit: "โจทย์" },
   "situation.html": { count: 500, unit: "สถานการณ์" },
   "fake-artist.html": { count: 910, unit: "คำลับ" },
   "borderchain.html": { count: 155, unit: "ประเทศ" },

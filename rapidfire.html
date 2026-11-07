@@ -19,7 +19,7 @@
   <section class="page-head reveal-up">
     <span class="kicker" style="background:var(--rapid); color:#2a1200;">22 · ตอบเร็ว</span>
     <h1>ถามไวตอบไว</h1>
-    <p>โจทย์แบบ "บอกมา 3 อย่าง" — 3 ประเทศที่อยากไป 3 อาหารที่ยอมกินไปตลอดชีวิต 3 ของที่จะหยิบถ้าบ้านไฟไหม้ ตอบให้ครบก่อนหมดเวลา ห้ามคิดนาน ยิ่งตอบเร็วยิ่งได้คำตอบจริงใจ</p>
+    <p>โจทย์แบบ "บอกมา 3 อย่าง" — เลือกหมวดเพลง หนัง ซีรีส์ หรือเรื่องใกล้ตัว แล้วตอบคนละ 3 อย่าง เล่นชิล ๆ รอบวงหรือแข่งตอบให้ครบก่อนหมดเวลาก็ได้</p>
   </section>
 
   <div class="rf-modes reveal-up" id="rfModes">
@@ -28,16 +28,19 @@
   </div>
   <p class="rf-mode-desc" id="rfModeDesc">สุ่มโจทย์ขึ้นมา แล้วผลัดกันตอบคนละ 3 อย่างรอบวง ไม่มีเวลาบีบ</p>
 
-  <div class="tags rf-tags reveal-up" id="rfCatTags">
-    <span class="tag active" data-cat="all">ทั้งหมด</span>
-    <span class="tag" data-cat="travel">✈️ เที่ยว</span>
-    <span class="tag" data-cat="food">🍜 ของกิน</span>
-    <span class="tag" data-cat="ent">🎬 บันเทิง</span>
-    <span class="tag" data-cat="self">🪞 เรื่องตัวเอง</span>
-    <span class="tag" data-cat="stuff">🎒 ของ &amp; ไอเทม</span>
-    <span class="tag" data-cat="people">🫂 คนรอบตัว</span>
-    <span class="tag" data-cat="daily">☀️ ชีวิตประจำวัน</span>
-    <span class="tag" data-cat="fun">🎲 สมมติ &amp; ฮา</span>
+  <div class="tags rf-tags reveal-up" id="rfCatTags" role="group" aria-label="เลือกหมวดโจทย์">
+    <button class="tag active" data-cat="all" type="button" aria-pressed="true">ทั้งหมด</button>
+    <button class="tag" data-cat="travel" type="button" aria-pressed="false">✈️ เที่ยว</button>
+    <button class="tag" data-cat="food" type="button" aria-pressed="false">🍜 ของกิน</button>
+    <button class="tag" data-cat="music" type="button" aria-pressed="false">🎵 เพลง</button>
+    <button class="tag" data-cat="movies" type="button" aria-pressed="false">🎬 หนัง</button>
+    <button class="tag" data-cat="series" type="button" aria-pressed="false">📺 ซีรีส์</button>
+    <button class="tag" data-cat="ent" type="button" aria-pressed="false">🎭 บันเทิงอื่น ๆ</button>
+    <button class="tag" data-cat="self" type="button" aria-pressed="false">🪞 เรื่องตัวเอง</button>
+    <button class="tag" data-cat="stuff" type="button" aria-pressed="false">🎒 ของ &amp; ไอเทม</button>
+    <button class="tag" data-cat="people" type="button" aria-pressed="false">🫂 คนรอบตัว</button>
+    <button class="tag" data-cat="daily" type="button" aria-pressed="false">☀️ ชีวิตประจำวัน</button>
+    <button class="tag" data-cat="fun" type="button" aria-pressed="false">🎲 สมมติ &amp; ฮา</button>
   </div>
 
   <!-- ---------- โหมดชิล ๆ ---------- -->

@@ -7,7 +7,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const CAT_LABEL = {
     travel: "✈️ เที่ยว",
     food: "🍜 ของกิน",
-    ent: "🎬 บันเทิง",
+    music: "🎵 เพลง",
+    movies: "🎬 หนัง",
+    series: "📺 ซีรีส์",
+    ent: "🎭 บันเทิงอื่น ๆ",
     self: "🪞 เรื่องของตัวเอง",
     stuff: "🎒 ของ & ไอเทม",
     people: "🫂 คนรอบตัว",
@@ -17,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const MODE_DESC = {
     chill: "สุ่มโจทย์ขึ้นมา แล้วผลัดกันตอบคนละ 3 อย่างรอบวง ไม่มีเวลาบีบ",
-    race: "สุ่มว่าถึงตาใคร แล้วตอบให้ครบ 3 อย่างก่อนหมดเวลา ตอบเร็วได้แต้มพิเศษ",
+    race: "สุ่มว่าถึงตาใคร แล้วตอบให้ครบ 3 อย่างก่อนหมดเวลา ตอบเร็วได้แต้มพิเศษ เปลี่ยนหมวดระหว่างแข่งมีผลรอบถัดไป",
   };
 
   const PLAYER_COLORS = [
@@ -96,13 +99,16 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.classList.add("active");
       S.mode = btn.dataset.mode;
       applyMode();
+      if (S.mode === "chill") nextChill();
     });
   });
 
   $("rfCatTags").querySelectorAll(".tag").forEach((tagEl) => {
     tagEl.addEventListener("click", () => {
-      $("rfCatTags").querySelectorAll(".tag").forEach((t) => t.classList.remove("active"));
-      tagEl.classList.add("active");
+      $("rfCatTags").querySelectorAll(".tag").forEach((t) => {
+        t.classList.toggle("active", t === tagEl);
+        t.setAttribute("aria-pressed", String(t === tagEl));
+      });
       S.cat = tagEl.dataset.cat;
       // กำลังจับเวลาอยู่ไม่ต้องสลับโจทย์กลางคัน หมวดใหม่จะมีผลรอบถัดไป
       if (S.mode === "chill") nextChill();
