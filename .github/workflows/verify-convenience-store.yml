@@ -13,7 +13,7 @@ defaults:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     env:
       STORE_BASE_SHA: "05eaf9c0eebd4303f6b64a42c4e6f017eb87c919"
