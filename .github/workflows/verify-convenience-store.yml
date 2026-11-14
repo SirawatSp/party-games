@@ -1,0 +1,149 @@
+name: ตรวจเกมร้านสะดวกซื้อก่อนเผยแพร่
+
+on:
+  push:
+    branches: ["codex/verify-convenience-store-20261115"]
+
+permissions:
+  contents: write
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      STORE_BASE_SHA: "05eaf9c0eebd4303f6b64a42c4e6f017eb87c919"
+      CHECKPOINT_SHA: "ff120cd1f47163e5e610586765668db454f08ac3"
+    steps:
+      - name: ดึงฐานที่ต้องตรวจ
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: เตรียม Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: ตรวจคลังฐานเดิม
+        run: node scripts/check-content.js
+      - name: คืนร่างและภาพจากจุดกู้
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import os, json, base64, hashlib, struct, urllib.request
+          from pathlib import Path
+          root = Path.cwd().resolve()
+          repo = os.environ['GITHUB_REPOSITORY']
+          token = os.environ['GH_TOKEN']
+          cache = {}
+          def blob(sha):
+              if sha in cache: return cache[sha]
+              req = urllib.request.Request('https://api.github.com/repos/' + repo + '/git/blobs/' + sha, headers={'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28'})
+              with urllib.request.urlopen(req, timeout=60) as response: obj = json.load(response)
+              data = base64.b64decode(obj['content'])
+              assert hashlib.sha1(('blob ' + str(len(data)) + '\0').encode() + data).hexdigest() == sha, 'blob digest ' + sha
+              cache[sha] = data
+              return data
+          checkpoint = json.loads(blob(os.environ['CHECKPOINT_SHA']))
+          assert checkpoint['baseCommit'] == os.environ['STORE_BASE_SHA']
+          inputs = Path(os.environ['RUNNER_TEMP']) / 'convenience-inputs'
+          inputs.mkdir(parents=True, exist_ok=True)
+          review = Path(os.environ['RUNNER_TEMP']) / 'convenience-review'
+          review.mkdir(parents=True, exist_ok=True)
+          for entry in checkpoint['sourceBlobs']:
+              path = entry['path']
+              if path == 'docs/CONTENT-REVIEW-convenience-store-draft.md': continue
+              destination = inputs / Path(path).name if path.startswith('recovery-inputs/') else root / path
+              assert destination.resolve().is_relative_to(inputs.resolve()) or destination.resolve().is_relative_to(root)
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              destination.write_bytes(blob(entry['blob']))
+              print('restored', path)
+          atlas = json.loads(blob(checkpoint['imageManifestBlob']))
+          encoded = ''.join(blob(part['sha']).decode('utf-8') for part in sorted(atlas['chunks'], key=lambda part: part['index']))
+          assert len(encoded) == atlas['base64Length']
+          image = base64.b64decode(encoded, validate=True)
+          assert len(image) == atlas['byteCount']
+          assert hashlib.sha1(image).hexdigest() == atlas['pngSha1']
+          assert image[:8] == b'\x89PNG\r\n\x1a\n'
+          assert struct.unpack('>II', image[16:24]) == (atlas['width'], atlas['height'])
+          destination = root / atlas['path']
+          destination.parent.mkdir(parents=True, exist_ok=True)
+          destination.write_bytes(image)
+          print('restored PNG', len(image), 'bytes', atlas['width'], atlas['height'], atlas['pngSha1'])
+          PY
+      - name: รับคลังใหม่ ตรวจข้อมูล และเตรียมแคช
+        run: |
+          node scripts/add-entries.js conveniencestore "$RUNNER_TEMP/convenience-inputs/rounds.json" --dry --init
+          node scripts/add-entries.js conveniencestore "$RUNNER_TEMP/convenience-inputs/rounds.json" --init
+          node scripts/add-entries.js convenienceproducts "$RUNNER_TEMP/convenience-inputs/products.json" --dry --init
+          node scripts/add-entries.js convenienceproducts "$RUNNER_TEMP/convenience-inputs/products.json" --init
+          node --check js/convenience-store.js
+          node --check scripts/test-convenience-store.js
+          node scripts/check-content.js | tee "$RUNNER_TEMP/convenience-review/check-content.log"
+          node scripts/ship.js | tee "$RUNNER_TEMP/convenience-review/ship.log"
+          git diff --check
+      - name: เตรียมเครื่องมือเบราว์เซอร์นอก repo
+        run: |
+          npm install --prefix "$RUNNER_TEMP/convenience-browser" --no-audit --no-fund playwright@1.56.1
+          "$RUNNER_TEMP/convenience-browser/node_modules/.bin/playwright" install --with-deps chromium
+          echo "PLAYWRIGHT_MODULE=$RUNNER_TEMP/convenience-browser/node_modules/playwright" >> "$GITHUB_ENV"
+          echo "NODE_PATH=$RUNNER_TEMP/convenience-browser/node_modules" >> "$GITHUB_ENV"
+          echo "CONVENIENCE_REVIEW=$RUNNER_TEMP/convenience-review" >> "$GITHUB_ENV"
+          echo "SHOTS=$RUNNER_TEMP/convenience-review/shots" >> "$GITHUB_ENV"
+      - name: ทดสอบรอบเล่นด้วย Chromium
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const { chromium } = require(process.env.PLAYWRIGHT_MODULE);
+          const run = require(path.join(process.cwd(), 'scripts/test-convenience-store.js'));
+          fs.mkdirSync(process.env.SHOTS, { recursive: true });
+          run(chromium, { shots: process.env.SHOTS }).then((results) => {
+            const output = { passed: results.filter((r) => r.ok).length, total: results.length, results };
+            fs.writeFileSync(path.join(process.env.CONVENIENCE_REVIEW, 'browser-results.json'), JSON.stringify(output, null, 2));
+            results.forEach((r) => console.log((r.ok ? 'ผ่าน ' : 'ไม่ผ่าน ') + r.name + (!r.ok ? ' ' + JSON.stringify(r.detail) : '')));
+            console.log(output.passed + '/' + output.total + ' ผ่าน');
+            if (output.passed !== output.total) process.exitCode = 1;
+          }).catch((error) => { console.error(error); process.exitCode = 1; });
+          NODE
+      - name: บันทึกเฉพาะชุดที่ทดสอบผ่าน
+        run: |
+          node - <<'NODE'
+          const fs = require('fs'), path = require('path');
+          const report = JSON.parse(fs.readFileSync(path.join(process.env.CONVENIENCE_REVIEW, 'browser-results.json'), 'utf8'));
+          if (report.passed !== report.total || !report.total) throw new Error('ยังไม่ผ่านการทดสอบครบ');
+          const lines = ['# ตรวจเกมร้านสะดวกซื้อ ลื้อสะดวกใจ', '',
+          'เพิ่มเกมสองคนเครื่องเดียว เลือกสินค้าแล้วปิดคำตอบก่อนส่งเครื่องให้อีกคนทาย สลับบทบาททุกหนึ่งรอบและนับแต้มร่วมเมื่อทายตรงกัน', '',
+          '## คลังและภาพ', '',
+          '- 30 สถานการณ์ใน 6 หมวด หมวดละ 5 ข้อ และภาพประกอบสินค้า 36 ตัวเลือก หมวดละ 6 รายการ',
+          '- น้ำอัดลม ชาพร้อมดื่ม นมและนมถั่วเหลือง ขนมขบเคี้ยว บะหมี่ และไอศกรีม',
+          '- ภาพประกอบต้นฉบับพร้อมชื่อแบรนด์และเครดิตใน assets/convenience-store/CREDITS.md เก็บในเว็บเพื่อเล่นออฟไลน์',
+          '- ใช้หน่วยความจำของรอบเท่านั้น ล้างปุ่มและข้อความคำตอบก่อนส่งเครื่อง ไม่เก็บชื่อหรือคำตอบลง URL หรือ storage', '',
+          '## ผลตรวจ', '',
+          '- สร้างคลังผ่าน add-entries.js --dry --init และ --init ทั้งสองคลัง',
+          '- node scripts/check-content.js ผ่านครบทุกคลัง ไม่มี ERROR; node scripts/ship.js สร้างจำนวนหน้าแรกและเลื่อนแคชแล้ว',
+          '- Playwright/Chromium ผ่าน ' + report.passed + '/' + report.total + ' ครอบคลุมคำตอบถูก/ผิด ส่งเครื่อง ความลับ กดติดกัน สลับบทบาท คีย์บอร์ด มือถือ รูปเสีย และออฟไลน์จริง',
+          '- รูป PNG คืนจากสำเนาต้นฉบับและตรวจ SHA-1 ee7451cacf0641650ef1c23160baef8b119db960 ตรงก่อนใช้',
+          '- ตรวจด้วย GitHub Actions บนสาขาทดสอบ เนื่องจากเครื่อง Codex Cloud เริ่มไม่สำเร็จ', '',
+          'หลักฐานการทดสอบและภาพหน้าจอ: https://github.com/' + process.env.GITHUB_REPOSITORY + '/actions/runs/' + process.env.GITHUB_RUN_ID, ''];
+          fs.writeFileSync('docs/CONTENT-REVIEW-convenience-store.md', lines.join('\n'));
+          NODE
+          node scripts/check-content.js > "$RUNNER_TEMP/convenience-review/check-before-commit.log"
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add convenience-store.html css/convenience-store.css js/convenience-store.js data/convenience-store.js data/convenience-products.js assets/convenience-store/products.png assets/convenience-store/CREDITS.md scripts/content-pools.js scripts/check-content.js scripts/test-convenience-store.js scripts/build-game-counts.js index.html sw.js data/game-counts.js docs/CONTENT-GUIDE.md docs/CONTENT-REVIEW-convenience-store.md
+          git commit -m "เพิ่มเกมร้านสะดวกซื้อ ลื้อสะดวกใจ พร้อมภาพและทายใจส่งเครื่อง"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+          git rev-parse HEAD | tee "$RUNNER_TEMP/convenience-review/tested-commit.txt"
+      - name: เก็บหลักฐานการตรวจ
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: convenience-store-review
+          path: ${{ runner.temp }}/convenience-review
+          retention-days: 14
