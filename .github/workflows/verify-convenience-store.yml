@@ -17,7 +17,7 @@ jobs:
     timeout-minutes: 25
     env:
       STORE_BASE_SHA: "05eaf9c0eebd4303f6b64a42c4e6f017eb87c919"
-      CHECKPOINT_SHA: "ff120cd1f47163e5e610586765668db454f08ac3"
+      CHECKPOINT_SHA: "9336a0b1c320546aa30b82ea038b6e3394a280ed"
     steps:
       - name: ดึงฐานที่ต้องตรวจ
         uses: actions/checkout@v4
@@ -95,6 +95,8 @@ jobs:
           echo "CONVENIENCE_REVIEW=$RUNNER_TEMP/convenience-review" >> "$GITHUB_ENV"
           echo "SHOTS=$RUNNER_TEMP/convenience-review/shots" >> "$GITHUB_ENV"
       - name: ทดสอบรอบเล่นด้วย Chromium
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           node - <<'NODE'
           const fs = require('fs');
@@ -102,11 +104,21 @@ jobs:
           const { chromium } = require(process.env.PLAYWRIGHT_MODULE);
           const run = require(path.join(process.cwd(), 'scripts/test-convenience-store.js'));
           fs.mkdirSync(process.env.SHOTS, { recursive: true });
-          run(chromium, { shots: process.env.SHOTS }).then((results) => {
+          run(chromium, { shots: process.env.SHOTS }).then(async (results) => {
             const output = { passed: results.filter((r) => r.ok).length, total: results.length, results };
             fs.writeFileSync(path.join(process.env.CONVENIENCE_REVIEW, 'browser-results.json'), JSON.stringify(output, null, 2));
             results.forEach((r) => console.log((r.ok ? 'ผ่าน ' : 'ไม่ผ่าน ') + r.name + (!r.ok ? ' ' + JSON.stringify(r.detail) : '')));
             console.log(output.passed + '/' + output.total + ' ผ่าน');
+            for (const name of ["choose", "desktop", "offline"]) {
+              const file = path.join(process.env.SHOTS, "convenience-store-" + name + ".png");
+              if (!fs.existsSync(file)) continue;
+              const response = await fetch("https://api.github.com/repos/" + process.env.GITHUB_REPOSITORY + "/git/blobs", {
+                method: "POST", headers: { Authorization: "Bearer " + process.env.GH_TOKEN, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
+                body: JSON.stringify({ content: fs.readFileSync(file).toString("base64"), encoding: "utf-8" })
+              });
+              if (!response.ok) throw new Error("เก็บภาพตรวจไม่สำเร็จ " + response.status);
+              console.log("REVIEW_IMAGE " + name + " " + (await response.json()).sha);
+            }
             if (output.passed !== output.total) process.exitCode = 1;
           }).catch((error) => { console.error(error); process.exitCode = 1; });
           NODE

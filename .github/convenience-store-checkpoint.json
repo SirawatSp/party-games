@@ -1,7 +1,7 @@
 {
   "version": 1,
   "baseCommit": "05eaf9c0eebd4303f6b64a42c4e6f017eb87c919",
-  "checkpointBlob": "ff120cd1f47163e5e610586765668db454f08ac3",
-  "purpose": "ตรวจเกมร้านสะดวกซื้อก่อนเผยแพร่บน master",
-  "publication": "สาขาตรวจเท่านั้น ไม่เปิด PR"
+  "checkpointBlob": "9336a0b1c320546aa30b82ea038b6e3394a280ed",
+  "purpose": "ตรวจเกมและเก็บหลักฐานบนสาขาทดสอบก่อนเผยแพร่",
+  "publication": "สาขาทดสอบเท่านั้น ไม่เปิด PR"
 }
