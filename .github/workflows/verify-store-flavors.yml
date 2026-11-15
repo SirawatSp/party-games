@@ -138,7 +138,7 @@ jobs:
           '- Playwright/Chromium ผ่าน ' + report.passed + '/' + report.total + ' รวมหมวดเดิม หมวดใหม่ การส่งเครื่อง ความลับ คะแนน ขนาดจอ คีย์บอร์ด ภาพ PNG/SVG เสีย และออฟไลน์จริง',
           '- ตรวจ XML ของ SVG ทุกไฟล์ และเปิดภาพผ่าน Chromium แล้ว', '',
           'หลักฐานและภาพหน้าจอ: https://github.com/' + process.env.GITHUB_REPOSITORY + '/actions/runs/' + process.env.GITHUB_RUN_ID, '', notes, ''];
-          fs.writeFileSync('docs/CONTENT-REVIEW-convenience-store.md', lines.join('\n'));
+          fs.writeFileSync('docs/CONTENT-REVIEW-convenience-store.md', lines.join('\n').trimEnd() + '\n');
           NODE
           node scripts/check-content.js > "$RUNNER_TEMP/convenience-review/check-before-commit.log"
           git diff --check
