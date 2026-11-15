@@ -17,7 +17,7 @@ jobs:
     timeout-minutes: 25
     env:
       STORE_BASE_SHA: "75d3f967f6505a1e4fe749b86d5dcdcc0c592fb6"
-      CHECKPOINT_SHA: "f54595e1b5ef0c21c3eb753418662cdb2a334e7d"
+      CHECKPOINT_SHA: "755af756894feb4279c95c5a621aac03ae48fa01"
     steps:
       - name: ดึงฐานที่ต้องตรวจ
         uses: actions/checkout@v4
