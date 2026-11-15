@@ -7,7 +7,7 @@
     if (!app) return;
 
     const ids = [
-      "csSetup", "csSetupForm", "csPlayerOne", "csPlayerTwo", "csRoundLimit",
+      "csSetup", "csSetupForm", "csStart", "csRoundLimit",
       "csCategories", "csSetupError", "csHud", "csRoundText", "csScoreText",
       "csReset", "csPlay", "csTurnLabel", "csCategoryLabel", "csPrompt",
       "csShelf", "csSelectionHint", "csConfirm", "csReveal", "csRevealTitle",
@@ -32,7 +32,7 @@
     // ไม่เขียนคำตอบ ชื่อผู้เล่น หรือสถานะรอบลง URL, storage หรือแอตทริบิวต์ลับในหน้าเว็บ
     let phase = "setup";
     let category = "all";
-    let names = [];
+    const players = ["คนที่ 1", "คนที่ 2"];
     let roundLimit = 6;
     let round = 0;
     let completed = 0;
@@ -179,7 +179,7 @@
       show(ui.csPlay);
       updateHud();
       showQuestion();
-      ui.csTurnLabel.textContent = names[chooser()] + " เลือก" + choiceNoun();
+      ui.csTurnLabel.textContent = players[chooser()] + " เลือก" + choiceNoun();
       ui.csSelectionHint.textContent = "ให้อีกคนหลบหน้าจอก่อน แล้วเลือก" + choiceNoun() + "หนึ่งอย่าง";
       ui.csShelf.setAttribute("aria-label", choiceNoun() + "ให้เลือกบนชั้นวาง");
       ui.csConfirm.textContent = "ยืนยันสิ่งที่เลือก";
@@ -194,7 +194,6 @@
 
     function resetGame(moveFocus = true) {
       phase = "setup";
-      names = [];
       round = completed = score = 0;
       secretId = selectedId = guessId = null;
       prompt = pickPrompt = null;
@@ -209,7 +208,7 @@
       ui.csRoundText.textContent = "";
       ui.csScoreText.textContent = "";
       show(ui.csSetup);
-      if (moveFocus) focus(ui.csPlayerOne);
+      if (moveFocus) focus(ui.csStart);
     }
 
     categoryButtons.forEach((button) => {
@@ -226,32 +225,15 @@
       });
     });
 
-    [ui.csPlayerOne, ui.csPlayerTwo].forEach((input) => {
-      input.addEventListener("input", () => {
-        if (phase === "setup") {
-          ui.csSetupError.textContent = "";
-          ui.csSetupError.hidden = true;
-        }
-      });
-    });
-
     ui.csSetupForm.addEventListener("submit", (event) => {
       event.preventDefault();
       if (phase !== "setup") return;
-      const entered = [ui.csPlayerOne.value, ui.csPlayerTwo.value]
-        .map((name, i) => name.trim().replace(/\s+/g, " ").slice(0, 18) || "คนที่" + (i + 1));
-      if (entered[0].normalize("NFKC").toLowerCase() === entered[1].normalize("NFKC").toLowerCase()) {
-        setupError("ใช้ชื่อคนละชื่อ เพื่อแยกคนเลือกกับคนทายได้ชัดเจน");
-        focus(ui.csPlayerTwo);
-        return;
-      }
       const pool = prompts.filter((item) => category === "all" || item.cat === category);
       if (!pool.length || typeof createPicker !== "function"
         || pool.some((item) => !CAT_LABEL[item.cat] || products.filter((product) => product.cat === item.cat).length < 2)) {
         setupError("คลังโจทย์หรือสินค้ายังไม่พร้อม ลองโหลดหน้าใหม่อีกครั้ง");
         return;
       }
-      names = entered;
       const limit = Number(ui.csRoundLimit.value);
       roundLimit = [6, 10, 12].includes(limit) ? limit : 6;
       round = completed = score = 0;
@@ -268,8 +250,8 @@
         secretId = selectedId;
         phase = "handoff";
         clearRoundView();
-        ui.csPassTitle.textContent = "ส่งเครื่องให้ " + names[1 - chooser()];
-        ui.csPassText.textContent = names[chooser()] + " เลือกเรียบร้อยแล้ว ให้คนทายรับเครื่องและกดพร้อมเมื่ออยู่หน้าจอคนเดียว";
+        ui.csPassTitle.textContent = "ส่งเครื่องให้ " + players[1 - chooser()];
+        ui.csPassText.textContent = players[chooser()] + " เลือกเรียบร้อยแล้ว ให้คนทายรับเครื่องและกดพร้อมเมื่ออยู่หน้าจอคนเดียว";
         show(ui.csPass);
         focus(ui.csReady);
         return;
@@ -288,8 +270,8 @@
       renderShelf("reveal");
       ui.csRevealTitle.textContent = matched ? "ทายตรงกัน!" : "ยังไม่ตรงกัน";
       ui.csRevealText.textContent = matched ? "คู่นี้รู้ใจ รับไป 1 แต้ม" : "รอบนี้ยังไม่ได้แต้ม ลองรู้ใจกันใหม่ในรอบถัดไป";
-      ui.csRevealDetails.textContent = names[chooser()] + " เลือก " + productText(findProduct(secretId))
-        + " · " + names[1 - chooser()] + " ทาย " + productText(findProduct(guessId));
+      ui.csRevealDetails.textContent = players[chooser()] + " เลือก " + productText(findProduct(secretId))
+        + " · " + players[1 - chooser()] + " ทาย " + productText(findProduct(guessId));
       ui.csNext.textContent = completed < roundLimit ? "รอบถัดไป" : "ดูสรุปเกม";
       ui.csReveal.hidden = false;
       focus(ui.csRevealTitle);
@@ -301,7 +283,7 @@
       clearRoundView();
       show(ui.csPlay);
       showQuestion();
-      ui.csTurnLabel.textContent = names[1 - chooser()] + (prompt.cat === "music" ? " ทายเพลง" : ["mama", "lays"].includes(prompt.cat) ? " ทายรสชาติ" : " ทายใจเพื่อน");
+      ui.csTurnLabel.textContent = players[1 - chooser()] + (prompt.cat === "music" ? " ทายเพลง" : ["mama", "lays"].includes(prompt.cat) ? " ทายรสชาติ" : " ทายใจเพื่อน");
       ui.csSelectionHint.textContent = "เลือก" + choiceNoun() + "ที่คิดว่าเพื่อนเลือก แล้วกดยืนยันคำทาย";
       ui.csShelf.setAttribute("aria-label", choiceNoun() + "ให้เลือกบนชั้นวาง");
       ui.csConfirm.textContent = "ยืนยันคำทาย";
@@ -323,7 +305,7 @@
       ui.csPassTitle.textContent = "";
       ui.csPassText.textContent = "";
       ui.csSummaryTitle.textContent = "รู้ใจตรงกัน " + score + " จาก " + roundLimit + " รอบ";
-      ui.csSummaryText.textContent = names[0] + " และ " + names[1]
+      ui.csSummaryText.textContent = players[0] + " และ " + players[1]
         + " ทายตรงกัน " + score + " รอบ จากทั้งหมด " + roundLimit + " รอบ ขอบคุณที่มาเดินร้านด้วยกัน";
       show(ui.csSummary);
       focus(ui.csSummaryTitle);
