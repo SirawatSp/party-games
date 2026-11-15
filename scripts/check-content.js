@@ -199,6 +199,7 @@ function checkConvenienceStorePools() {
 
   const ids = new Map();
   const cells = new Map();
+  const images = new Map();
   const creditsByFile = new Map();
   const localUrls = new Set([
     scenarioPool.page, "css/convenience-store.css", scenarioPool.script,
@@ -217,15 +218,27 @@ function checkConvenienceStorePools() {
       else ids.set(key, at);
     }
 
-    const image = localFile(productPool, item.image, at + " ภาพ", [".png", ".jpg", ".jpeg", ".webp"], false);
+    const image = localFile(productPool, item.image, at + " ภาพ", [".png", ".jpg", ".jpeg", ".webp", ".svg"], false);
     if (image) localUrls.add(image.local);
-    const validSprite = Array.isArray(item.sprite) && item.sprite.length === 2
-      && item.sprite.every((n) => Number.isInteger(n) && n >= 0 && n < 6);
-    if (!validSprite) err(productPool, at + " sprite ต้องเป็น [คอลัมน์, แถว] จำนวนเต็ม 0-5");
-    else if (image) {
-      const key = image.realFile + ":" + item.sprite.join(",");
-      if (cells.has(key)) err(productPool, at + " sprite ซ้ำกับ " + cells.get(key) + " ในภาพเดียวกัน");
-      else cells.set(key, at);
+    const hasSprite = Object.hasOwn(item, "sprite");
+    if (hasSprite) {
+      const validSprite = Array.isArray(item.sprite) && item.sprite.length === 2
+        && item.sprite.every((n) => Number.isInteger(n) && n >= 0 && n < 6);
+      if (!validSprite) err(productPool, at + " sprite ต้องเป็น [คอลัมน์, แถว] จำนวนเต็ม 0-5");
+      else if (image) {
+        const key = image.realFile + ":" + item.sprite.join(",");
+        if (cells.has(key)) err(productPool, at + " sprite ซ้ำกับ " + cells.get(key) + " ในภาพเดียวกัน");
+        else cells.set(key, at);
+      }
+    }
+    if (image) {
+      // ภาพตารางเดิมต้องระบุช่อง ส่วนภาพเดี่ยวใช้ไฟล์ของตัวเองโดยไม่ใส่ sprite
+      if (!hasSprite && image.local === "assets/convenience-store/products.png")
+        err(productPool, at + " ภาพตาราง products.png ต้องระบุ sprite เพื่อแสดงเฉพาะสินค้านั้น");
+      const previous = images.get(image.realFile);
+      if (previous && (!hasSprite || !previous.hasSprite))
+        err(productPool, at + " ภาพเดี่ยวซ้ำกับ " + previous.at + " — " + image.local);
+      else if (!previous) images.set(image.realFile, { at, hasSprite });
     }
 
     const creditFiles = new Map();
@@ -254,8 +267,15 @@ function checkConvenienceStorePools() {
     if (shelf.length < 4)
       err(scenarioPool, 'หมวด "' + cat + '" ต้องมีสินค้าอย่างน้อย 4 รายการในชั้นเดียวกัน (ตอนนี้ ' + shelf.length + ")");
     const brands = new Set(shelf.filter((item) => typeof item.brand === "string" && item.brand.trim()).map((item) => nameKey(item.brand)));
-    if (brands.size < 2)
-      err(scenarioPool, 'หมวด "' + cat + '" ต้องมีสินค้าอย่างน้อย 2 แบรนด์ให้ทายใจ');
+    // สองหมวดนี้ให้ทายรสภายในแบรนด์เดียว จึงยอมรับเฉพาะแบรนด์ที่ตั้งชื่อหมวดไว้
+    const flavorBrands = { mama: "มาม่า", lays: "เลย์" };
+    if (Object.hasOwn(flavorBrands, cat)) {
+      const expectedBrand = nameKey(flavorBrands[cat]);
+      if (brands.size !== 1 || !brands.has(expectedBrand))
+        err(scenarioPool, 'หมวด "' + cat + '" ต้องใช้แบรนด์ ' + flavorBrands[cat] + " ทุกรายการ เพื่อให้เลือกต่างรสในแบรนด์เดียว");
+    } else if (brands.size < 2) {
+      err(scenarioPool, 'หมวด "' + cat + '" ต้องมีอย่างน้อย 2 ' + (cat === "music" ? "ศิลปิน" : "แบรนด์") + " ให้ทายใจ");
+    }
   });
   new Set(products.filter(isObject).map((item) => item.cat)).forEach((cat) => {
     if (!scenarioCats.has(cat))

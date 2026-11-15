@@ -20,7 +20,8 @@
 
     const CAT_LABEL = {
       soda: "น้ำอัดลม", tea: "ชา", milk: "นม", snacks: "ขนมขบเคี้ยว",
-      noodles: "บะหมี่กึ่งสำเร็จรูป", icecream: "ไอศกรีม"
+      noodles: "บะหมี่กึ่งสำเร็จรูป", icecream: "ไอศกรีม",
+      mama: "รสมาม่า", lays: "รสเลย์", music: "เพลงฮิต"
     };
     const prompts = typeof CONVENIENCE_STORE_LIST !== "undefined" && Array.isArray(CONVENIENCE_STORE_LIST)
       ? CONVENIENCE_STORE_LIST : [];
@@ -49,6 +50,7 @@
     };
     const chooser = () => (round - 1) % 2;
     const productText = (product) => product.name + " (" + product.brand + ")";
+    const choiceNoun = () => prompt?.cat === "music" ? "เพลง" : ["mama", "lays"].includes(prompt?.cat) ? "รสชาติ" : "สินค้า";
     const findProduct = (id) => roundProducts.find((product) => product.id === id);
 
     function show(screen) {
@@ -177,8 +179,9 @@
       show(ui.csPlay);
       updateHud();
       showQuestion();
-      ui.csTurnLabel.textContent = names[chooser()] + " เลือกสินค้า";
-      ui.csSelectionHint.textContent = "ให้อีกคนหลบหน้าจอก่อน แล้วเลือกสินค้าหนึ่งชิ้น";
+      ui.csTurnLabel.textContent = names[chooser()] + " เลือก" + choiceNoun();
+      ui.csSelectionHint.textContent = "ให้อีกคนหลบหน้าจอก่อน แล้วเลือก" + choiceNoun() + "หนึ่งอย่าง";
+      ui.csShelf.setAttribute("aria-label", choiceNoun() + "ให้เลือกบนชั้นวาง");
       ui.csConfirm.textContent = "ยืนยันสิ่งที่เลือก";
       renderShelf("choose");
       focus(ui.csTurnLabel);
@@ -298,8 +301,9 @@
       clearRoundView();
       show(ui.csPlay);
       showQuestion();
-      ui.csTurnLabel.textContent = names[1 - chooser()] + " ทายใจเพื่อน";
-      ui.csSelectionHint.textContent = "เลือกสินค้าที่คิดว่าเพื่อนเลือก แล้วกดยืนยันคำทาย";
+      ui.csTurnLabel.textContent = names[1 - chooser()] + (prompt.cat === "music" ? " ทายเพลง" : ["mama", "lays"].includes(prompt.cat) ? " ทายรสชาติ" : " ทายใจเพื่อน");
+      ui.csSelectionHint.textContent = "เลือก" + choiceNoun() + "ที่คิดว่าเพื่อนเลือก แล้วกดยืนยันคำทาย";
+      ui.csShelf.setAttribute("aria-label", choiceNoun() + "ให้เลือกบนชั้นวาง");
       ui.csConfirm.textContent = "ยืนยันคำทาย";
       renderShelf("guess");
       focus(ui.csTurnLabel);

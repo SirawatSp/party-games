@@ -182,8 +182,8 @@ const POOLS = [
     key: "convenienceproducts", file: "convenience-products.js", varName: "CONVENIENCE_PRODUCTS",
     page: "convenience-store.html", script: "js/convenience-store.js",
     label: "ร้านสะดวกซื้อ ลื้อสะดวกใจ — ภาพสินค้า",
-    required: ["id", "name", "brand", "cat", "image", "source", "author", "rights", "rightsUrl", "sprite"],
-    optional: [], dupKey: "id", catField: "cat", closedCats: true, minPerCat: 4,
+    required: ["id", "name", "brand", "cat", "image", "source", "author", "rights", "rightsUrl"],
+    optional: ["sprite"], dupKey: "id", catField: "cat", closedCats: true, minPerCat: 4,
   },
   {
     key: "matchup", file: "matchup.js", varName: "MATCHUP_LIST",

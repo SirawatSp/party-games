@@ -68,3 +68,42 @@
 | nestle_extreme | เนสท์เล่ เอ็กซ์ตรีม | Nestlé Extreme | products.png | [3, 5] |
 | ete | เอเต้ | Ete | products.png | [4, 5] |
 | buds | บัดส์ | Bud's | products.png | [5, 5] |
+
+
+## ภาพสัญลักษณ์รสชาติและเพลง
+
+เพิ่มวันที่ 16 พฤศจิกายน 2026 เป็นภาพ SVG ขนาด 320 × 320 ที่วาดจากรูปทรงและสีในโค้ดสำหรับเกมนี้ ไม่ใช่รูปซองสินค้าจริงหรือปกเพลงต้นฉบับ สีซองช่วยแยกตัวเลือก ไม่ใช่การรับรองบรรจุภัณฑ์ที่วางขาย ภาพเพลงเป็นงานออกแบบใหม่ ไม่มีภาพศิลปิน เนื้อเพลง หรือไฟล์เสียง ผู้สร้างและข้อความสิทธิ์เหมือนข้อมูลต้นฉบับข้างต้น ชื่อรสชาติ เพลง ศิลปิน และเครื่องหมายการค้ายังคงเป็นของเจ้าของผลงาน
+
+| id | name | brand | image | kind |
+|---|---|---|---|---|
+| mama-minced-pork | รสหมูสับ | มาม่า | mama-minced-pork.svg | ภาพสัญลักษณ์รสชาติ |
+| mama-tom-yum | รสต้มยำกุ้ง | มาม่า | mama-tom-yum.svg | ภาพสัญลักษณ์รสชาติ |
+| mama-creamy-tom-yum | รสต้มยำกุ้งน้ำข้น | มาม่า | mama-creamy-tom-yum.svg | ภาพสัญลักษณ์รสชาติ |
+| mama-palo-duck | รสเป็ดพะโล้ | มาม่า | mama-palo-duck.svg | ภาพสัญลักษณ์รสชาติ |
+| mama-nam-tok | รสหมูน้ำตก | มาม่า | mama-nam-tok.svg | ภาพสัญลักษณ์รสชาติ |
+| mama-tom-saab | รสต้มแซ่บ | มาม่า | mama-tom-saab.svg | ภาพสัญลักษณ์รสชาติ |
+| lays-original | รสออริจินอล | เลย์ | lays-original.svg | ภาพสัญลักษณ์รสชาติ |
+| lays-nori | รสโนริสาหร่าย | เลย์ | lays-nori.svg | ภาพสัญลักษณ์รสชาติ |
+| lays-bbq | รสเอ็กซ์ตร้าบาร์บีคิว | เลย์ | lays-bbq.svg | ภาพสัญลักษณ์รสชาติ |
+| lays-sour-cream | รสซาวครีมและหัวหอม | เลย์ | lays-sour-cream.svg | ภาพสัญลักษณ์รสชาติ |
+| lays-hot-squid | รสหมึกย่างฮอตชิลลี่ | เลย์ | lays-hot-squid.svg | ภาพสัญลักษณ์รสชาติ |
+| lays-miang-kham | รสเมี่ยงคำครบรส | เลย์ | lays-miang-kham.svg | ภาพสัญลักษณ์รสชาติ |
+| song-bad-boy | ทรงอย่างแบด | Paper Planes | song-bad-boy.svg | ภาพเพลงวาดใหม่ |
+| song-melt | โต๊ะริม | NONT TANONT | song-melt.svg | ภาพเพลงวาดใหม่ |
+| song-ghost | ซ่อน (ไม่) หา | Jeff Satur | song-ghost.svg | ภาพเพลงวาดใหม่ |
+| song-you | เธอ | COCKTAIL | song-you.svg | ภาพเพลงวาดใหม่ |
+| song-until-then | ถ้าเราเจอกันอีก | Tilly Birds | song-until-then.svg | ภาพเพลงวาดใหม่ |
+| song-only-you | แค่คุณ | Musketeers | song-only-you.svg | ภาพเพลงวาดใหม่ |
+
+## แหล่งตรวจชื่อรสชาติและเพลง
+
+- รสมาม่า: [หน้าผลิตภัณฑ์มาม่าของสหพัฒน์](https://www.sahapat.co.th/product/foodproduct/mama) ยืนยันรสหมูสับ ต้มยำกุ้ง ต้มยำกุ้งน้ำข้น เป็ดพะโล้ หมูน้ำตก และต้มแซ่บ (ชื่อแบบซองในหน้าแหล่งเขียนต้มแซบ ส่วนแบบคัพเขียนต้มแซ่บ)
+- รสเลย์: [ร้าน Lay's & Friends บน LINE SHOPPING](https://shop.line.me/@lays/product/1003552893) ยืนยันออริจินอล โนริสาหร่าย เอ็กซ์ตร้าบาร์บีคิว ซาวครีมและหัวหอม หมึกย่างฮอตชิลลี่ และเมี่ยงคำครบรส ไม่ระบุว่ามีจำหน่ายในทุกร้านหรือรับรองสต็อกปัจจุบัน
+- ทรงอย่างแบด — Paper Planes: [มิวสิกวิดีโอทางการ](https://www.youtube.com/watch?v=cqQAzpZBpAw) และ [ข่าวจาก GMM Grammy](https://www.gmmgrammy.com/newsroom/news-single.php?id=9850)
+- โต๊ะริม — NONT TANONT: [มิวสิกวิดีโอทางการ](https://www.youtube.com/watch?v=XqQMisU5En8)
+- ซ่อน (ไม่) หา — Jeff Satur: [มิวสิกวิดีโอทางการ](https://www.youtube.com/watch?v=qguo-j5PxBE)
+- เธอ — COCKTAIL: [มิวสิกวิดีโอทางการ](https://www.youtube.com/watch?v=G4Ssmwglqq8)
+- ถ้าเราเจอกันอีก — Tilly Birds: [มิวสิกวิดีโอทางการ](https://www.youtube.com/watch?v=_ivYh1FakjE) และ [เว็บไซต์ศิลปิน](https://www.tillybirds.com/music-videos)
+- แค่คุณ — Musketeers: [ข่าวของค่าย What The Duck](https://www.whattheduckmusic.com/post/__sea) ระบุเป็นหนึ่งในเพลงฮิตของวง
+
+เพลงเลือกจากเพลงที่คนรู้จักกว้างขวางหลายช่วงปี ไม่ได้อ้างเป็นอันดับชาร์ตล่าสุด ไม่ใช้เนื้อเพลง บันทึกเสียง หรือปกต้นฉบับในเว็บ
