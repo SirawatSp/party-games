@@ -84,10 +84,8 @@ async function run(chromium, options = {}) {
     await context.route("**://fonts.g*/**", (route) => route.abort());
     return context;
   }
-  async function start(page, cat = "all", names = ["", ""], limit = "6") {
+  async function start(page, cat = "all", limit = "6") {
     await setupVisible(page);
-    await page.locator("#csPlayerOne").fill(names[0]);
-    await page.locator("#csPlayerTwo").fill(names[1]);
     await page.locator("#csRoundLimit").selectOption(limit);
     await page.locator('#csCategories [data-cat="' + cat + '"]').click();
     await page.locator("#csStart").click();
@@ -220,24 +218,22 @@ async function run(chromium, options = {}) {
     const page = await newPage(context);
     check("เริ่มที่หน้าตั้งค่าและเลือกหกรอบเป็นค่าเริ่มต้น", await page.locator("#csRoundLimit").inputValue() === "6"
       && await page.locator("#csPass").isHidden() && await page.locator("#csSummary").isHidden());
-    await page.locator("#csPlayerOne").fill("เพื่อน");
-    await page.locator("#csPlayerTwo").fill("เพื่อน");
-    await page.locator("#csStart").click();
-    check("ชื่อซ้ำแจ้งข้อผิดพลาดและยังไม่เริ่มเกม", await page.locator("#csSetupForm").isVisible()
-      && !!(await page.locator("#csSetupError").textContent()).trim() && await page.locator("#csPlay").isHidden());
+    check("เริ่มเกมได้โดยไม่มีช่องกรอกชื่อผู้เล่น", await page.locator("#csSetupForm input").count() === 0
+      && await page.locator("#csStart").isEnabled() && await page.locator("#csPlay").isHidden());
+    await shot(page, "setup");
 
     await start(page, "soda");
-    check("ไม่กรอกชื่อใช้ชื่อเริ่มต้นได้", /คนที่\s*1/.test(await page.locator("#csTurnLabel").textContent()));
+    check("คนที่ 1 เป็นผู้เลือกในรอบแรก", (await page.locator("#csTurnLabel").textContent()).startsWith("คนที่ 1 "));
     const defaultId = (await grid(page)).ids[0];
     await productButton(page, defaultId).click();
     await page.locator("#csConfirm").click();
-    check("ส่งเครื่องบอกชื่อเริ่มต้นของคนทาย", /คนที่\s*2/.test(await page.locator("#csPassTitle").textContent()));
+    check("ส่งเครื่องให้คนที่ 2 ทายในรอบแรก", (await page.locator("#csPassTitle").textContent()).includes("คนที่ 2"));
     await reset(page);
-    check("รีเซ็ตกลับช่องชื่อและล้างหน้าที่เก็บตัวเลือก", await focusIs(page, "csPlayerOne") && await emptyPrivateDom(page));
+    check("รีเซ็ตกลับปุ่มเริ่มและล้างหน้าที่เก็บตัวเลือก", await focusIs(page, "csStart") && await emptyPrivateDom(page));
 
     const gridChecks = [];
     for (const cat of ["all", ...categories]) {
-      await start(page, cat, ["ต้น", "ฟ้า"]);
+      await start(page, cat);
       const current = await grid(page);
       gridChecks.push({ cat, promptCat: current.prompt?.cat, valid: current.correctProducts && current.readable && current.loaded
         && current.nativeButtons.every(Boolean) && (cat === "all" || current.prompt?.cat === cat) && !!current.label });
@@ -247,7 +243,7 @@ async function run(chromium, options = {}) {
     check("ทุกหมวดและทั้งหมดใช้โจทย์จริงกับสินค้าหกชิ้นในหมวดเดียวกัน", gridChecks.every((item) => item.valid), gridChecks);
 
     for (const cat of ["mama", "lays", "music"]) {
-      await start(page, cat, ["ต้น", "ฟ้า"]);
+      await start(page, cat);
       const current = await grid(page);
       const choices = products.filter((item) => item.cat === cat);
       const brands = new Set(choices.map((item) => item.brand));
@@ -275,7 +271,7 @@ async function run(chromium, options = {}) {
     }
 
     for (const limit of ["10", "12"]) {
-      await start(page, "snacks", ["ต้น", "ฟ้า"], limit);
+      await start(page, "snacks", limit);
       check("ตั้งจำนวนรอบเป็น " + limit + " ได้", (await hud(page)).round[1] === Number(limit));
       await reset(page);
     }
@@ -288,8 +284,6 @@ async function run(chromium, options = {}) {
     await page.locator('#csCategories [data-cat="tea"]').focus();
     await page.keyboard.press("Space");
     check("เลือกหมวดด้วยคีย์บอร์ดได้", await page.locator('#csCategories [data-cat="tea"]').getAttribute("aria-pressed") === "true");
-    await page.locator("#csPlayerOne").fill("ต้น");
-    await page.locator("#csPlayerTwo").fill("ฟ้า");
     await page.locator("#csRoundLimit").selectOption("6");
     await page.locator("#csStart").focus();
     await page.keyboard.press("Enter");
@@ -310,7 +304,7 @@ async function run(chromium, options = {}) {
     check("เฉลยด้วยคีย์บอร์ดแล้วโฟกัสหัวข้อผลลัพธ์", await page.locator("#csReveal").isVisible() && await focusIs(page, "csRevealTitle"));
     await reset(page);
 
-    await start(page, "tea", ["ต้น", "ฟ้า"]);
+    await start(page, "tea");
     const rounds = [];
     const correctness = [true, false, true, false, true, true];
     for (let i = 0; i < correctness.length; i++) {
@@ -333,34 +327,37 @@ async function run(chromium, options = {}) {
     check("การส่งเครื่องไม่เขียนข้อมูลลงพื้นที่เก็บ URL ชื่อหน้าต่าง หรือตัวแปรใหม่", rounds.every((r) => r.privateState));
     check("คนทายได้ชั้นสินค้าใหม่ที่ยังไม่มีคำตอบถูกเลือก", rounds.every((r) => r.fresh && r.gridMatches));
     check("ผู้เลือกและคนทายสลับบทบาทครบหกรอบ", rounds.every((r, i) =>
-      r.chooser.includes(i % 2 === 0 ? "ต้น" : "ฟ้า") && r.guesser.includes(i % 2 === 0 ? "ฟ้า" : "ต้น")));
+      r.chooser.startsWith(i % 2 === 0 ? "คนที่ 1 " : "คนที่ 2 ")
+      && r.guesser.startsWith(i % 2 === 0 ? "คนที่ 2 " : "คนที่ 1 ")));
     check("การเลือกและเฉลยแสดงชื่อสินค้าตามที่ทั้งคู่กด", rounds.every((r) => r.selection && r.revealNames));
     check("ทุกช่วงย้ายโฟกัสไปยังส่วนที่เปิดใหม่", rounds.every((r) => r.passFocus && r.guessFocus && r.revealFocus));
     check("ผลตอบตรงและไม่ตรงใช้ข้อความต่างกัน", !!rounds[0].title.trim() && rounds[0].title !== rounds[1].title);
     check("โจทย์หมวดเดิมไม่ซ้ำก่อนครบถุงและไม่ซ้ำท้ายรอบ", new Set(rounds.slice(0, 5).map((r) => r.q)).size === 5 && rounds[5].q !== rounds[4].q);
     check("ครบหกรอบจบที่หน้าสรุปพร้อมคะแนนสี่จากหก", await page.locator("#csSummary").isVisible()
       && JSON.stringify((await hud(page)).score) === JSON.stringify([4, 6]) && await focusIs(page, "csSummaryTitle")
-      && (await page.locator("#csSummaryText").textContent()).includes("4") && (await page.locator("#csSummaryText").textContent()).includes("6"));
+      && (await page.locator("#csSummaryText").textContent()).includes("4") && (await page.locator("#csSummaryText").textContent()).includes("6")
+      && (await page.locator("#csSummaryText").textContent()).includes("คนที่ 1")
+      && (await page.locator("#csSummaryText").textContent()).includes("คนที่ 2"));
     await shot(page, "summary");
     await doubleClick(page, "csConfirm");
     check("กดปุ่มยืนยันเก่าหลังจบเกมไม่เพิ่มคะแนน", JSON.stringify((await hud(page)).score) === JSON.stringify([4, 6]));
     await page.locator("#csPlayAgain").click();
     await setupVisible(page);
-    check("เล่นอีกรอบกลับตั้งค่าและล้างคำตอบ", await focusIs(page, "csPlayerOne") && await emptyPrivateDom(page));
+    check("เล่นอีกรอบกลับตั้งค่าและล้างคำตอบ", await focusIs(page, "csStart") && await emptyPrivateDom(page));
 
-    await start(page, "soda", ["ต้น", "ฟ้า"]);
+    await start(page, "soda");
     const staleId = (await grid(page)).ids[0];
     await productButton(page, staleId).click();
     await page.locator("#csConfirm").click();
     await reset(page);
-    await start(page, "milk", ["ต้น", "ฟ้า"]);
+    await start(page, "milk");
     const afterReset = await playRound(page, true);
     check("เปลี่ยนหมวดหลังรีเซ็ตใช้คำตอบของเกมใหม่และคะแนนเริ่มใหม่", afterReset.scoreOnce && afterReset.fresh
       && JSON.stringify(afterReset.score) === JSON.stringify([1, 1]));
     await reset(page);
 
     for (const phase of ["pass", "guess"]) {
-      await start(page, "snacks", ["ต้น", "ฟ้า"]);
+      await start(page, "snacks");
       const id = (await grid(page)).ids[0];
       await productButton(page, id).click();
       await page.locator("#csConfirm").click();
@@ -376,7 +373,7 @@ async function run(chromium, options = {}) {
     let imageFailures = 0;
     await faultContext.route("**/assets/convenience-store/products.png*", (route) => { imageFailures++; return route.abort(); });
     const faultPage = await newPage(faultContext);
-    await start(faultPage, "icecream", ["ต้น", "ฟ้า"]);
+    await start(faultPage, "icecream");
     await faultPage.waitForFunction(() => !!document.querySelector("#csShelf .cs-image-missing"), null, { timeout: 10000 });
     const failedGrid = await grid(faultPage, false);
     const failedRound = await playRound(faultPage, true);
@@ -386,7 +383,7 @@ async function run(chromium, options = {}) {
     await reset(faultPage);
     let svgFailures = 0;
     await faultContext.route("**/assets/convenience-store/*.svg", (route) => { svgFailures++; return route.abort(); });
-    await start(faultPage, "lays", ["ต้น", "ฟ้า"]);
+    await start(faultPage, "lays");
     await faultPage.waitForFunction(() => !!document.querySelector("#csShelf .cs-image-missing"), null, { timeout: 10000 });
     const failedSvgGrid = await grid(faultPage, false);
     const failedSvgRound = await playRound(faultPage, true);
@@ -412,7 +409,7 @@ async function run(chromium, options = {}) {
     offlinePage.on("response", (response) => { if (response.fromServiceWorker()) swResponses.add(new URL(response.url()).pathname); });
     await offlineContext.setOffline(true);
     const offlineResponse = await offlinePage.goto(base + "/convenience-store.html", { waitUntil: "domcontentloaded" });
-    await start(offlinePage, "noodles", ["ต้น", "ฟ้า"]);
+    await start(offlinePage, "noodles");
     const offlineGrid = await grid(offlinePage);
     const offlineRound = await playRound(offlinePage, true);
     check("เปิดหน้า โหลดภาพ และเล่นครบหนึ่งรอบขณะออฟไลน์จริง", offlineResponse.fromServiceWorker()
@@ -423,7 +420,7 @@ async function run(chromium, options = {}) {
     await setupVisible(offlinePage);
     check("โหลดหน้าออฟไลน์ใหม่ยังล้างเกมเดิม", await emptyPrivateDom(offlinePage) && await offlinePage.locator("#csPlay").isHidden());
     for (const cat of ["mama", "lays", "music"]) {
-      await start(offlinePage, cat, ["ต้น", "ฟ้า"]);
+      await start(offlinePage, cat);
       const current = await grid(offlinePage);
       const round = await playRound(offlinePage, true);
       const images = new Set(products.filter((item) => item.cat === cat)

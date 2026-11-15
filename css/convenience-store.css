@@ -33,10 +33,8 @@
 .cs-eyebrow{margin:0 0 5px;color:var(--cs-teal);font-family:'Kanit',sans-serif;font-size:12px;font-weight:700;letter-spacing:.06em;}
 .cs-section-heading h2{font-size:clamp(22px,3vw,30px);line-height:1.25;}
 .cs-setup-form{display:block;}
-.cs-name-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 .cs-field{display:flex;flex-direction:column;gap:8px;min-width:0;font-size:14px;font-weight:600;}
-.cs-field input,.cs-field select{width:100%;min-width:0;min-height:48px;padding:11px 13px;border:2px solid #b3c4b5;border-radius:8px;background:#fffdf7;color:var(--cs-ink);font-size:15px;line-height:1.4;box-shadow:inset 0 2px 0 #eef0e3;}
-.cs-field input::placeholder{color:#7b8b80;opacity:1;}
+.cs-field select{width:100%;min-width:0;min-height:48px;padding:11px 13px;border:2px solid #b3c4b5;border-radius:8px;background:#fffdf7;color:var(--cs-ink);font-size:15px;line-height:1.4;box-shadow:inset 0 2px 0 #eef0e3;}
 .cs-field-hint{margin:10px 0 22px;color:var(--cs-muted);font-size:12.5px;line-height:1.65;}
 .cs-round-setting{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:end;gap:18px;margin-bottom:26px;}
 .cs-round-note{margin:0;padding:10px 0 8px 16px;border-left:2px dashed #c0cfb8;color:var(--cs-muted);font-size:12px;line-height:1.8;}
@@ -143,8 +141,7 @@
   .cs-section-heading{gap:11px;}
   .cs-step-number{flex-basis:40px;height:40px;font-size:19px;}
   .cs-section-heading h2{font-size:23px;}
-  .cs-name-grid{gap:12px;}
-  .cs-field input,.cs-field select{font-size:14px;padding:10px 11px;}
+  .cs-field select{font-size:14px;padding:10px 11px;}
   .cs-round-setting{grid-template-columns:1fr;gap:12px;margin-bottom:22px;}
   .cs-round-note{padding:3px 0 3px 12px;}
   .cs-hud{padding:14px 17px;gap:7px;}
@@ -184,9 +181,7 @@
   .cs-shop-logo{font-size:24px;}
   .cs-open-sign{font-size:10px;padding:5px 7px;}
   .cs-setup{padding:22px 15px;}
-  .cs-name-grid{gap:9px;}
   .cs-field{font-size:13px;}
-  .cs-field input{padding-left:9px;padding-right:9px;}
   .cs-category{font-size:12px;min-height:41px;padding:8px 10px;gap:5px;}
   .cs-hud{padding-left:13px;padding-right:13px;}
   .cs-round-pill{font-size:11px;padding:4px 6px;}
