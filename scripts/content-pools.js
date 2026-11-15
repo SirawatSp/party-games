@@ -172,6 +172,20 @@ const POOLS = [
     dupKey: "text", catField: "tag", closedCats: true,
   },
   {
+    key: "conveniencestore", file: "convenience-store.js", varName: "CONVENIENCE_STORE_LIST",
+    page: "convenience-store.html", script: "js/convenience-store.js",
+    label: "ร้านสะดวกซื้อ ลื้อสะดวกใจ — สถานการณ์ทายใจ",
+    required: ["q", "cat"], optional: [],
+    dupKey: "q", catField: "cat", closedCats: true,
+  },
+  {
+    key: "convenienceproducts", file: "convenience-products.js", varName: "CONVENIENCE_PRODUCTS",
+    page: "convenience-store.html", script: "js/convenience-store.js",
+    label: "ร้านสะดวกซื้อ ลื้อสะดวกใจ — ภาพสินค้า",
+    required: ["id", "name", "brand", "cat", "image", "source", "author", "rights", "rightsUrl", "sprite"],
+    optional: [], dupKey: "id", catField: "cat", closedCats: true, minPerCat: 4,
+  },
+  {
     key: "matchup", file: "matchup.js", varName: "MATCHUP_LIST",
     page: "matchup.html", script: "js/matchup.js",
     label: "จับคู่ รู้จายยยย",

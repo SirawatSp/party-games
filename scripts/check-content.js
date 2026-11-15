@@ -140,6 +140,145 @@ function checkPicturePool(pool, list) {
   });
 }
 
+// ตรวจชั้นสินค้าและโจทย์ร่วมกัน แม้สั่งตรวจเฉพาะคลังใดคลังหนึ่ง
+function checkConvenienceStorePools() {
+  const scenarioPool = byKey("conveniencestore");
+  const productPool = byKey("convenienceproducts");
+  const readList = (pool) => {
+    try {
+      const list = loadPool(pool);
+      if (Array.isArray(list) && list.length) return list;
+      err(pool, "ต้องเป็นคลังที่ไม่ว่าง จึงจะตรวจชั้นสินค้าได้");
+    } catch (e) {
+      err(pool, "โหลดคลังที่ใช้ร่วมกันไม่ผ่าน — " + e.message);
+    }
+    return null;
+  };
+  const scenarios = readList(scenarioPool);
+  const products = readList(productPool);
+  if (!scenarios || !products) return;
+
+  const isObject = (item) => item && typeof item === "object" && !Array.isArray(item);
+  const nameKey = (value) => String(value).normalize("NFKC").trim().toLowerCase();
+  const scenarioCats = new Set();
+  scenarios.forEach((item, i) => {
+    const at = "ข้อ #" + (i + 1);
+    if (!isObject(item)) return err(scenarioPool, at + " ต้องเป็นข้อมูลโจทย์");
+    ["q", "cat"].forEach((field) => {
+      if (typeof item[field] !== "string" || !item[field].trim())
+        err(scenarioPool, at + " ฟิลด์ " + field + " ต้องเป็นข้อความไม่ว่าง");
+    });
+    if (typeof item.cat === "string" && item.cat.trim()) scenarioCats.add(item.cat);
+  });
+
+  const localFile = (pool, value, at, extensions, allowFragment) => {
+    const local = typeof value === "string" ? value.split("#")[0] : "";
+    if (!/^assets\/convenience-store\/[A-Za-z0-9_./-]+$/.test(local)
+      || local.split("/").some((part) => part === "." || part === ".." || !part)
+      || !extensions.includes(path.extname(local).toLowerCase())
+      || (!allowFragment && value.includes("#"))) {
+      err(pool, at + " ต้องเป็นพาธไฟล์ใน assets/convenience-store/ ที่ไม่ย้อนออกนอกโฟลเดอร์ — " + String(value));
+      return null;
+    }
+    const absolute = path.resolve(ROOT, local);
+    try {
+      if (!fs.statSync(absolute).isFile() || !fs.statSync(absolute).size)
+        throw new Error("ไฟล์ว่างหรือไม่ใช่ไฟล์");
+      const realFile = fs.realpathSync(absolute);
+      const realRoot = fs.realpathSync(ROOT) + path.sep;
+      if (!realFile.startsWith(realRoot)) {
+        err(pool, at + " พาธไฟล์ชี้ออกนอก repository — " + local);
+        return null;
+      }
+      return { local, absolute, realFile };
+    } catch (e) {
+      err(pool, at + " ไม่มีไฟล์หรือไฟล์ว่าง — " + local);
+      return null;
+    }
+  };
+
+  const ids = new Map();
+  const cells = new Map();
+  const creditsByFile = new Map();
+  const localUrls = new Set([
+    scenarioPool.page, "css/convenience-store.css", scenarioPool.script,
+    "data/" + scenarioPool.file, "data/" + productPool.file,
+  ]);
+  products.forEach((item, i) => {
+    const at = "สินค้า #" + (i + 1);
+    if (!isObject(item)) return err(productPool, at + " ต้องเป็นข้อมูลสินค้า");
+    productPool.required.filter((field) => field !== "sprite").forEach((field) => {
+      if (typeof item[field] !== "string" || !item[field].trim())
+        err(productPool, at + " ฟิลด์ " + field + " ต้องเป็นข้อความไม่ว่าง");
+    });
+    if (typeof item.id === "string" && item.id.trim()) {
+      const key = nameKey(item.id);
+      if (ids.has(key)) err(productPool, at + " id ซ้ำกับ " + ids.get(key) + " — " + item.id);
+      else ids.set(key, at);
+    }
+
+    const image = localFile(productPool, item.image, at + " ภาพ", [".png", ".jpg", ".jpeg", ".webp"], false);
+    if (image) localUrls.add(image.local);
+    const validSprite = Array.isArray(item.sprite) && item.sprite.length === 2
+      && item.sprite.every((n) => Number.isInteger(n) && n >= 0 && n < 6);
+    if (!validSprite) err(productPool, at + " sprite ต้องเป็น [คอลัมน์, แถว] จำนวนเต็ม 0-5");
+    else if (image) {
+      const key = image.realFile + ":" + item.sprite.join(",");
+      if (cells.has(key)) err(productPool, at + " sprite ซ้ำกับ " + cells.get(key) + " ในภาพเดียวกัน");
+      else cells.set(key, at);
+    }
+
+    const creditFiles = new Map();
+    ["source", "rightsUrl"].forEach((field) => {
+      const file = localFile(productPool, item[field], at + " " + field, [".md"], true);
+      if (file) {
+        localUrls.add(file.local);
+        creditFiles.set(file.realFile, file);
+      }
+    });
+    creditFiles.forEach((file) => {
+      if (!creditsByFile.has(file.realFile)) {
+        const rows = fs.readFileSync(file.absolute, "utf8").split("\n")
+          .filter((line) => /^\s*\|/.test(line))
+          .map((line) => line.split("|").slice(1, -1).map((cell) => cell.trim().replace(/^`(.*)`$/, "$1")));
+        creditsByFile.set(file.realFile, rows);
+      }
+      const rows = creditsByFile.get(file.realFile);
+      if (!rows.some((row) => row.includes(item.id) && row.includes(item.brand)))
+        err(productPool, at + " เครดิตต้องมี id และแบรนด์ตรงกันในแถวเดียว — " + item.id + " / " + file.local);
+    });
+  });
+
+  scenarioCats.forEach((cat) => {
+    const shelf = products.filter((item) => isObject(item) && item.cat === cat);
+    if (shelf.length < 4)
+      err(scenarioPool, 'หมวด "' + cat + '" ต้องมีสินค้าอย่างน้อย 4 รายการในชั้นเดียวกัน (ตอนนี้ ' + shelf.length + ")");
+    const brands = new Set(shelf.filter((item) => typeof item.brand === "string" && item.brand.trim()).map((item) => nameKey(item.brand)));
+    if (brands.size < 2)
+      err(scenarioPool, 'หมวด "' + cat + '" ต้องมีสินค้าอย่างน้อย 2 แบรนด์ให้ทายใจ');
+  });
+  new Set(products.filter(isObject).map((item) => item.cat)).forEach((cat) => {
+    if (!scenarioCats.has(cat))
+      err(productPool, 'หมวดสินค้า "' + cat + '" ไม่มีสถานการณ์ให้เล่น');
+  });
+
+  const swPath = path.join(ROOT, "sw.js");
+  const sw = fs.existsSync(swPath) ? fs.readFileSync(swPath, "utf8") : "";
+  const precacheBlock = sw.match(/const\s+PRECACHE_URLS\s*=\s*\[([\s\S]*?)\];/);
+  const precache = new Set();
+  if (precacheBlock) precacheBlock[1].split("\n").forEach((line) => {
+    const entry = line.match(/^\s*(["'])([^"']+)\1\s*,?\s*(?:\/\/.*)?$/);
+    if (entry) precache.add(entry[2]);
+  });
+  localUrls.forEach((url) => {
+    const file = path.join(ROOT, url);
+    if (!fs.existsSync(file) || !fs.statSync(file).isFile() || !fs.statSync(file).size)
+      err(productPool, "ไฟล์ที่ต้องใช้เล่นออฟไลน์ไม่มีหรือว่าง — " + url);
+    if (!precache.has(url))
+      err(productPool, "ไฟล์ยังไม่อยู่ใน PRECACHE_URLS สำหรับเล่นออฟไลน์ — " + url);
+  });
+}
+
 for (const pool of pools) {
   let list;
   try {
@@ -288,6 +427,9 @@ for (const pool of pools) {
   const cats = pool.catField ? " · " + existingCats.size + " หมวด" : "";
   console.log("  " + pool.key.padEnd(14) + String(list.length).padStart(5) + " ข้อ" + cats + "   " + pool.label);
 }
+
+if (pools.some((pool) => ["conveniencestore", "convenienceproducts"].includes(pool.key)))
+  checkConvenienceStorePools();
 
 console.log("");
 const shown = NEW_N > 0 ? reviews.filter((r) => r.isNew) : reviews;
