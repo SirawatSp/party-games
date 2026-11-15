@@ -21,7 +21,7 @@
     <div class="cs-hero-copy">
       <span class="cs-kicker"><span aria-hidden="true">✦</span> ร้านนี้รับคนรู้ใจ</span>
       <h1 class="cs-title">ร้านสะดวกซื้อ<br><span>ลื้อสะดวกใจ</span></h1>
-      <p class="cs-lead">มีโจทย์มาให้ แล้วหยิบของที่ตัวเองอยากซื้อหนึ่งชิ้น ส่งเครื่องให้คนข้าง ๆ ทายว่าจะเลือกอะไร</p>
+      <p class="cs-lead">เลือกของที่อยากซื้อ รสมาม่า รสเลย์ หรือเพลงที่อยากฟัง แล้วส่งเครื่องให้คนข้าง ๆ ทายใจ</p>
     </div>
     <div class="cs-hero-sign" aria-hidden="true">
       <svg class="cs-basket" viewBox="0 0 160 142" fill="none">
@@ -70,6 +70,9 @@
             <button class="cs-category" type="button" data-cat="snacks" aria-pressed="false"><span aria-hidden="true">🍿</span> ขนมขบเคี้ยว</button>
             <button class="cs-category" type="button" data-cat="noodles" aria-pressed="false"><span aria-hidden="true">🍜</span> บะหมี่</button>
             <button class="cs-category" type="button" data-cat="icecream" aria-pressed="false"><span aria-hidden="true">🍦</span> ไอศกรีม</button>
+            <button class="cs-category" type="button" data-cat="mama" aria-pressed="false"><span aria-hidden="true">🍜</span> รสมาม่า</button>
+            <button class="cs-category" type="button" data-cat="lays" aria-pressed="false"><span aria-hidden="true">🥔</span> รสเลย์</button>
+            <button class="cs-category" type="button" data-cat="music" aria-pressed="false"><span aria-hidden="true">🎵</span> เพลงฮิต</button>
           </div>
         </fieldset>
         <p class="cs-error" id="csSetupError" role="alert"></p>
@@ -92,8 +95,8 @@
         <span class="cs-situation-pin" aria-hidden="true">โจทย์หน้าร้าน</span>
         <p class="cs-prompt" id="csPrompt"></p>
       </div>
-      <div class="cs-shelf-heading" aria-hidden="true"><span>หยิบชิ้นที่ใช่</span><span>เลือกได้หนึ่งชิ้น</span></div>
-      <div class="cs-shelf" id="csShelf" role="group" aria-label="สินค้าให้เลือกบนชั้นวาง"></div>
+      <div class="cs-shelf-heading" aria-hidden="true"><span>เลือกสิ่งที่ใช่</span><span>เลือกได้หนึ่งอย่าง</span></div>
+      <div class="cs-shelf" id="csShelf" role="group" aria-label="ตัวเลือกบนชั้นวาง"></div>
       <div class="cs-selection-bar">
         <p class="cs-selection-hint" id="csSelectionHint" role="status" aria-live="polite"></p>
         <button class="cs-button cs-button-primary" id="csConfirm" type="button" disabled>ยืนยันชิ้นนี้ <span aria-hidden="true">→</span></button>
@@ -130,15 +133,15 @@
   <section class="cs-how" aria-labelledby="csHowTitle">
     <h2 id="csHowTitle">คู่มือเข้าร้านฉบับรู้ใจ</h2>
     <ol>
-      <li><span>1</span><div><strong>คนแรกแอบหยิบ</strong><p>อ่านโจทย์ เลือกสินค้าหนึ่งชิ้น แล้วยืนยันโดยไม่ให้อีกคนเห็น</p></div></li>
+      <li><span>1</span><div><strong>คนแรกแอบหยิบ</strong><p>อ่านโจทย์ เลือกสินค้า รสชาติ หรือเพลงหนึ่งอย่าง แล้วยืนยันโดยไม่ให้อีกคนเห็น</p></div></li>
       <li><span>2</span><div><strong>ส่งเครื่องให้กัน</strong><p>รอหน้าส่งเครื่องก่อน คนทายค่อยกดพร้อมเมื่อได้ถือเครื่องแล้ว</p></div></li>
-      <li><span>3</span><div><strong>ทายชิ้นที่เขาเลือก</strong><p>เลือกสินค้าที่คิดว่าอีกคนหยิบไป แล้วดูเฉลยพร้อมกัน</p></div></li>
+      <li><span>3</span><div><strong>ทายชิ้นที่เขาเลือก</strong><p>เลือกสิ่งที่คิดว่าอีกคนเลือก แล้วดูเฉลยพร้อมกัน</p></div></li>
       <li><span>4</span><div><strong>สลับกันในรอบต่อไป</strong><p>ทายตรงได้หนึ่งแต้มให้คู่นี้ แล้วลองดูว่ารู้ใจอีกฝ่ายมากแค่ไหน</p></div></li>
     </ol>
   </section>
   <details class="cs-credits" id="csCredits">
     <summary>เครดิตภาพสินค้า</summary>
-    <p>ใช้ภาพประกอบสินค้าเพื่อเล่นทายใจ เครื่องหมายการค้าเป็นของเจ้าของแบรนด์ ภาพประกอบอาจไม่ตรงกับบรรจุภัณฑ์ปัจจุบัน</p>
+    <p>ใช้ภาพประกอบวาดใหม่เพื่อเล่นทายใจ ภาพซองเป็นสัญลักษณ์ของรสชาติ และภาพเพลงไม่ใช่ปกต้นฉบับ ชื่อแบรนด์ เพลง และศิลปินเป็นของเจ้าของผลงาน หมวดเพลงให้เลือกชื่อเพลงที่อยากฟัง</p>
     <a href="assets/convenience-store/CREDITS.md">ดูที่มาภาพและข้อมูลสิทธิ์ →</a>
   </details>
 

@@ -1,7 +1,7 @@
 // สร้างอัตโนมัติจาก scripts/build-game-counts.js — อย่าแก้ไขตรงนี้ตรง ๆ
 // รันใหม่ทุกครั้งที่แก้ไขคลังโจทย์: node scripts/build-game-counts.js
 const GAME_COUNTS = {
-  "convenience-store.html": { count: 30, unit: "สถานการณ์" },
+  "convenience-store.html": { count: 45, unit: "สถานการณ์" },
   "picture-reveal.html": { count: 120, unit: "รูป" },
   "truth-or-dare.html": { count: 100, unit: "โจทย์" },
   "witness-sketch.html": { count: 16, unit: "รูป" },

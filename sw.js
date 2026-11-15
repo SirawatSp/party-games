@@ -1,7 +1,7 @@
 // Service Worker สำหรับเล่นออฟไลน์ได้ทั้งเว็บ (เก็บ cache ทุกหน้า/สคริปต์/คลังโจทย์ไว้ในเครื่อง)
 // เปิดเว็บครั้งแรกตอนมีเน็ต ระบบจะโหลดเก็บไว้ให้อัตโนมัติ ครั้งต่อไปเปิดได้แม้ไม่มีเน็ตเลย
 // อัปเดตเนื้อหาเว็บทีไร ให้เปลี่ยนเลข CACHE_VERSION เพื่อบังคับดาวน์โหลดของใหม่ทับของเก่า
-const CACHE_VERSION = "party-games-v121";
+const CACHE_VERSION = "party-games-v122";
 
 // หมายเหตุ: เกม "ทายถนน" (street-scene) เก็บโครงหน้า แผนที่ และคลังสถานที่ไว้
 // โหมด "สถานที่สำคัญ" จึงเล่นได้เต็มรูปแบบตอนออฟไลน์
@@ -15,6 +15,24 @@ const PRECACHE_URLS = [
   "data/convenience-store.js",
   "data/convenience-products.js",
   "assets/convenience-store/products.png",
+  "assets/convenience-store/mama-minced-pork.svg",
+  "assets/convenience-store/mama-tom-yum.svg",
+  "assets/convenience-store/mama-creamy-tom-yum.svg",
+  "assets/convenience-store/mama-palo-duck.svg",
+  "assets/convenience-store/mama-nam-tok.svg",
+  "assets/convenience-store/mama-tom-saab.svg",
+  "assets/convenience-store/lays-original.svg",
+  "assets/convenience-store/lays-nori.svg",
+  "assets/convenience-store/lays-bbq.svg",
+  "assets/convenience-store/lays-sour-cream.svg",
+  "assets/convenience-store/lays-hot-squid.svg",
+  "assets/convenience-store/lays-miang-kham.svg",
+  "assets/convenience-store/song-bad-boy.svg",
+  "assets/convenience-store/song-melt.svg",
+  "assets/convenience-store/song-ghost.svg",
+  "assets/convenience-store/song-you.svg",
+  "assets/convenience-store/song-until-then.svg",
+  "assets/convenience-store/song-only-you.svg",
   "assets/convenience-store/CREDITS.md",
   "picture-reveal.html",
   "css/picture-reveal.css",
