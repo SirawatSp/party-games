@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ร้านสะดวกซื้อ ลื้อสะดวกใจ — หยิบของที่ใช่ แล้วทายใจเพื่อน</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/convenience-store.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#133d37">
+</head>
+<body class="cs-page">
+<div class="marquee"><span></span></div>
+<div class="wrap cs-wrap">
+  <div class="topnav">
+    <a class="brand-logo" href="index.html"><img class="brand-img" src="assets/logo.png" width="720" height="416" alt="Party Games — วงกำลังจะเหงา"></a>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+
+  <header class="cs-hero">
+    <div class="cs-hero-copy">
+      <span class="cs-kicker"><span aria-hidden="true">✦</span> ร้านนี้รับคนรู้ใจ</span>
+      <h1 class="cs-title">ร้านสะดวกซื้อ<br><span>ลื้อสะดวกใจ</span></h1>
+      <p class="cs-lead">มีโจทย์มาให้ แล้วหยิบของที่ตัวเองอยากซื้อหนึ่งชิ้น ส่งเครื่องให้คนข้าง ๆ ทายว่าจะเลือกอะไร</p>
+    </div>
+    <div class="cs-hero-sign" aria-hidden="true">
+      <svg class="cs-basket" viewBox="0 0 160 142" fill="none">
+        <path d="M35 61 62 20M125 61 98 20" stroke="currentColor" stroke-width="9" stroke-linecap="round"/>
+        <path d="m20 60 17 64h86l17-64H20Z" fill="#d6ff3d" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/>
+        <path d="m58 80 4 25M80 80v25M102 80l-4 25" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
+        <path d="M17 60h126" stroke="currentColor" stroke-width="10" stroke-linecap="round"/>
+        <path d="m121 15 4-9m12 21 9-3M21 29l-8-4" stroke="#ff2f87" stroke-width="5" stroke-linecap="round"/>
+      </svg>
+      <span>หยิบ 1 ชิ้น<br><b>รู้ใจ 1 คน</b></span>
+    </div>
+  </header>
+
+  <main class="cs-app" id="csApp">
+    <div class="cs-shop-banner">
+      <span class="cs-shop-logo" aria-hidden="true">สะดวก<span>ใจ</span></span>
+      <span class="cs-shop-motto">ซื้อง่าย · ทายใจยาก</span>
+      <span class="cs-open-sign"><span aria-hidden="true">●</span> เปิดร้านเล่น</span>
+    </div>
+
+    <section class="cs-setup" id="csSetup" aria-labelledby="csSetupTitle">
+      <div class="cs-section-heading">
+        <span class="cs-step-number" aria-hidden="true">01</span>
+        <div>
+          <p class="cs-eyebrow">ชวนคนข้าง ๆ มาเป็นคู่หู</p>
+          <h2 id="csSetupTitle">ใครจะเข้าร้านด้วยกัน?</h2>
+        </div>
+      </div>
+      <form id="csSetupForm" class="cs-setup-form" novalidate>
+        <div class="cs-name-grid">
+          <label class="cs-field" for="csPlayerOne"><span>คนที่ 1</span><input id="csPlayerOne" name="playerOne" maxlength="18" placeholder="คนที่ 1" autocomplete="off" spellcheck="false" aria-describedby="csNamesHint"></label>
+          <label class="cs-field" for="csPlayerTwo"><span>คนที่ 2</span><input id="csPlayerTwo" name="playerTwo" maxlength="18" placeholder="คนที่ 2" autocomplete="off" spellcheck="false" aria-describedby="csNamesHint"></label>
+        </div>
+        <p class="cs-field-hint" id="csNamesHint">ไม่ใส่ชื่อก็เริ่มเล่นได้ แต่ละรอบจะสลับกันเลือกและทาย</p>
+        <div class="cs-round-setting">
+          <label class="cs-field" for="csRoundLimit"><span>แวะร้านกันกี่รอบ?</span><select id="csRoundLimit" name="roundLimit"><option value="6" selected>6 รอบ · เล่นพอดี ๆ</option><option value="10">10 รอบ · เริ่มรู้ใจกัน</option><option value="12">12 รอบ · คู่หูประจำร้าน</option></select></label>
+          <p class="cs-round-note"><strong>ทายตรงกัน = 1 แต้ม</strong><br>ช่วยกันเก็บแต้มความรู้ใจของคู่นี้</p>
+        </div>
+        <fieldset class="cs-category-field">
+          <legend>วันนี้อยากเดินชั้นไหน?</legend>
+          <div class="cs-categories" id="csCategories">
+            <button class="cs-category is-active" type="button" data-cat="all" aria-pressed="true">เดินทั่วร้าน</button>
+            <button class="cs-category" type="button" data-cat="soda" aria-pressed="false"><span aria-hidden="true">🥤</span> น้ำอัดลม</button>
+            <button class="cs-category" type="button" data-cat="tea" aria-pressed="false"><span aria-hidden="true">🍵</span> ชาพร้อมดื่ม</button>
+            <button class="cs-category" type="button" data-cat="milk" aria-pressed="false"><span aria-hidden="true">🥛</span> นมและนมถั่วเหลือง</button>
+            <button class="cs-category" type="button" data-cat="snacks" aria-pressed="false"><span aria-hidden="true">🍿</span> ขนมขบเคี้ยว</button>
+            <button class="cs-category" type="button" data-cat="noodles" aria-pressed="false"><span aria-hidden="true">🍜</span> บะหมี่</button>
+            <button class="cs-category" type="button" data-cat="icecream" aria-pressed="false"><span aria-hidden="true">🍦</span> ไอศกรีม</button>
+          </div>
+        </fieldset>
+        <p class="cs-error" id="csSetupError" role="alert"></p>
+        <button class="cs-button cs-button-primary cs-start" id="csStart" type="submit">เปิดร้าน แล้วเริ่มเลือก <span aria-hidden="true">→</span></button>
+      </form>
+    </section>
+
+    <div class="cs-hud" id="csHud" hidden>
+      <p class="cs-round-pill" id="csRoundText"></p>
+      <p class="cs-score-pill" id="csScoreText"></p>
+      <button class="cs-reset" id="csReset" type="button">เริ่มใหม่ ↻</button>
+    </div>
+
+    <section class="cs-play" id="csPlay" aria-labelledby="csTurnLabel" hidden>
+      <div class="cs-turn-heading">
+        <h2 class="cs-turn-label" id="csTurnLabel" tabindex="-1"></h2>
+        <span class="cs-category-label" id="csCategoryLabel"></span>
+      </div>
+      <div class="cs-situation">
+        <span class="cs-situation-pin" aria-hidden="true">โจทย์หน้าร้าน</span>
+        <p class="cs-prompt" id="csPrompt"></p>
+      </div>
+      <div class="cs-shelf-heading" aria-hidden="true"><span>หยิบชิ้นที่ใช่</span><span>เลือกได้หนึ่งชิ้น</span></div>
+      <div class="cs-shelf" id="csShelf" role="group" aria-label="สินค้าให้เลือกบนชั้นวาง"></div>
+      <div class="cs-selection-bar">
+        <p class="cs-selection-hint" id="csSelectionHint" role="status" aria-live="polite"></p>
+        <button class="cs-button cs-button-primary" id="csConfirm" type="button" disabled>ยืนยันชิ้นนี้ <span aria-hidden="true">→</span></button>
+      </div>
+      <section class="cs-reveal" id="csReveal" aria-live="polite" hidden>
+        <span class="cs-receipt-edge" aria-hidden="true"></span>
+        <p class="cs-eyebrow">ใบเสร็จความรู้ใจ</p>
+        <h3 id="csRevealTitle" tabindex="-1"></h3>
+        <p id="csRevealText"></p>
+        <div class="cs-reveal-details" id="csRevealDetails"></div>
+        <button class="cs-button cs-button-primary" id="csNext" type="button">แวะชั้นต่อไป <span aria-hidden="true">→</span></button>
+      </section>
+    </section>
+
+    <section class="cs-pass" id="csPass" aria-labelledby="csPassTitle" hidden>
+      <div class="cs-paper-bag" aria-hidden="true"><span>?</span></div>
+      <p class="cs-eyebrow">เก็บของใส่ถุงแล้ว</p>
+      <h2 id="csPassTitle" tabindex="-1">ส่งเครื่องให้คนทาย</h2>
+      <p class="cs-pass-text" id="csPassText">ให้คนทายถือเครื่อง แล้วกดเมื่อพร้อม</p>
+      <button class="cs-button cs-button-primary" id="csReady" type="button">พร้อมทายแล้ว <span aria-hidden="true">→</span></button>
+    </section>
+
+    <section class="cs-summary" id="csSummary" aria-labelledby="csSummaryTitle" hidden>
+      <div class="cs-summary-stamp" aria-hidden="true">คู่หู<br>รู้ใจ</div>
+      <p class="cs-eyebrow">ปิดร้านรอบนี้</p>
+      <h2 id="csSummaryTitle" tabindex="-1">รู้ใจกันแค่ไหน?</h2>
+      <p class="cs-summary-text" id="csSummaryText"></p>
+      <button class="cs-button cs-button-primary" id="csPlayAgain" type="button">เปิดร้านอีกรอบ ↻</button>
+    </section>
+
+    <div class="cs-store-base" aria-hidden="true"><span>ขอบคุณที่แวะมาทายใจ</span><span>แล้วพบกันรอบหน้า ✦</span></div>
+  </main>
+
+  <section class="cs-how" aria-labelledby="csHowTitle">
+    <h2 id="csHowTitle">คู่มือเข้าร้านฉบับรู้ใจ</h2>
+    <ol>
+      <li><span>1</span><div><strong>คนแรกแอบหยิบ</strong><p>อ่านโจทย์ เลือกสินค้าหนึ่งชิ้น แล้วยืนยันโดยไม่ให้อีกคนเห็น</p></div></li>
+      <li><span>2</span><div><strong>ส่งเครื่องให้กัน</strong><p>รอหน้าส่งเครื่องก่อน คนทายค่อยกดพร้อมเมื่อได้ถือเครื่องแล้ว</p></div></li>
+      <li><span>3</span><div><strong>ทายชิ้นที่เขาเลือก</strong><p>เลือกสินค้าที่คิดว่าอีกคนหยิบไป แล้วดูเฉลยพร้อมกัน</p></div></li>
+      <li><span>4</span><div><strong>สลับกันในรอบต่อไป</strong><p>ทายตรงได้หนึ่งแต้มให้คู่นี้ แล้วลองดูว่ารู้ใจอีกฝ่ายมากแค่ไหน</p></div></li>
+    </ol>
+  </section>
+  <details class="cs-credits" id="csCredits">
+    <summary>เครดิตภาพสินค้า</summary>
+    <p>ใช้ภาพประกอบสินค้าเพื่อเล่นทายใจ เครื่องหมายการค้าเป็นของเจ้าของแบรนด์ ภาพประกอบอาจไม่ตรงกับบรรจุภัณฑ์ปัจจุบัน</p>
+    <a href="assets/convenience-store/CREDITS.md">ดูที่มาภาพและข้อมูลสิทธิ์ →</a>
+  </details>
+
+  <footer class="cs-footer">ของชิ้นเดียวกัน อาจบอกความรู้ใจได้มากกว่าที่คิด <span aria-hidden="true">✦</span></footer>
+</div>
+<script src="data/convenience-store.js"></script>
+<script src="data/convenience-products.js"></script>
+<script src="js/main.js"></script>
+<script src="js/convenience-store.js"></script>
+</body>
+</html>
