@@ -12,6 +12,7 @@
 const { POOLS, byKey, loadPool, dupValue, uiCats } = require("./content-pools.js");
 const fs = require("fs");
 const path = require("path");
+const vm = require("vm");
 const ROOT = path.join(__dirname, "..");
 
 const argv = process.argv.slice(2);
@@ -299,6 +300,93 @@ function checkConvenienceStorePools() {
   });
 }
 
+// คลังร่วมสองเกมต้องมีธงที่ตรวจต้นทางแล้วและรูปทรงจริง พร้อมเล่นออฟไลน์ได้ทั้งคู่
+function checkCountryQuizPool(pool, list) {
+  const regionKeys = ["asia", "europe", "africa", "north_america", "south_america", "oceania"];
+  const regions = new Set(regionKeys);
+  const codes = new Set(), isoCodes = new Set(), names = new Map();
+  const normalizeName = (value) => value.normalize("NFKC").toLowerCase().replace(/[\p{P}\p{Z}\s\u200b-\u200d\ufeff]/gu, "");
+  let shapeCodes = new Set(), source = null;
+  try {
+    const world = vm.runInNewContext(fs.readFileSync(path.join(ROOT, "data/worldmap.js"), "utf8") + ";WORLD_MAP");
+    shapeCodes = new Set(world.countries.filter((country) => typeof country.d === "string" && country.d.trim()).map((country) => country.code));
+    source = require("./fetch-country-flags.js");
+  } catch (error) {
+    err(pool, "โหลดข้อมูลรูปทรงหรือตารางต้นทางธงไม่ผ่าน — " + error.message);
+  }
+  const creditPath = "assets/country-quiz/CREDITS.md";
+  const creditFile = path.join(ROOT, creditPath);
+  const credits = fs.existsSync(creditFile) ? fs.readFileSync(creditFile, "utf8") : "";
+  const rows = credits.split("\n").filter((line) => /^\s*\|/.test(line));
+  if (!credits.trim()) err(pool, "ไม่มีเครดิตภาพธงและข้อมูลรูปร่าง");
+  if (source && (!credits.includes(source.FLAG_REVISION) || !credits.includes(source.COUNTRY_REVISION)))
+    err(pool, "เครดิตต้องระบุรุ่นต้นทางธงและฐานข้อมูลตรงกับสคริปต์ดึงภาพ");
+  const urls = new Set(["flag-quiz.html", "country-shape.html", "css/country-quiz.css", "js/country-quiz.js",
+    "data/country-quiz.js", "data/worldmap.js", creditPath,
+    "assets/country-quiz/LICENSE-flag-icons.txt", "assets/country-quiz/LICENSE-world-countries.md"]);
+  list.forEach((country, i) => {
+    const at = "ประเทศ #" + (i + 1);
+    if (!country || typeof country !== "object" || Array.isArray(country)) return err(pool, at + " ต้องเป็นข้อมูลประเทศ");
+    ["code", "iso2", "name", "en", "region", "flag"].forEach((field) => {
+      if (typeof country[field] !== "string" || !country[field].trim()) err(pool, at + " " + field + " ต้องเป็นข้อความไม่ว่าง");
+    });
+    if (!/^[A-Z]{3}$/.test(country.code) || codes.has(country.code)) err(pool, at + " code ไม่ถูกต้องหรือซ้ำ");
+    codes.add(country.code);
+    if (!/^[a-z]{2}$/.test(country.iso2) || isoCodes.has(country.iso2)) err(pool, at + " iso2 ไม่ถูกต้องหรือซ้ำ");
+    isoCodes.add(country.iso2);
+    if (!shapeCodes.has(country.code)) err(pool, at + " ไม่มีรูปทรงจริงใน WORLD_MAP.countries — " + country.code);
+    if (!regions.has(country.region)) err(pool, at + " region ไม่อยู่ในทวีปที่รองรับ");
+    if (!Array.isArray(country.aliases) || !country.aliases.length || country.aliases.some((name) => typeof name !== "string" || !name.trim()))
+      err(pool, at + " aliases ต้องเป็นรายชื่อข้อความไม่ว่าง");
+    [country.name, country.en, ...(Array.isArray(country.aliases) ? country.aliases : [])].filter((name) => typeof name === "string").forEach((name) => {
+      const key = normalizeName(name);
+      if (!key) err(pool, at + " มีชื่อที่ไม่มีตัวอักษร");
+      if (names.has(key) && names.get(key) !== country.code) err(pool, at + " ชื่อหรือชื่อเรียกอื่นชนกับ " + names.get(key) + " — " + name);
+      else names.set(key, country.code);
+    });
+    const expected = "assets/country-quiz/flags/" + country.iso2 + ".svg";
+    if (country.flag !== expected) return err(pool, at + " flag ต้องเป็นพาธ SVG ที่ตรงกับ iso2");
+    urls.add(expected);
+    const file = path.join(ROOT, expected);
+    try {
+      if (!fs.statSync(file).isFile() || !fs.statSync(file).size || !fs.realpathSync(file).startsWith(fs.realpathSync(ROOT) + path.sep))
+        throw new Error("ไม่มีไฟล์หรือพาธไม่อยู่ในเว็บ");
+      const buffer = fs.readFileSync(file);
+      if (source) {
+        source.verifySvg(buffer, country.code);
+        const origin = source.FLAG_SOURCES[country.iso2];
+        if (!origin || source.gitHash(buffer) !== origin.sha) err(pool, at + " ภาพธงไม่ตรงต้นทางที่ตรวจไว้");
+      }
+    } catch (error) { err(pool, at + " ภาพธงไม่พร้อม — " + error.message); }
+    if (!rows.some((row) => {
+      const cells = row.split("|").map((cell) => cell.trim());
+      return cells.includes(country.code) && cells.includes(country.iso2)
+        && row.includes("flags/" + country.iso2 + ".svg") && (!source || row.includes(source.FLAG_REVISION));
+    })) err(pool, at + " เครดิตรายประเทศไม่ครบ — " + country.code);
+  });
+  for (const page of ["flag-quiz.html", "country-shape.html"]) {
+    const file = path.join(ROOT, page);
+    const html = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
+    const buttons = [...html.matchAll(/data-region="([^"]+)"/g)].map((match) => match[1]);
+    if (buttons.length !== 7 || new Set(buttons).size !== 7 || !["all", ...regionKeys].every((region) => buttons.includes(region)))
+      err(pool, page + " ต้องมีปุ่มทุกทวีปและทั้งหมดอย่างละหนึ่งปุ่ม");
+    if (!html.includes('src="data/country-quiz.js"') || !html.includes('src="js/country-quiz.js"'))
+      err(pool, page + " โหลดคลังหรือตรรกะเกมไม่ครบ");
+    if (page === "country-shape.html" && !html.includes('src="data/worldmap.js"')) err(pool, page + " ไม่โหลดข้อมูลรูปทรง");
+  }
+  regionKeys.forEach((region) => {
+    if (!list.some((country) => country.region === region)) err(pool, "ทวีป " + region + " ไม่มีประเทศให้เล่น");
+  });
+  const sw = fs.readFileSync(path.join(ROOT, "sw.js"), "utf8");
+  const block = sw.match(/const\s+PRECACHE_URLS\s*=\s*\[([\s\S]*?)\];/);
+  const precache = new Set(block ? [...block[1].matchAll(/^\s*["']([^"']+)["']\s*,?\s*(?:\/\/.*)?$/gm)].map((match) => match[1]) : []);
+  urls.forEach((url) => {
+    const file = path.join(ROOT, url);
+    if (!fs.existsSync(file) || !fs.statSync(file).isFile() || !fs.statSync(file).size) err(pool, "ไฟล์สำหรับออฟไลน์ไม่มีหรือว่าง — " + url);
+    if (!precache.has(url)) err(pool, "ไฟล์ยังไม่อยู่ใน PRECACHE_URLS — " + url);
+  });
+}
+
 for (const pool of pools) {
   let list;
   try {
@@ -312,6 +400,7 @@ for (const pool of pools) {
     continue;
   }
   if (pool.key === "picturereveal") checkPicturePool(pool, list);
+  if (pool.key === "countryquiz") checkCountryQuizPool(pool, list);
 
   const allowedCats = pool.catField && pool.closedCats ? uiCats(pool) : null;
   const existingCats = new Set();

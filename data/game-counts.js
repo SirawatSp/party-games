@@ -1,6 +1,8 @@
 // สร้างอัตโนมัติจาก scripts/build-game-counts.js — อย่าแก้ไขตรงนี้ตรง ๆ
 // รันใหม่ทุกครั้งที่แก้ไขคลังโจทย์: node scripts/build-game-counts.js
 const GAME_COUNTS = {
+  "flag-quiz.html": { count: 164, unit: "ประเทศ" },
+  "country-shape.html": { count: 164, unit: "ประเทศ" },
   "convenience-store.html": { count: 45, unit: "สถานการณ์" },
   "picture-reveal.html": { count: 120, unit: "รูป" },
   "truth-or-dare.html": { count: 100, unit: "โจทย์" },

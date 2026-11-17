@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ทายประเทศจากรูปร่าง — Party Games</title>
+<meta name="description" content="เห็นแค่รูปทรงลอย ๆ ไม่มีชื่อกำกับ จะจำได้ไหมว่านี่คือประเทศอะไร?">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/country-quiz.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#153d3b">
+</head>
+<body class="cq-page cq-shape-page">
+<div class="marquee"><span></span></div>
+<div class="wrap cq-wrap">
+  <div class="topnav">
+    <a class="brand-logo" href="index.html"><img class="brand-img" src="assets/logo.png" width="720" height="416" alt="Party Games — วงกำลังจะเหงา"></a>
+    <a class="back-link" href="index.html">← กลับหน้าแรก</a>
+  </div>
+  <header class="cq-hero">
+    <div>
+      <p class="cq-kicker"><span aria-hidden="true">✦</span> มองให้ดี แล้วทายให้ไว</p>
+      <h1>ทายประเทศ<br><span>จากรูปร่าง</span></h1>
+      <p class="cq-lead">เห็นแค่รูปทรงลอย ๆ ไม่มีชื่อกำกับ จะจำได้ไหมว่านี่คือประเทศอะไร?</p>
+    </div>
+    <div class="cq-passport-stamp" aria-hidden="true">
+      <svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="37" stroke="currentColor" stroke-width="3"/><circle cx="50" cy="50" r="29" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 5"/><path d="m63 27-7 29-19 17 7-29Z" fill="currentColor"/><path d="m63 27-19 17 12 12Z" fill="#d6ff3d"/><circle cx="50" cy="50" r="4" fill="#fff7e3"/><path d="M50 4v12m0 68v12M4 50h12m68 0h12" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+      <span>รอบรู้โลก<br><b>รู้กันทั้งวง</b></span>
+    </div>
+  </header>
+
+  <nav class="cq-switcher" aria-label="เลือกเกมประเทศ">
+    <a href="flag-quiz.html"><span aria-hidden="true">⚑</span> ทายธงชาติ</a>
+    <a href="country-shape.html" aria-current="page"><span aria-hidden="true">◈</span> ทายรูปร่างประเทศ</a>
+  </nav>
+
+  <main class="cq-app" id="cqApp" data-mode="shape">
+    <div class="cq-app-banner">
+      <span class="cq-dossier">แฟ้มรูปร่างประเทศ</span>
+      <span class="cq-open-mark"><span aria-hidden="true">●</span> พร้อมออกเดินทาง</span>
+    </div>
+
+    <section class="cq-filters" aria-labelledby="cqRegionTitle">
+      <h2 id="cqRegionTitle">อยากเริ่มที่ทวีปไหน?</h2>
+      <div class="cq-regions" id="cqRegions" role="group" aria-label="เลือกทวีป">
+        <button class="cq-region" type="button" data-region="all" aria-pressed="true">ทั่วโลก</button>
+        <button class="cq-region" type="button" data-region="asia" aria-pressed="false">เอเชีย</button>
+        <button class="cq-region" type="button" data-region="europe" aria-pressed="false">ยุโรป</button>
+        <button class="cq-region" type="button" data-region="africa" aria-pressed="false">แอฟริกา</button>
+        <button class="cq-region" type="button" data-region="north_america" aria-pressed="false">อเมริกาเหนือ</button>
+        <button class="cq-region" type="button" data-region="south_america" aria-pressed="false">อเมริกาใต้</button>
+        <button class="cq-region" type="button" data-region="oceania" aria-pressed="false">โอเชียเนีย</button>
+      </div>
+    </section>
+
+    <section class="cq-round" aria-label="รูปร่างประเทศปริศนา">
+      <div class="cq-round-heading">
+        <p class="cq-round-eyebrow">ชื่อประเทศคือคำตอบ</p>
+        <div class="cq-progress" id="cqProgress" aria-live="polite">
+          <span id="cqCounter">ข้อที่ 1</span>
+          <span aria-hidden="true">·</span>
+          <span id="cqTotal">กำลังเตรียมประเทศ</span>
+        </div>
+      </div>
+      <div class="cq-stage" id="cqStage" aria-label="รูปร่างประเทศปริศนา">
+        <span class="cq-stage-label" aria-hidden="true">มองเส้น มองรูปทรง</span>
+        <img class="cq-flag" id="cqFlag" alt="ธงชาติให้ทาย" width="640" height="480" decoding="async" hidden>
+        <svg class="cq-shape" id="cqShape" viewBox="0 0 320 320" role="img" aria-label="รูปร่างประเทศให้ทาย" preserveAspectRatio="xMidYMid meet" focusable="false" hidden><path id="cqShapePath" d="" fill-rule="evenodd"></path></svg>
+        <span class="cq-stage-caption" aria-hidden="true">ประเทศอะไรเอ่ย?</span>
+      </div>
+      <div class="cq-status-area">
+        <p class="cq-status" id="cqStatus" role="status" aria-live="polite">กำลังเตรียมรูปทรงประเทศ…</p>
+        <button class="cq-button cq-button-small" id="cqRetry" type="button" hidden>ลองโหลดภาพอีกครั้ง ↻</button>
+      </div>
+      <section class="cq-answer" id="cqAnswer" aria-live="polite" aria-atomic="true" hidden>
+        <p class="cq-answer-label">คำตอบคือประเทศ</p>
+        <h2 id="cqCountry" tabindex="-1"></h2>
+        <p class="cq-english" id="cqEnglish"></p>
+        <p class="cq-shape-note" id="cqShapeNote" hidden></p>
+      </section>
+      <div class="cq-controls">
+        <button class="cq-button cq-button-primary" id="cqReveal" type="button" aria-controls="cqAnswer" disabled>เฉลยประเทศ <span aria-hidden="true">↗</span></button>
+        <button class="cq-button cq-button-secondary" id="cqNext" type="button">ประเทศถัดไป <span aria-hidden="true">→</span></button>
+      </div>
+      <p class="cq-play-hint">ตอบออกเสียง แล้วกดเฉลย · ข้ามหรือเปลี่ยนทวีปได้ทุกเมื่อ</p>
+    </section>
+    <div class="cq-app-base" aria-hidden="true"><span>หนึ่งภาพ พาเที่ยวหนึ่งประเทศ</span><span>พร้อมแล้ว ไปต่อ ✦</span></div>
+  </main>
+
+  <section class="cq-how" aria-labelledby="cqHowTitle">
+    <h2 id="cqHowTitle">ชวนทั้งวงทายได้เลย</h2>
+    <ol>
+      <li><span>1</span><div><strong>เลือกทวีป</strong><p>เลือกทวีปที่อยากลอง หรือทายรวมทั่วโลก</p></div></li>
+      <li><span>2</span><div><strong>ดูรูปร่าง แล้วบอกชื่อประเทศ</strong><p>ผลัดกันตอบหรือแข่งกันทั้งวง ไม่ต้องพิมพ์คำตอบ</p></div></li>
+      <li><span>3</span><div><strong>เปิดเฉลย แล้วไปต่อ</strong><p>กดเฉลยเมื่อทุกคนตอบแล้ว หรือข้ามไปประเทศถัดไปได้</p></div></li>
+    </ol>
+  </section>
+  <div class="cq-bottom-links">
+    <a href="assets/country-quiz/CREDITS.md">ที่มาภาพและข้อมูลสิทธิ์ ↗</a>
+    <a href="flag-quiz.html">ลองทายจากธงชาติ →</a>
+  </div>
+  <footer class="cq-footer">จำได้กี่ประเทศ ชวนเพื่อนมาลองกัน <span aria-hidden="true">✦</span></footer>
+</div>
+<script src="data/country-quiz.js"></script>
+<script src="data/worldmap.js"></script>
+<script src="js/main.js"></script>
+<script src="js/country-quiz.js"></script>
+</body>
+</html>
