@@ -1,0 +1,188 @@
+name: ตรวจสถานการณ์ร้านสะดวกซื้อเพิ่ม 100 ข้อ
+
+on:
+  push:
+    branches: ["codex/verify-store-100-20261117"]
+
+permissions:
+  contents: write
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      STORE_BASE_SHA: "8dc87035adb5a0a6353340396a63d3a1071b49f5"
+      CHECKPOINT_SHA: "0159f21adca15db3ae9aaf213d1444e978f06b36"
+    steps:
+      - name: ดึงฐานที่ต้องตรวจ
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: เตรียม Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: ตรวจคลังฐานเดิม
+        run: node scripts/check-content.js
+      - name: คืนชุดสถานการณ์และภาพตัวเลือกสำหรับตรวจ
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import os, json, base64, hashlib, urllib.request, xml.etree.ElementTree as ET
+          from pathlib import Path
+          root = Path.cwd().resolve()
+          repo = os.environ['GITHUB_REPOSITORY']
+          token = os.environ['GH_TOKEN']
+          def blob(sha):
+              req = urllib.request.Request('https://api.github.com/repos/' + repo + '/git/blobs/' + sha, headers={'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28'})
+              with urllib.request.urlopen(req, timeout=60) as response: obj = json.load(response)
+              data = base64.b64decode(obj['content'])
+              assert hashlib.sha1(('blob ' + str(len(data)) + '\0').encode() + data).hexdigest() == sha, 'blob digest ' + sha
+              return data
+          manifest = json.loads(blob(os.environ['CHECKPOINT_SHA']))
+          assert manifest['baseCommit'] == os.environ['STORE_BASE_SHA']
+          review = Path(os.environ['RUNNER_TEMP']) / 'convenience-review'
+          review.mkdir(parents=True, exist_ok=True)
+          for entry in manifest['sources']:
+              destination = root / entry['path']
+              assert destination.resolve().is_relative_to(root)
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              destination.write_bytes(blob(entry['blob']))
+              print('restored', entry['path'])
+          inputs = Path(os.environ['RUNNER_TEMP']) / 'store100-inputs'
+          inputs.mkdir(parents=True, exist_ok=True)
+          for key, sha in manifest['inputs'].items():
+              (inputs / (key + '.json')).write_bytes(blob(sha))
+          for entry in manifest['copies']:
+              source = root / entry['source']
+              target = root / entry['target']
+              assert source.resolve().is_relative_to(root) and target.resolve().is_relative_to(root)
+              original = source.read_bytes()
+              assert hashlib.sha1(('blob ' + str(len(original)) + '\0').encode() + original).hexdigest() == entry['sha']
+              target.parent.mkdir(parents=True, exist_ok=True)
+              target.write_bytes(original)
+              assert target.read_bytes() == original
+              print('copied original image', entry['source'], entry['target'])
+          drawings = [entry for entry in manifest['sources'] if entry['path'].endswith('.svg')]
+          assert len(drawings) == 37
+          for entry in drawings:
+              svg = ET.fromstring((root / entry['path']).read_bytes())
+              assert svg.tag == '{http://www.w3.org/2000/svg}svg'
+              assert svg.attrib['viewBox'] == '0 0 320 320'
+              assert not any(node.tag.endswith(('script', 'image', 'foreignObject')) for node in svg.iter())
+              assert all(not key.endswith('href') for node in svg.iter() for key in node.attrib)
+          print('verified original SVG drawings', len(drawings), 'and unchanged copied images', len(manifest['copies']))
+          PY
+      - name: เติมคลัง ตรวจภาพและข้อมูล แล้วเตรียมแคช
+        run: |
+          node --check js/convenience-store.js
+          node --check scripts/test-convenience-store.js
+          node scripts/add-entries.js conveniencestore "$RUNNER_TEMP/store100-inputs/rounds.json" --dry
+          node scripts/add-entries.js conveniencestore "$RUNNER_TEMP/store100-inputs/rounds.json"
+          node scripts/add-entries.js convenienceproducts "$RUNNER_TEMP/store100-inputs/products.json" --dry
+          node scripts/add-entries.js convenienceproducts "$RUNNER_TEMP/store100-inputs/products.json"
+          node scripts/check-content.js | tee "$RUNNER_TEMP/convenience-review/check-content.log"
+          node scripts/ship.js | tee "$RUNNER_TEMP/convenience-review/ship.log"
+          git diff --quiet "$STORE_BASE_SHA" -- data/worldmap.js data/picture-reveal.js assets/picture-reveal data/country-quiz.js assets/country-quiz
+          git add --intent-to-add convenience-store.html js/convenience-store.js scripts/check-content.js scripts/test-convenience-store.js index.html sw.js docs/CONTENT-GUIDE.md assets/convenience-store/CREDITS.md assets/convenience-store/meal-omelet-rice.svg assets/convenience-store/pen-ballpoint.svg assets/convenience-store/pen-gel.svg assets/convenience-store/pen-fountain.svg assets/convenience-store/pen-brush.svg assets/convenience-store/pen-gold.svg assets/convenience-store/pencils-colour.svg assets/convenience-store/coffee-espresso.svg assets/convenience-store/coffee-americano.svg assets/convenience-store/coffee-latte.svg assets/convenience-store/coffee-cappuccino.svg assets/convenience-store/coffee-mocha.svg assets/convenience-store/coffee-caramel.svg assets/convenience-store/gift-book.svg assets/convenience-store/gift-headphones.svg assets/convenience-store/gift-candle.svg assets/convenience-store/gift-tumbler.svg assets/convenience-store/gift-board-game.svg assets/convenience-store/gift-camera.svg assets/convenience-store/flower-rose.svg assets/convenience-store/flower-sunflower.svg assets/convenience-store/flower-tulip.svg assets/convenience-store/flower-lily.svg assets/convenience-store/flower-gypsophila.svg assets/convenience-store/flower-orchid.svg assets/convenience-store/bag-tote.svg assets/convenience-store/bag-backpack.svg assets/convenience-store/bag-crossbody.svg assets/convenience-store/bag-briefcase.svg assets/convenience-store/bag-duffel.svg assets/convenience-store/bag-suitcase.svg assets/convenience-store/activity-cinema.svg assets/convenience-store/activity-karaoke.svg assets/convenience-store/activity-board-games.svg assets/convenience-store/activity-cooking.svg assets/convenience-store/activity-cycling.svg assets/convenience-store/activity-camping.svg assets/convenience-store/country-japan.svg assets/convenience-store/country-south-korea.svg assets/convenience-store/country-uk.svg assets/convenience-store/country-france.svg assets/convenience-store/country-australia.svg assets/convenience-store/country-canada.svg assets/convenience-store/meal-basil-rice.jpg assets/convenience-store/meal-fried-rice.jpg assets/convenience-store/meal-pad-see-ew.jpg assets/convenience-store/meal-rad-na.jpg assets/convenience-store/meal-pad-thai.jpg assets/convenience-store/sweet-mango-rice.jpg assets/convenience-store/sweet-coconut-pancakes.jpg assets/convenience-store/sweet-layer-cake.jpg assets/convenience-store/sweet-ruby.jpg assets/convenience-store/sweet-banana.jpg assets/convenience-store/sweet-bua-loi.jpg data/convenience-store.js data/convenience-products.js data/game-counts.js
+          git diff --check
+      - name: เตรียมเครื่องมือเบราว์เซอร์นอก repo
+        run: |
+          npm install --prefix "$RUNNER_TEMP/convenience-browser" --no-audit --no-fund playwright@1.56.1
+          "$RUNNER_TEMP/convenience-browser/node_modules/.bin/playwright" install --with-deps chromium
+          echo "PLAYWRIGHT_MODULE=$RUNNER_TEMP/convenience-browser/node_modules/playwright" >> "$GITHUB_ENV"
+          echo "NODE_PATH=$RUNNER_TEMP/convenience-browser/node_modules" >> "$GITHUB_ENV"
+          echo "CONVENIENCE_REVIEW=$RUNNER_TEMP/convenience-review" >> "$GITHUB_ENV"
+          echo "SHOTS=$RUNNER_TEMP/convenience-review/shots" >> "$GITHUB_ENV"
+      - name: ทดสอบรอบเล่นด้วย Chromium
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const vm = require('vm');
+          const { chromium } = require(process.env.PLAYWRIGHT_MODULE);
+          const run = require(path.join(process.cwd(), 'scripts/test-convenience-store.js'));
+          fs.mkdirSync(process.env.SHOTS, { recursive: true });
+          run(chromium, { shots: process.env.SHOTS }).then(async (results) => {
+            const output = { passed: results.filter((r) => r.ok).length, total: results.length, results };
+            fs.writeFileSync(path.join(process.env.CONVENIENCE_REVIEW, 'browser-results.json'), JSON.stringify(output, null, 2));
+            results.forEach((r) => console.log((r.ok ? 'ผ่าน ' : 'ไม่ผ่าน ') + r.name + (!r.ok ? ' ' + JSON.stringify(r.detail) : '')));
+            console.log(output.passed + '/' + output.total + ' ผ่าน');
+            const allProducts = vm.runInNewContext(fs.readFileSync('data/convenience-products.js', 'utf8') + ';CONVENIENCE_PRODUCTS');
+            const groups = [["countries", "food", "stationery"], ["dessert", "coffee", "gifts"], ["flowers", "bags", "activities"]];
+            const galleryBrowser = await chromium.launch({ headless: true });
+            const galleryPage = await galleryBrowser.newPage({ viewport: { width: 1200, height: 930 }, deviceScaleFactor: 1 });
+            const escape = (text) => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+            for (let index = 0; index < groups.length; index++) {
+              const blocks = groups[index].map((cat) => '<section><h2>' + escape(cat) + '</h2><div class="row">' + allProducts.filter((p) => p.cat === cat).map((p) => {
+                const mime = p.image.endsWith('.jpg') ? 'image/jpeg' : 'image/svg+xml';
+                return '<figure><img src="data:' + mime + ';base64,' + fs.readFileSync(p.image).toString('base64') + '"><figcaption>' + escape(p.name) + '</figcaption></figure>';
+              }).join('') + '</div></section>').join('');
+              await galleryPage.setContent('<html lang="th"><meta charset="utf-8"><style>body{margin:18px;background:#f4f4ea;color:#183d39;font:18px Tahoma,sans-serif}h2{font-size:18px;margin:8px 0}.row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}section{margin-bottom:18px}figure{margin:0;padding:10px;background:white;border:1px solid #bccdbd;border-radius:10px;text-align:center}img{width:155px;height:155px;object-fit:contain}figcaption{min-height:48px;font-size:17px}</style>' + blocks + '</html>');
+              await galleryPage.locator('img').evaluateAll((images) => Promise.all(images.map((image) => image.decode())));
+              await galleryPage.screenshot({ path: path.join(process.env.SHOTS, 'convenience-store-gallery-' + (index + 1) + '.png'), fullPage: true });
+            }
+            await galleryBrowser.close();
+            for (const name of ["countries-shelf", "stationery-shelf", "gallery-1", "gallery-2", "gallery-3"]) {
+
+              const file = path.join(process.env.SHOTS, "convenience-store-" + name + ".png");
+              if (!fs.existsSync(file)) continue;
+              const response = await fetch("https://api.github.com/repos/" + process.env.GITHUB_REPOSITORY + "/git/blobs", {
+                method: "POST", headers: { Authorization: "Bearer " + process.env.GH_TOKEN, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
+                body: JSON.stringify({ content: fs.readFileSync(file).toString("base64"), encoding: "utf-8" })
+              });
+              if (!response.ok) throw new Error("เก็บภาพตรวจไม่สำเร็จ " + response.status);
+              console.log("REVIEW_IMAGE " + name + " " + (await response.json()).sha);
+            }
+            if (output.passed !== output.total) process.exitCode = 1;
+          }).catch((error) => { console.error(error); process.exitCode = 1; });
+          NODE
+      - name: บันทึกเฉพาะชุดที่ทดสอบผ่าน
+        run: |
+          node - <<'NODE'
+          const fs = require('fs'), path = require('path'), vm = require('vm');
+          const report = JSON.parse(fs.readFileSync(path.join(process.env.CONVENIENCE_REVIEW, 'browser-results.json'), 'utf8'));
+          if (report.passed !== report.total || !report.total) throw new Error('ยังไม่ผ่านการทดสอบครบ');
+          const list = (file, variable) => vm.runInNewContext(fs.readFileSync(file, 'utf8') + ';' + variable);
+          const prompts = list('data/convenience-store.js', 'CONVENIENCE_STORE_LIST');
+          const products = list('data/convenience-products.js', 'CONVENIENCE_PRODUCTS');
+          if (prompts.length !== 145 || products.length !== 108 || new Set(prompts.map(p => p.cat)).size !== 18) throw new Error('ยอดไม่ตรงชุดเพิ่ม 100 ข้อ');
+          const lines = ['# ตรวจร้านสะดวกซื้อ ลื้อสะดวกใจ — เพิ่ม 100 สถานการณ์', '',
+          'เพิ่มคำถามความชอบจากประเทศที่จะไปเที่ยวหรือทำงาน อาหารตามสั่ง เครื่องเขียนสำหรับอวยพรงานแต่ง และสถานการณ์เลือกสิ่งที่ตรงใจในชีวิตประจำวัน', '',
+          '- โจทย์ 45 → 145 ข้อ (+100); ตัวเลือก 54 → 108 รายการ (+54); รวม 18 หมวด',
+          '- ประเทศ 20 ข้อ แบ่งเที่ยวและทำงานอย่างละ 10; อาหารตามสั่ง เครื่องเขียน ขนมไทย กาแฟ ของขวัญ ดอกไม้ กระเป๋า กิจกรรม หมวดละ 10',
+          '- ภาพใหม่ 54 ไฟล์: SVG วาดใหม่ 37 ธง MIT 6 และภาพอาหาร/ขนม CC 11 ภาพ พร้อมเครดิตรายรายการ',
+          '- สำเนาธงและภาพถ่ายตรงต้นฉบับใน repo ทุกไบต์ ตรวจ Git SHA-1 ก่อนคัดลอก และไม่แก้คลังอาหารหรือเกมประเทศเดิม',
+          '- โจทย์ใหม่ผ่านการเทียบข้อความและรูปแบบมาตรฐานกับคลังเดิม ไม่พบซ้ำ ตรวจเนื้อหาให้แต่ละข้อถามคนละบริบท',
+          '- ป้ายประเภทของหมวดทั่วไประบุเป็นประเภทตัวเลือก ไม่ใช้ชื่อแบรนด์สมมติ; หมวดสินค้าเดิมยังตรวจความหลากหลายแบรนด์',
+          '- คนที่ 1/2 สลับบทบาทตามเดิม ส่งเครื่องแล้วล้างตัวเลือกและข้อความเฉลยออกจาก DOM ไม่บันทึกคำตอบลง storage หรือ URL',
+          '- add-entries.js --dry และคำสั่งเพิ่มจริงผ่านทั้งสองคลัง; check-content.js ไม่มี ERROR; ship.js อัปเดตจำนวนและแคช',
+          '- Playwright/Chromium ผ่าน ' + report.passed + '/' + report.total + ' รวมทุกหมวดใหม่ เลือก/ส่งเครื่อง/ทาย/เฉลย ความลับ คะแนน จอเล็ก ภาพ PNG/SVG/JPEG เสีย และออฟไลน์จริง',
+          '- ตรวจ XML ของ SVG ใหม่ 37 ไฟล์และเปิดภาพตัวเลือกทุกหมวดผ่านเบราว์เซอร์จริง', '',
+          'เครดิตภาพ: assets/convenience-store/CREDITS.md', '',
+          'หลักฐานและภาพหน้าจอ: https://github.com/' + process.env.GITHUB_REPOSITORY + '/actions/runs/' + process.env.GITHUB_RUN_ID, ''];
+          fs.writeFileSync('docs/CONTENT-REVIEW-convenience-store.md', lines.join('\n').trimEnd() + '\n');
+          NODE
+          node scripts/check-content.js > "$RUNNER_TEMP/convenience-review/check-before-commit.log"
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add convenience-store.html js/convenience-store.js scripts/check-content.js scripts/test-convenience-store.js index.html sw.js docs/CONTENT-GUIDE.md assets/convenience-store/CREDITS.md assets/convenience-store/meal-omelet-rice.svg assets/convenience-store/pen-ballpoint.svg assets/convenience-store/pen-gel.svg assets/convenience-store/pen-fountain.svg assets/convenience-store/pen-brush.svg assets/convenience-store/pen-gold.svg assets/convenience-store/pencils-colour.svg assets/convenience-store/coffee-espresso.svg assets/convenience-store/coffee-americano.svg assets/convenience-store/coffee-latte.svg assets/convenience-store/coffee-cappuccino.svg assets/convenience-store/coffee-mocha.svg assets/convenience-store/coffee-caramel.svg assets/convenience-store/gift-book.svg assets/convenience-store/gift-headphones.svg assets/convenience-store/gift-candle.svg assets/convenience-store/gift-tumbler.svg assets/convenience-store/gift-board-game.svg assets/convenience-store/gift-camera.svg assets/convenience-store/flower-rose.svg assets/convenience-store/flower-sunflower.svg assets/convenience-store/flower-tulip.svg assets/convenience-store/flower-lily.svg assets/convenience-store/flower-gypsophila.svg assets/convenience-store/flower-orchid.svg assets/convenience-store/bag-tote.svg assets/convenience-store/bag-backpack.svg assets/convenience-store/bag-crossbody.svg assets/convenience-store/bag-briefcase.svg assets/convenience-store/bag-duffel.svg assets/convenience-store/bag-suitcase.svg assets/convenience-store/activity-cinema.svg assets/convenience-store/activity-karaoke.svg assets/convenience-store/activity-board-games.svg assets/convenience-store/activity-cooking.svg assets/convenience-store/activity-cycling.svg assets/convenience-store/activity-camping.svg assets/convenience-store/country-japan.svg assets/convenience-store/country-south-korea.svg assets/convenience-store/country-uk.svg assets/convenience-store/country-france.svg assets/convenience-store/country-australia.svg assets/convenience-store/country-canada.svg assets/convenience-store/meal-basil-rice.jpg assets/convenience-store/meal-fried-rice.jpg assets/convenience-store/meal-pad-see-ew.jpg assets/convenience-store/meal-rad-na.jpg assets/convenience-store/meal-pad-thai.jpg assets/convenience-store/sweet-mango-rice.jpg assets/convenience-store/sweet-coconut-pancakes.jpg assets/convenience-store/sweet-layer-cake.jpg assets/convenience-store/sweet-ruby.jpg assets/convenience-store/sweet-banana.jpg assets/convenience-store/sweet-bua-loi.jpg data/convenience-store.js data/convenience-products.js data/game-counts.js docs/CONTENT-REVIEW-convenience-store.md
+          git commit -m "เพิ่มโจทย์ร้านสะดวกซื้อ 100 ข้อพร้อมตัวเลือกภาพ 54 รายการ"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+          git rev-parse HEAD | tee "$RUNNER_TEMP/convenience-review/tested-commit.txt"
+      - name: เก็บหลักฐานการตรวจ
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: convenience-store-100-review
+          path: ${{ runner.temp }}/convenience-review
+          retention-days: 14
