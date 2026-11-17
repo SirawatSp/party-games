@@ -107,3 +107,70 @@
 - แค่คุณ — Musketeers: [ข่าวของค่าย What The Duck](https://www.whattheduckmusic.com/post/__sea) ระบุเป็นหนึ่งในเพลงฮิตของวง
 
 เพลงเลือกจากเพลงที่คนรู้จักกว้างขวางหลายช่วงปี ไม่ได้อ้างเป็นอันดับชาร์ตล่าสุด ไม่ใช้เนื้อเพลง บันทึกเสียง หรือปกต้นฉบับในเว็บ
+
+## ภาพตัวเลือกเพิ่ม 100 สถานการณ์
+
+เพิ่มวันที่ 17 พฤศจิกายน 2026 จำนวน 54 ตัวเลือกใน 9 หมวด ประเทศใช้ธงที่เก็บไว้แล้วในชุดเกมประเทศ ภาพอาหารและขนมใช้ไฟล์ภาพถ่ายที่มีข้อมูลสิทธิ์จากคลังอาหารเดิม และอีก 37 ภาพเป็นภาพ SVG วาดใหม่สำหรับเกมนี้ ไม่ใช้รูปสินค้า โปสเตอร์ หรือโลโก้จากภายนอกมาสร้างภาพวาดใหม่
+
+ธง 6 ภาพมาจาก `lipis/flag-icons` รุ่น `ac7e0eb3259eb62aa6100c435607e2fe03896a97` จัดทำโดย Panayiotis Lipiridis และผู้ร่วมพัฒนา ภายใต้ MIT ดู [ข้อความลิขสิทธิ์และสัญญาอนุญาตต้นฉบับ](../country-quiz/LICENSE-flag-icons.txt) และ [เครดิตชุดธง](../country-quiz/CREDITS.md)
+
+ภาพถ่าย 11 ภาพคงผู้สร้าง สัญญาอนุญาต และต้นทางในตารางด้านล่าง สำเนาไฟล์ธงและภาพถ่ายตรงกับไฟล์เดิมทุกไบต์ ไม่แก้สี ตัด หรือปรับภาพ การแสดงในกรอบของหน้าเว็บไม่เปลี่ยนไฟล์ต้นฉบับ ภาพกะเพราเป็นกะเพราหมูกรอบราดข้าว จึงใช้ชื่อเมนูกะเพราราดข้าวแบบไม่ระบุเนื้อสัตว์ ภาพข้าวไข่เจียววาดใหม่ ไม่ใช่ภาพถ่าย
+
+ภาพ SVG ใหม่เป็นภาพสัญลักษณ์ของสิ่งของ กาแฟ ดอกไม้ และกิจกรรม ใช้ช่วยแยกตัวเลือก ไม่ใช่การรับรองแบรนด์ รูปแบบสินค้า หรือสูตรเครื่องดื่ม ชื่อประเภทใต้ภาพมีไว้บอกกลุ่มตัวเลือก ไม่ใช่ชื่อผู้ผลิต
+
+| id | name | brand | image | ผู้สร้าง | สิทธิ์ | ต้นทาง |
+|---|---|---|---|---|---|---|
+| country-japan | ญี่ปุ่น | ประเทศ | country-japan.svg | Panayiotis Lipiridis และผู้ร่วมพัฒนา flag-icons | [MIT](../country-quiz/LICENSE-flag-icons.txt) | [ธงต้นทาง](https://github.com/lipis/flag-icons/blob/ac7e0eb3259eb62aa6100c435607e2fe03896a97/flags/4x3/jp.svg) |
+| country-south-korea | เกาหลีใต้ | ประเทศ | country-south-korea.svg | Panayiotis Lipiridis และผู้ร่วมพัฒนา flag-icons | [MIT](../country-quiz/LICENSE-flag-icons.txt) | [ธงต้นทาง](https://github.com/lipis/flag-icons/blob/ac7e0eb3259eb62aa6100c435607e2fe03896a97/flags/4x3/kr.svg) |
+| country-uk | สหราชอาณาจักร | ประเทศ | country-uk.svg | Panayiotis Lipiridis และผู้ร่วมพัฒนา flag-icons | [MIT](../country-quiz/LICENSE-flag-icons.txt) | [ธงต้นทาง](https://github.com/lipis/flag-icons/blob/ac7e0eb3259eb62aa6100c435607e2fe03896a97/flags/4x3/gb.svg) |
+| country-france | ฝรั่งเศส | ประเทศ | country-france.svg | Panayiotis Lipiridis และผู้ร่วมพัฒนา flag-icons | [MIT](../country-quiz/LICENSE-flag-icons.txt) | [ธงต้นทาง](https://github.com/lipis/flag-icons/blob/ac7e0eb3259eb62aa6100c435607e2fe03896a97/flags/4x3/fr.svg) |
+| country-australia | ออสเตรเลีย | ประเทศ | country-australia.svg | Panayiotis Lipiridis และผู้ร่วมพัฒนา flag-icons | [MIT](../country-quiz/LICENSE-flag-icons.txt) | [ธงต้นทาง](https://github.com/lipis/flag-icons/blob/ac7e0eb3259eb62aa6100c435607e2fe03896a97/flags/4x3/au.svg) |
+| country-canada | แคนาดา | ประเทศ | country-canada.svg | Panayiotis Lipiridis และผู้ร่วมพัฒนา flag-icons | [MIT](../country-quiz/LICENSE-flag-icons.txt) | [ธงต้นทาง](https://github.com/lipis/flag-icons/blob/ac7e0eb3259eb62aa6100c435607e2fe03896a97/flags/4x3/ca.svg) |
+| meal-basil-rice | กะเพราราดข้าว | อาหารตามสั่ง | meal-basil-rice.jpg | Iudexvivorum | [CC0](<https://creativecommons.org/publicdomain/zero/1.0/deed.en>) | [ไฟล์ต้นทาง](<https://commons.wikimedia.org/wiki/File:Basil_fried_crispy_pork_with_rice_-_Chiang_Mai_-_2017-07-11_(002).jpg>) |
+| meal-fried-rice | ข้าวผัด | อาหารตามสั่ง | meal-fried-rice.jpg | Karl Thomas Moore | [CC BY-SA 4.0](<https://creativecommons.org/licenses/by-sa/4.0>) | [ไฟล์ต้นทาง](<https://commons.wikimedia.org/wiki/File:Thai_Fried_Rice.jpg>) |
+| meal-omelet-rice | ข้าวไข่เจียว | อาหารตามสั่ง | meal-omelet-rice.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| meal-pad-see-ew | ผัดซีอิ๊ว | อาหารตามสั่ง | meal-pad-see-ew.jpg | Vee Satayamas | [CC BY-SA 4.0](<https://creativecommons.org/licenses/by-sa/4.0>) | [ไฟล์ต้นทาง](<https://commons.wikimedia.org/wiki/File:Pad_See_Ew_-_Bangkok.jpg>) |
+| meal-rad-na | ราดหน้า | อาหารตามสั่ง | meal-rad-na.jpg | Takeaway | [CC BY-SA 3.0](<https://creativecommons.org/licenses/by-sa/3.0>) | [ไฟล์ต้นทาง](<https://commons.wikimedia.org/wiki/File:Kuai-tiao_rat_na_mu.JPG>) |
+| meal-pad-thai | ผัดไทย | อาหารตามสั่ง | meal-pad-thai.jpg | Takeaway | [CC BY-SA 3.0](<https://creativecommons.org/licenses/by-sa/3.0>) | [ไฟล์ต้นทาง](<https://commons.wikimedia.org/wiki/File:Phat_Thai_kung_Chang_Khien_street_stall.jpg>) |
+| pen-ballpoint | ปากกาลูกลื่น | เครื่องเขียน | pen-ballpoint.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| pen-gel | ปากกาเจล | เครื่องเขียน | pen-gel.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| pen-fountain | ปากกาหมึกซึม | เครื่องเขียน | pen-fountain.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| pen-brush | ปากกาพู่กัน | เครื่องเขียน | pen-brush.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| pen-gold | ปากกาสีทอง | เครื่องเขียน | pen-gold.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| pencils-colour | ดินสอสี | เครื่องเขียน | pencils-colour.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| sweet-mango-rice | ข้าวเหนียวมะม่วง | ขนมไทย | sweet-mango-rice.jpg | Dennis Wong from Hong Kong, Hong Kong | [CC BY 2.0](<https://creativecommons.org/licenses/by/2.0>) | [ไฟล์ต้นทาง](<https://commons.wikimedia.org/wiki/File:Mango_sticy_rice_(3859549574).jpg>) |
+| sweet-coconut-pancakes | ขนมครก | ขนมไทย | sweet-coconut-pancakes.jpg | Takeaway | [CC BY-SA 3.0](<https://creativecommons.org/licenses/by-sa/3.0>) | [ไฟล์ต้นทาง](<https://commons.wikimedia.org/wiki/File:Khanom_khrok.jpg>) |
+| sweet-layer-cake | ขนมชั้น | ขนมไทย | sweet-layer-cake.jpg | Jane and Xuan | [CC0](<http://creativecommons.org/publicdomain/zero/1.0/deed.en>) | [ไฟล์ต้นทาง](<https://commons.wikimedia.org/wiki/File:Khanom_chan.jpg>) |
+| sweet-ruby | ทับทิมกรอบ | ขนมไทย | sweet-ruby.jpg | Iudexvivorum | [CC0](<http://creativecommons.org/publicdomain/zero/1.0/deed.en>) | [ไฟล์ต้นทาง](<https://commons.wikimedia.org/wiki/File:Rear_Palace_Thapthim_Krop_-_2017-02-25_(001).jpg>) |
+| sweet-banana | กล้วยบวชชี | ขนมไทย | sweet-banana.jpg | Susan Slater | [CC BY-SA 4.0](<https://creativecommons.org/licenses/by-sa/4.0>) | [ไฟล์ต้นทาง](<https://commons.wikimedia.org/wiki/File:Kluai_buat_chi.jpg>) |
+| sweet-bua-loi | บัวลอย | ขนมไทย | sweet-bua-loi.jpg | Alpha | [CC BY-SA 2.0](<https://creativecommons.org/licenses/by-sa/2.0>) | [ไฟล์ต้นทาง](<https://commons.wikimedia.org/wiki/File:Bua_loi_-_2009-08-01_-_001.jpg>) |
+| coffee-espresso | เอสเปรสโซ | กาแฟ | coffee-espresso.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| coffee-americano | อเมริกาโน่ | กาแฟ | coffee-americano.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| coffee-latte | ลาเต้ | กาแฟ | coffee-latte.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| coffee-cappuccino | คาปูชิโน่ | กาแฟ | coffee-cappuccino.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| coffee-mocha | มอคค่า | กาแฟ | coffee-mocha.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| coffee-caramel | คาราเมลมัคคิอาโต | กาแฟ | coffee-caramel.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| gift-book | หนังสือ | ของขวัญ | gift-book.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| gift-headphones | หูฟัง | ของขวัญ | gift-headphones.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| gift-candle | เทียนหอม | ของขวัญ | gift-candle.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| gift-tumbler | แก้วเก็บอุณหภูมิ | ของขวัญ | gift-tumbler.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| gift-board-game | บอร์ดเกม | ของขวัญ | gift-board-game.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| gift-camera | กล้องอินสแตนต์ | ของขวัญ | gift-camera.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| flower-rose | กุหลาบ | ดอกไม้ | flower-rose.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| flower-sunflower | ทานตะวัน | ดอกไม้ | flower-sunflower.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| flower-tulip | ทิวลิป | ดอกไม้ | flower-tulip.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| flower-lily | ลิลลี่ | ดอกไม้ | flower-lily.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| flower-gypsophila | ยิปโซ | ดอกไม้ | flower-gypsophila.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| flower-orchid | กล้วยไม้ | ดอกไม้ | flower-orchid.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| bag-tote | ถุงผ้า | กระเป๋า | bag-tote.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| bag-backpack | เป้สะพายหลัง | กระเป๋า | bag-backpack.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| bag-crossbody | กระเป๋าสะพายข้าง | กระเป๋า | bag-crossbody.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| bag-briefcase | กระเป๋าเอกสาร | กระเป๋า | bag-briefcase.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| bag-duffel | กระเป๋าดัฟเฟิล | กระเป๋า | bag-duffel.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| bag-suitcase | กระเป๋าล้อลาก | กระเป๋า | bag-suitcase.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| activity-cinema | ดูหนังโรง | กิจกรรม | activity-cinema.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| activity-karaoke | ร้องคาราโอเกะ | กิจกรรม | activity-karaoke.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| activity-board-games | เล่นบอร์ดเกม | กิจกรรม | activity-board-games.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| activity-cooking | ทำอาหาร | กิจกรรม | activity-cooking.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| activity-cycling | ปั่นจักรยาน | กิจกรรม | activity-cycling.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |
+| activity-camping | ตั้งแคมป์ | กิจกรรม | activity-camping.svg | ภาพประกอบต้นฉบับสำหรับเกม | ภาพประกอบสำหรับเกม เครื่องหมายการค้าเป็นของเจ้าของ | ภาพ SVG วาดใหม่ใน repository |

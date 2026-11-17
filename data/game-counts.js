@@ -3,7 +3,7 @@
 const GAME_COUNTS = {
   "flag-quiz.html": { count: 164, unit: "ประเทศ" },
   "country-shape.html": { count: 164, unit: "ประเทศ" },
-  "convenience-store.html": { count: 45, unit: "สถานการณ์" },
+  "convenience-store.html": { count: 145, unit: "สถานการณ์" },
   "picture-reveal.html": { count: 120, unit: "รูป" },
   "truth-or-dare.html": { count: 100, unit: "โจทย์" },
   "witness-sketch.html": { count: 16, unit: "รูป" },
