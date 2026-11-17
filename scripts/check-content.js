@@ -268,12 +268,14 @@ function checkConvenienceStorePools() {
     if (shelf.length < 4)
       err(scenarioPool, 'หมวด "' + cat + '" ต้องมีสินค้าอย่างน้อย 4 รายการในชั้นเดียวกัน (ตอนนี้ ' + shelf.length + ")");
     const brands = new Set(shelf.filter((item) => typeof item.brand === "string" && item.brand.trim()).map((item) => nameKey(item.brand)));
-    // สองหมวดนี้ให้ทายรสภายในแบรนด์เดียว จึงยอมรับเฉพาะแบรนด์ที่ตั้งชื่อหมวดไว้
-    const flavorBrands = { mama: "มาม่า", lays: "เลย์" };
-    if (Object.hasOwn(flavorBrands, cat)) {
-      const expectedBrand = nameKey(flavorBrands[cat]);
-      if (brands.size !== 1 || !brands.has(expectedBrand))
-        err(scenarioPool, 'หมวด "' + cat + '" ต้องใช้แบรนด์ ' + flavorBrands[cat] + " ทุกรายการ เพื่อให้เลือกต่างรสในแบรนด์เดียว");
+    // หมวดรสยึดแบรนด์เดียว ส่วนตัวเลือกทั่วไปใช้ป้ายประเภทที่กำหนด ไม่แต่งชื่อแบรนด์ขึ้นมา
+    const singleLabels = { mama: "มาม่า", lays: "เลย์", countries: "ประเทศ", food: "อาหารตามสั่ง", stationery: "เครื่องเขียน", dessert: "ขนมไทย", coffee: "กาแฟ", gifts: "ของขวัญ", flowers: "ดอกไม้", bags: "กระเป๋า", activities: "กิจกรรม" };
+    if (Object.hasOwn(singleLabels, cat)) {
+      const expectedLabel = nameKey(singleLabels[cat]);
+      if (brands.size !== 1 || !brands.has(expectedLabel))
+        err(scenarioPool, 'หมวด "' + cat + '" ต้องใช้ป้ายแบรนด์หรือประเภท ' + singleLabels[cat] + " ทุกรายการ");
+      const uniqueNames = new Set(shelf.filter((item) => typeof item.name === "string").map((item) => nameKey(item.name)));
+      if (uniqueNames.size !== shelf.length) err(scenarioPool, 'หมวด "' + cat + '" ต้องมีชื่อรายการที่ต่างกันจริงทุกตัวเลือก');
     } else if (brands.size < 2) {
       err(scenarioPool, 'หมวด "' + cat + '" ต้องมีอย่างน้อย 2 ' + (cat === "music" ? "ศิลปิน" : "แบรนด์") + " ให้ทายใจ");
     }

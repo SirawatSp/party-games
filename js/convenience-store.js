@@ -21,7 +21,8 @@
     const CAT_LABEL = {
       soda: "น้ำอัดลม", tea: "ชา", milk: "นม", snacks: "ขนมขบเคี้ยว",
       noodles: "บะหมี่กึ่งสำเร็จรูป", icecream: "ไอศกรีม",
-      mama: "รสมาม่า", lays: "รสเลย์", music: "เพลงฮิต"
+      mama: "รสมาม่า", lays: "รสเลย์", music: "เพลงฮิต",
+      countries: "ประเทศ", food: "อาหารตามสั่ง", stationery: "เครื่องเขียน", dessert: "ขนมไทย", coffee: "กาแฟ", gifts: "ของขวัญ", flowers: "ดอกไม้", bags: "กระเป๋า", activities: "กิจกรรม"
     };
     const prompts = typeof CONVENIENCE_STORE_LIST !== "undefined" && Array.isArray(CONVENIENCE_STORE_LIST)
       ? CONVENIENCE_STORE_LIST : [];
@@ -49,8 +50,9 @@
       element.focus();
     };
     const chooser = () => (round - 1) % 2;
-    const productText = (product) => product.name + " (" + product.brand + ")";
-    const choiceNoun = () => prompt?.cat === "music" ? "เพลง" : ["mama", "lays"].includes(prompt?.cat) ? "รสชาติ" : "สินค้า";
+    const TOPIC_NOUN = {"countries":"ประเทศ","food":"เมนู","stationery":"เครื่องเขียน","dessert":"ขนม","coffee":"กาแฟ","gifts":"ของขวัญ","flowers":"ดอกไม้","bags":"กระเป๋า","activities":"กิจกรรม"};
+    const productText = (product) => Object.hasOwn(TOPIC_NOUN, product.cat) ? product.name : product.name + " (" + product.brand + ")";
+    const choiceNoun = () => TOPIC_NOUN[prompt?.cat] || (prompt?.cat === "music" ? "เพลง" : ["mama", "lays"].includes(prompt?.cat) ? "รสชาติ" : "สินค้า");
     const findProduct = (id) => roundProducts.find((product) => product.id === id);
 
     function show(screen) {
@@ -180,7 +182,7 @@
       updateHud();
       showQuestion();
       ui.csTurnLabel.textContent = players[chooser()] + " เลือก" + choiceNoun();
-      ui.csSelectionHint.textContent = "ให้อีกคนหลบหน้าจอก่อน แล้วเลือก" + choiceNoun() + "หนึ่งอย่าง";
+      ui.csSelectionHint.textContent = "ให้อีกคนหลบหน้าจอก่อน แล้วเลือกหนึ่งตัวเลือกที่ตรงใจที่สุด";
       ui.csShelf.setAttribute("aria-label", choiceNoun() + "ให้เลือกบนชั้นวาง");
       ui.csConfirm.textContent = "ยืนยันสิ่งที่เลือก";
       renderShelf("choose");
@@ -283,7 +285,7 @@
       clearRoundView();
       show(ui.csPlay);
       showQuestion();
-      ui.csTurnLabel.textContent = players[1 - chooser()] + (prompt.cat === "music" ? " ทายเพลง" : ["mama", "lays"].includes(prompt.cat) ? " ทายรสชาติ" : " ทายใจเพื่อน");
+      ui.csTurnLabel.textContent = players[1 - chooser()] + (Object.hasOwn(TOPIC_NOUN, prompt.cat) ? " ทาย" + choiceNoun() : prompt.cat === "music" ? " ทายเพลง" : ["mama", "lays"].includes(prompt.cat) ? " ทายรสชาติ" : " ทายใจเพื่อน");
       ui.csSelectionHint.textContent = "เลือก" + choiceNoun() + "ที่คิดว่าเพื่อนเลือก แล้วกดยืนยันคำทาย";
       ui.csShelf.setAttribute("aria-label", choiceNoun() + "ให้เลือกบนชั้นวาง");
       ui.csConfirm.textContent = "ยืนยันคำทาย";

@@ -37,6 +37,9 @@ async function run(chromium, options = {}) {
   const prompts = readList("data/convenience-store.js", "CONVENIENCE_STORE_LIST");
   const products = readList("data/convenience-products.js", "CONVENIENCE_PRODUCTS");
   const categories = [...new Set(prompts.map((item) => item.cat))];
+  const topicLabels = {"countries":"ประเทศ","food":"อาหารตามสั่ง","stationery":"เครื่องเขียน","dessert":"ขนมไทย","coffee":"กาแฟ","gifts":"ของขวัญ","flowers":"ดอกไม้","bags":"กระเป๋า","activities":"กิจกรรม"};
+  const topicNouns = {"countries":"ประเทศ","food":"เมนู","stationery":"เครื่องเขียน","dessert":"ขนม","coffee":"กาแฟ","gifts":"ของขวัญ","flowers":"ดอกไม้","bags":"กระเป๋า","activities":"กิจกรรม"};
+  const focusCategories = ["mama", "lays", "music", ...Object.keys(topicLabels)];
   const local = options.base ? null : await serve();
   const base = (options.base || local.base).replace(/\/$/, "");
   const executablePath = options.executablePath || process.env.CHROMIUM_PATH
@@ -240,16 +243,16 @@ async function run(chromium, options = {}) {
       if (cat === "icecream") await shot(page, "icecream-shelf");
       await reset(page);
     }
-    check("ทุกหมวดและทั้งหมดใช้โจทย์จริงกับสินค้าหกชิ้นในหมวดเดียวกัน", gridChecks.every((item) => item.valid), gridChecks);
+    check("ทุกหมวดและทั้งหมดใช้โจทย์จริงกับตัวเลือกหกรายการในหมวดเดียวกัน", gridChecks.every((item) => item.valid), gridChecks);
 
-    for (const cat of ["mama", "lays", "music"]) {
+    for (const cat of focusCategories) {
       await start(page, cat);
       const current = await grid(page);
       const choices = products.filter((item) => item.cat === cat);
       const brands = new Set(choices.map((item) => item.brand));
       const choiceNames = new Set(choices.map((item) => item.name));
-      const expectedBrand = cat === "mama" ? "มาม่า" : "เลย์";
-      check("หมวด " + cat + " แสดงชื่อรสหรือเพลงพร้อมแบรนด์หรือศิลปินครบ", current.correctProducts
+      const expectedBrand = topicLabels[cat] || (cat === "mama" ? "มาม่า" : "เลย์");
+      check("หมวด " + cat + " แสดงชื่อและป้ายกำกับตัวเลือกครบ", current.correctProducts
         && current.readable && current.loaded && choiceNames.size === choices.length
         && (cat === "music" ? brands.size >= 2 : brands.size === 1 && brands.has(expectedBrand)));
       await shot(page, cat + "-shelf");
@@ -258,13 +261,13 @@ async function run(chromium, options = {}) {
         && round.pass && round.disconnected && round.privateState && round.fresh && round.gridMatches
         && round.noEarlyScore && round.scoreOnce && round.revealNames
         && JSON.stringify(round.score) === JSON.stringify([1, 1]), round);
-      const noun = cat === "music" ? "เพลง" : "รสชาติ";
+      const noun = topicNouns[cat] || (cat === "music" ? "เพลง" : "รสชาติ");
       check("ข้อความคนเลือกและคนทายตรงกับหมวด " + cat, round.chooser.includes("เลือก" + noun)
         && round.guesser.includes("ทาย" + noun), { chooser: round.chooser, guesser: round.guesser });
       if (cat === "music") await shot(page, "music-reveal");
       for (const width of [320, 390, 1280]) {
         await page.setViewportSize({ width, height: 900 });
-        check("ชั้นรสหรือเพลง " + cat + " อ่านครบและไม่ล้นจอ " + width, await noOverflow(page), lastOverflow);
+        check("ชั้นตัวเลือก " + cat + " อ่านครบและไม่ล้นจอ " + width, await noOverflow(page), lastOverflow);
       }
       await page.setViewportSize({ width: 390, height: 844 });
       await reset(page);
@@ -390,6 +393,15 @@ async function run(chromium, options = {}) {
     check("ภาพรสชาติแบบ SVG เสียยังเลือกและทายด้วยชื่อรสได้", svgFailures > 0 && failedSvgGrid.readable
       && failedSvgGrid.correctProducts && failedSvgRound.scoreOnce && failedSvgRound.pass && failedSvgRound.fresh);
     await shot(faultPage, "svg-image-failure");
+    await reset(faultPage);
+    let photoFailures = 0;
+    await faultContext.route("**/assets/convenience-store/*.jpg", (route) => { photoFailures++; return route.abort(); });
+    await start(faultPage, "food");
+    await faultPage.waitForFunction(() => !!document.querySelector("#csShelf .cs-image-missing"));
+    const failedPhotoRound = await playRound(faultPage, true);
+    check("ภาพอาหารเสียยังเลือกเมนู ส่งเครื่อง และคิดคะแนนได้", photoFailures > 0
+      && failedPhotoRound.scoreOnce && failedPhotoRound.pass && failedPhotoRound.fresh);
+    await shot(faultPage, "food-image-failure");
     await faultContext.close();
 
     const offlineContext = await newContext({ serviceWorkers: "allow" });
@@ -419,7 +431,7 @@ async function run(chromium, options = {}) {
     await offlinePage.reload({ waitUntil: "domcontentloaded" });
     await setupVisible(offlinePage);
     check("โหลดหน้าออฟไลน์ใหม่ยังล้างเกมเดิม", await emptyPrivateDom(offlinePage) && await offlinePage.locator("#csPlay").isHidden());
-    for (const cat of ["mama", "lays", "music"]) {
+    for (const cat of focusCategories) {
       await start(offlinePage, cat);
       const current = await grid(offlinePage);
       const round = await playRound(offlinePage, true);
