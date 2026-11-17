@@ -20,6 +20,13 @@ const DATA_DIR = path.join(ROOT, "data");
 //                ห้ามเพิ่มค่าใหม่โดยไม่แก้หน้าเว็บด้วย
 const POOLS = [
   {
+    key: "countryquiz", file: "country-quiz.js", varName: "COUNTRY_QUIZ_LIST",
+    page: "flag-quiz.html", script: "js/country-quiz.js",
+    label: "ทายธงชาติ และทายประเทศจากรูปร่าง",
+    required: ["code", "iso2", "name", "en", "aliases", "region", "flag"], optional: [],
+    dupKey: "code", catField: "region", closedCats: true, uiCatAttribute: "region",
+  },
+  {
     key: "picturereveal", file: "picture-reveal.js", varName: "PICTURE_REVEAL_LIST",
     page: "picture-reveal.html", script: "js/picture-reveal.js",
     label: "เปิดป้าย ทายรูป — หนัง การ์ตูน อาหารไทย",
@@ -260,7 +267,7 @@ function uiCats(pool) {
   const htmlPath = path.join(ROOT, pool.page || "");
   if (pool.page && fs.existsSync(htmlPath)) {
     const html = fs.readFileSync(htmlPath, "utf8");
-    const re = /data-(?:tag|cat|level)="([^"]+)"/g;
+    const re = pool.uiCatAttribute === "region" ? /data-region="([^"]+)"/g : /data-(?:tag|cat|level)="([^"]+)"/g;
     let m;
     while ((m = re.exec(html))) if (m[1] !== "all") found.add(m[1]);
   }
@@ -278,4 +285,3 @@ function uiCats(pool) {
 }
 
 module.exports = { POOLS, DATA_DIR, ROOT, loadPool, byKey, dupValue, uiCats };
-
